@@ -5,7 +5,7 @@ import HeaderMain from "./components/header-main";
 export default function Layout() {
   return (
     <div className="grid grid-rows-[auto_1fr_auto] min-h-screen bg-background">
-      <header>
+      <header className="sticky top-0 bg-background">
         <AuthNav />
         <HeaderMain />
       </header>
