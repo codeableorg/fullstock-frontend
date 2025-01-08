@@ -16,7 +16,7 @@ export default function HeaderMain() {
     <Container className="sm:relative">
       <div className="flex justify-between items-center h-12">
         <Link to="/">
-          <img src={logo} alt="FullStock inicio" />
+          <img src={logo} alt="FullStock inicio" width="128" height="32" />
         </Link>
         <HeaderActions />
       </div>
