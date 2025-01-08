@@ -4,6 +4,10 @@ import heroSrc from "@/assets/hero.jpg";
 import polosSrc from "@/assets/polos.jpg";
 import tazasSrc from "@/assets/tazas.jpg";
 import stickersSrc from "@/assets/stickers.jpg";
+import { Truck } from "@/components/icons/truck";
+import { Return } from "@/components/icons/return";
+import { Ribbon } from "@/components/icons/ribbon";
+import { Idea } from "@/components/icons/idea";
 
 const categoriesContent = [
   {
@@ -81,6 +85,51 @@ export default function Home() {
                 </div>
               </div>
             ))}
+          </div>
+        </Container>
+      </section>
+      <section className="py-12 md:py-24 bg-muted">
+        <Container className="text-center">
+          <h2 className="text-2xl font-bold mb-12">
+            Nuestra Promesa de Calidad
+          </h2>
+          <div className="flex flex-col gap-8 sm:grid sm:grid-cols-2 md:grid-cols-4">
+            <div>
+              <Truck className="mb-6 inline-block" />
+              <h3 className="font-medium mb-2 text-sm">Entrega rápida</h3>
+              <p className=" text-sm text-muted-foreground">
+                Recibe tus productos en tiempo récord, directo a tu puerta, para
+                que puedas disfrutar de ellos cuanto antes.
+              </p>
+            </div>
+            <div>
+              <Return className="mb-6 inline-block" />
+              <h3 className="font-medium mb-2 text-sm">
+                Satisfacción Garantizada
+              </h3>
+              <p className=" text-sm text-muted-foreground">
+                Tu felicidad es nuestra prioridad. Si no estás 100% satisfecho,
+                estamos aquí para ayudarte con cambios o devoluciones.
+              </p>
+            </div>
+            <div>
+              <Ribbon className="mb-6 inline-block" />
+              <h3 className="font-medium mb-2 text-sm">
+                Materiales de Alta Calidad
+              </h3>
+              <p className=" text-sm text-muted-foreground">
+                Nos aseguramos de que todos nuestros productos estén hechos con
+                materiales de la más alta calidad.
+              </p>
+            </div>
+            <div>
+              <Idea className="mb-6 inline-block" />
+              <h3 className="font-medium mb-2 text-sm">Diseños Exclusivos</h3>
+              <p className=" text-sm text-muted-foreground">
+                Cada producto está diseñado pensando en los desarrolladores, con
+                estilos únicos que no encontrarás en ningún otro lugar.
+              </p>
+            </div>
           </div>
         </Container>
       </section>
