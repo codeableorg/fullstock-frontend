@@ -4,10 +4,7 @@ import heroSrc from "@/assets/hero.jpg";
 import polosSrc from "@/assets/polos.jpg";
 import tazasSrc from "@/assets/tazas.jpg";
 import stickersSrc from "@/assets/stickers.jpg";
-import { Truck } from "@/components/icons/truck";
-import { Return } from "@/components/icons/return";
-import { Ribbon } from "@/components/icons/ribbon";
-import { Idea } from "@/components/icons/idea";
+import { Truck, Return, Ribbon, Idea } from "@/components/icons";
 
 const categoriesContent = [
   {

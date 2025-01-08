@@ -1,6 +1,10 @@
-import { Outlet } from "react-router";
+import { Link, Outlet } from "react-router";
 import AuthNav from "./components/auth-nav";
 import HeaderMain from "./components/header-main";
+import { Button } from "@/components/ui/button";
+import { Container } from "@/components/ui/container";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
 
 export default function Layout() {
   return (
@@ -12,7 +16,71 @@ export default function Layout() {
       <main>
         <Outlet />
       </main>
-      <footer>Footer</footer>
+      <footer>
+        <Container>
+          <div className="py-12 md:py-16 flex flex-col gap-8 lg:flex-row">
+            <div className="flex flex-wrap gap-x-4 gap-y-8 grow">
+              <ul className="basis-36 grow flex flex-col gap-6 text-sm text-muted-foreground">
+                <li className="font-medium text-foreground">Tienda</li>
+                <li>
+                  <Link to="/polos">Polos</Link>
+                </li>
+                <li>
+                  <Link to="/tazas">Tazas</Link>
+                </li>
+                <li>
+                  <Link to="/stickers">Stickers</Link>
+                </li>
+              </ul>
+              <ul className="basis-36 grow flex flex-col gap-6 text-sm text-muted-foreground">
+                <li className="font-medium text-foreground">Compañía</li>
+                <li>
+                  <Link to="/quienes-somos">Quienes somos</Link>
+                </li>
+                <li>
+                  <Link to="/terminos">Términos y condiciones</Link>
+                </li>
+                <li>
+                  <Link to="/privacidad">Privacidad</Link>
+                </li>
+              </ul>
+              <ul className="basis-36 grow flex flex-col gap-6 text-sm text-muted-foreground">
+                <li className="font-medium text-foreground">Conecta</li>
+                <li>
+                  <Link to="/contacto">Contáctanos</Link>
+                </li>
+                <li>
+                  <Link to="https://www.facebook.com/" target="_blank">
+                    Facebook
+                  </Link>
+                </li>
+                <li>
+                  <Link to="https://www.instagram.com/" target="_blank">
+                    Instagram
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            <div className="text-sm max-w-md">
+              <p className="font-medium mb-6">Suscríbete a nuestro boletín</p>
+              <p className="text-muted-foreground mb-2">
+                Recibe las últimas ofertas y descuentos en tu correo
+                semanalmente.
+              </p>
+              <form className="flex gap-2">
+                <Input type="email" aria-label="email" required />
+                <Button size="lg" variant="secondary">
+                  Suscribirse
+                </Button>
+              </form>
+            </div>
+          </div>
+          <Separator orientation="horizontal" decorative={true} />
+          <small className="text-center text-sm text-muted-foreground py-6 block">
+            Todos los derechos reservados © Full Stock
+          </small>
+        </Container>
+      </footer>
     </div>
   );
 }
