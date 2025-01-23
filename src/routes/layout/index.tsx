@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator";
 export default function Layout() {
   return (
     <div className="grid grid-rows-[auto_1fr_auto] min-h-screen bg-background">
-      <header className="sticky top-0 bg-background">
+      <header className="sticky top-0 bg-background border-b border-border z-50">
         <AuthNav />
         <HeaderMain />
       </header>
