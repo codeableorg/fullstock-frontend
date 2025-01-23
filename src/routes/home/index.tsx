@@ -5,6 +5,7 @@ import polosSrc from "@/assets/polos.jpg";
 import tazasSrc from "@/assets/tazas.jpg";
 import stickersSrc from "@/assets/stickers.jpg";
 import { Truck, Return, Ribbon, Idea } from "@/components/icons";
+import { Link } from "react-router";
 
 const categoriesContent = [
   {
@@ -66,7 +67,11 @@ export default function Home() {
           </div>
           <div className="flex flex-col gap-8 md:flex-row">
             {categoriesContent.map((category) => (
-              <div className="basis-0 grow" key={category.title}>
+              <Link
+                to={category.title.toLowerCase()}
+                className="basis-0 grow group"
+                key={category.title}
+              >
                 <div className="rounded-xl overflow-hidden mb-4">
                   <img
                     src={category.imageSrc}
@@ -75,12 +80,14 @@ export default function Home() {
                   />
                 </div>
                 <div>
-                  <h3 className="font-semibold mb-2">{category.title}</h3>
+                  <h3 className="font-semibold mb-2 group-hover:underline">
+                    {category.title}
+                  </h3>
                   <p className="text-sm text-muted-foreground">
                     {category.description}
                   </p>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </Container>
