@@ -7,6 +7,7 @@ import Home from "./routes/home";
 import Root from "./routes/root";
 import Category from "./routes/category";
 import { ThemeProvider } from "./providers/theme";
+import Product from "./routes/product";
 
 const router = createBrowserRouter([
   {
@@ -19,6 +20,10 @@ const router = createBrowserRouter([
       {
         path: "/:category",
         element: <Category />,
+      },
+      {
+        path: "/products/:id",
+        element: <Product />,
       },
     ],
   },
