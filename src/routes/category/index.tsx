@@ -69,10 +69,12 @@ export default function Category() {
     <>
       <section className="py-10 border-b border-border">
         <Container>
-          <h1 className="text-4xl font-bold mb-4">{capitalize(category)}</h1>
-          <p className="text-sm text-muted-foreground">
-            {categoryDescription[category]}
-          </p>
+          <div className="max-w-3xl">
+            <h1 className="text-4xl font-bold mb-4">{capitalize(category)}</h1>
+            <p className="text-sm text-muted-foreground">
+              {categoryDescription[category]}
+            </p>
+          </div>
         </Container>
       </section>
       <section className="py-10">
