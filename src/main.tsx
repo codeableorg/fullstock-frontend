@@ -4,13 +4,13 @@ import { RouterProvider, createBrowserRouter } from "react-router";
 
 import "./index.css";
 import Home from "./routes/home";
-import Layout from "./routes/layout";
+import Root from "./routes/root";
 import Category from "./routes/category";
 import { ThemeProvider } from "./providers/theme";
 
 const router = createBrowserRouter([
   {
-    element: <Layout />,
+    element: <Root />,
     children: [
       {
         index: true,

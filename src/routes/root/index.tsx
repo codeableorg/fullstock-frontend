@@ -1,4 +1,4 @@
-import { Link, Outlet } from "react-router";
+import { Link, Outlet, ScrollRestoration } from "react-router";
 import AuthNav from "./components/auth-nav";
 import HeaderMain from "./components/header-main";
 import { Button } from "@/components/ui/button";
@@ -6,7 +6,7 @@ import { Container } from "@/components/ui/container";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 
-export default function Layout() {
+export default function Root() {
   return (
     <div className="grid grid-rows-[auto_1fr_auto] min-h-screen bg-background">
       <header className="sticky top-0 bg-background border-b border-border z-50">
@@ -81,6 +81,7 @@ export default function Layout() {
           </small>
         </Container>
       </footer>
+      <ScrollRestoration />
     </div>
   );
 }
