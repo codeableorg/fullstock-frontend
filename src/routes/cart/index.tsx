@@ -13,7 +13,7 @@ export default function Cart() {
           Carrito de compras
         </h1>
         <div className="divide-y divide-border border border-border rounded-xl">
-          {state.items.map(({ product, quantity }) => (
+          {state.items?.map(({ product, quantity }) => (
             <div key={product.id} className="flex gap-6 p-6">
               <div className="w-20 rounded-xl bg-muted">
                 <img

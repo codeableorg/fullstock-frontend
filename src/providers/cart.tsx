@@ -1,14 +1,10 @@
-import { createContext, useContext, useReducer } from "react";
+import { createContext, useContext, useEffect, useReducer } from "react";
 import { Product } from "@/services/products/product.types";
-import { mockProducts } from "@/services/products/mockProducts";
-
-interface CartItem {
-  product: Product;
-  quantity: number;
-}
+import { type CartItem } from "@/services/cart/cart.types";
+import { CartService } from "@/services/cart/cart.service";
 
 interface CartState {
-  items: CartItem[];
+  items?: CartItem[];
   total: number;
 }
 
@@ -18,11 +14,14 @@ type CartAction =
   | {
       type: "UPDATE_QUANTITY";
       payload: { productId: Product["id"]; quantity: number };
-    };
+    }
+  | { type: "LOAD_CART"; payload: CartItem[] };
 
 function cartReducer(state: CartState, action: CartAction): CartState {
   switch (action.type) {
     case "ADD_ITEM": {
+      if (state.items === undefined) return state;
+
       const existingItem = state.items.find(
         (item) => item.product.id === action.payload.id
       );
@@ -49,6 +48,8 @@ function cartReducer(state: CartState, action: CartAction): CartState {
       };
     }
     case "REMOVE_ITEM": {
+      if (state.items === undefined) return state;
+
       const newItems = state.items.filter(
         (item) => item.product.id !== action.payload
       );
@@ -58,6 +59,8 @@ function cartReducer(state: CartState, action: CartAction): CartState {
       };
     }
     case "UPDATE_QUANTITY": {
+      if (state.items === undefined) return state;
+
       const newItems = state.items.map((item) =>
         item.product.id === action.payload.productId
           ? { ...item, quantity: action.payload.quantity }
@@ -66,6 +69,12 @@ function cartReducer(state: CartState, action: CartAction): CartState {
       return {
         items: newItems,
         total: calculateTotal(newItems),
+      };
+    }
+    case "LOAD_CART": {
+      return {
+        items: action.payload,
+        total: calculateTotal(action.payload),
       };
     }
     default:
@@ -87,17 +96,24 @@ const CartContext = createContext<{
   updateQuantity: (productId: Product["id"], quantity: number) => void;
 } | null>(null);
 
-const defaultCartItems: CartItem[] = [
-  { product: mockProducts[0], quantity: 1 }, // Polo React
-  { product: mockProducts[7], quantity: 2 }, // Polo It's A Feature
-  { product: mockProducts[20], quantity: 1 }, // Coffee.js Mug
-];
-
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(cartReducer, {
-    items: defaultCartItems,
-    total: calculateTotal(defaultCartItems),
+    items: undefined,
+    total: 0,
   });
+
+  useEffect(() => {
+    CartService.getCart().then((items) => {
+      console.log(items);
+      dispatch({ type: "LOAD_CART", payload: items });
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!state.items) return;
+
+    CartService.updateCart(state.items);
+  }, [state.items]);
 
   const addItem = (product: Product) => {
     dispatch({ type: "ADD_ITEM", payload: product });
