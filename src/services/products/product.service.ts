@@ -13,4 +13,13 @@ export const ProductService = {
       }, 500);
     });
   },
+
+  getProductById(id: string): Promise<Product | null> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const product = mockProducts.find((product) => product.id === id);
+        resolve(product || null);
+      }, 500);
+    });
+  },
 };

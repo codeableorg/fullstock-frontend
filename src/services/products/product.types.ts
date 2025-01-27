@@ -9,6 +9,7 @@ export interface Product {
   description: string;
   category: ProductCategory;
   isOnSale: boolean;
+  features: string[];
 }
 
 export function isValidCategory(

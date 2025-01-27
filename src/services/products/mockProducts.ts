@@ -10,6 +10,12 @@ export const mockProducts: Product[] = [
       "Viste tu pasión por React con estilo y comodidad en cada línea de código.",
     category: "polos",
     isOnSale: false,
+    features: [
+      "Estampado resistente que mantiene sus colores vibrantes lavado tras lavado.",
+      "Hecho de algodón suave que asegura comodidad y frescura.",
+      "Costuras reforzadas para una mayor durabilidad.",
+      "Corte moderno que se adapta perfectamente al cuerpo.",
+    ],
   },
   {
     id: "2",
@@ -20,6 +26,12 @@ export const mockProducts: Product[] = [
       "Deja que tu amor por JavaScript hable a través de cada hilo de este polo.",
     category: "polos",
     isOnSale: false,
+    features: [
+      "Logo de JavaScript bordado con precisión y detalle.",
+      "Tela premium de algodón peinado.",
+      "Disponible en varios colores.",
+      "Acabado profesional con doble costura.",
+    ],
   },
   {
     id: "3",
@@ -30,6 +42,12 @@ export const mockProducts: Product[] = [
       "Conéctate al estilo con este polo de Node.js, tan robusto como tu código.",
     category: "polos",
     isOnSale: false,
+    features: [
+      "Diseño minimalista con el logo de Node.js.",
+      "Material transpirable ideal para largas sesiones de código.",
+      "Tejido resistente a múltiples lavados.",
+      "Etiqueta sin costuras para mayor comodidad.",
+    ],
   },
   {
     id: "4",
@@ -40,6 +58,12 @@ export const mockProducts: Product[] = [
       "Tipa tu estilo con precisión: lleva tu pasión por TypeScript en cada hilo.",
     category: "polos",
     isOnSale: false,
+    features: [
+      "Logo de TypeScript estampado en alta calidad.",
+      "Tejido antimanchas y duradero.",
+      "Cuello reforzado que mantiene su forma.",
+      "100% algodón hipoalergénico.",
+    ],
   },
   {
     id: "5",
@@ -50,6 +74,12 @@ export const mockProducts: Product[] = [
       "Domina el servidor con estilo: viste con orgullo tu título de Backend Developer.",
     category: "polos",
     isOnSale: false,
+    features: [
+      "Diseño exclusivo para desarrolladores backend.",
+      "Material premium que mantiene su forma.",
+      "Costuras reforzadas en puntos de tensión.",
+      "Estampado de alta durabilidad.",
+    ],
   },
   {
     id: "6",
@@ -60,6 +90,12 @@ export const mockProducts: Product[] = [
       "Construye experiencias con estilo: luce con orgullo tu polo de Frontend Developer.",
     category: "polos",
     isOnSale: false,
+    features: [
+      "Diseño inspirado en elementos de UI/UX.",
+      "Tela suave y ligera perfecta para el día a día.",
+      "Estampado flexible que no se agrieta.",
+      "Acabado profesional en cada detalle.",
+    ],
   },
   {
     id: "7",
@@ -70,6 +106,12 @@ export const mockProducts: Product[] = [
       "Domina ambos mundos con estilo: lleva tu título de FullStack Developer en cada línea de tu look.",
     category: "polos",
     isOnSale: false,
+    features: [
+      "Diseño que representa ambos mundos del desarrollo.",
+      "Material premium de larga duración.",
+      "Proceso de estampado ecológico.",
+      "Corte moderno y cómodo.",
+    ],
   },
   {
     id: "8",
@@ -80,6 +122,12 @@ export const mockProducts: Product[] = [
       "Cuando el bug se convierte en arte: lleva con orgullo tu polo 'It's a feature'.",
     category: "polos",
     isOnSale: true,
+    features: [
+      "Estampado humorístico de alta calidad.",
+      "Algodón orgánico certificado.",
+      "Diseño exclusivo de la comunidad dev.",
+      "Disponible en múltiples colores.",
+    ],
   },
   {
     id: "9",
@@ -90,6 +138,12 @@ export const mockProducts: Product[] = [
       "El clásico del desarrollador: presume tu confianza con 'It works on my machine'.",
     category: "polos",
     isOnSale: true,
+    features: [
+      "Frase icónica del mundo del desarrollo.",
+      "Material durable y cómodo.",
+      "Estampado que no se desvanece.",
+      "Ideal para regalo entre desarrolladores.",
+    ],
   },
   {
     id: "s1",
@@ -99,6 +153,12 @@ export const mockProducts: Product[] = [
     price: 2.99,
     description: "Classic JavaScript hexagon logo sticker",
     isOnSale: false,
+    features: [
+      "Vinilo de alta calidad resistente al agua",
+      "Adhesivo duradero que no deja residuos",
+      "Colores vibrantes que no se desvanecen",
+      "Tamaño perfecto para laptops y dispositivos",
+    ],
   },
   {
     id: "s2",
@@ -108,6 +168,12 @@ export const mockProducts: Product[] = [
     price: 2.49,
     description: "React Native logo with mobile devices",
     isOnSale: false,
+    features: [
+      "Vinilo de alta calidad resistente al agua",
+      "Adhesivo duradero que no deja residuos",
+      "Colores vibrantes que no se desvanecen",
+      "Tamaño perfecto para laptops y dispositivos",
+    ],
   },
   {
     id: "s3",
@@ -117,6 +183,12 @@ export const mockProducts: Product[] = [
     price: 3.99,
     description: "Large Git branching visualization",
     isOnSale: false,
+    features: [
+      "Vinilo de alta calidad resistente al agua",
+      "Adhesivo duradero que no deja residuos",
+      "Colores vibrantes que no se desvanecen",
+      "Tamaño perfecto para laptops y dispositivos",
+    ],
   },
   {
     id: "s4",
@@ -126,6 +198,12 @@ export const mockProducts: Product[] = [
     price: 2.99,
     description: "Official Python programming language logo",
     isOnSale: false,
+    features: [
+      "Vinilo de alta calidad resistente al agua",
+      "Adhesivo duradero que no deja residuos",
+      "Colores vibrantes que no se desvanecen",
+      "Tamaño perfecto para laptops y dispositivos",
+    ],
   },
   {
     id: "s5",
@@ -135,6 +213,12 @@ export const mockProducts: Product[] = [
     price: 2.99,
     description: "Cute Docker whale carrying containers",
     isOnSale: false,
+    features: [
+      "Vinilo de alta calidad resistente al agua",
+      "Adhesivo duradero que no deja residuos",
+      "Colores vibrantes que no se desvanecen",
+      "Tamaño perfecto para laptops y dispositivos",
+    ],
   },
   {
     id: "s6",
@@ -144,6 +228,12 @@ export const mockProducts: Product[] = [
     price: 2.49,
     description: "Tux the Linux penguin",
     isOnSale: false,
+    features: [
+      "Vinilo de alta calidad resistente al agua",
+      "Adhesivo duradero que no deja residuos",
+      "Colores vibrantes que no se desvanecen",
+      "Tamaño perfecto para laptops y dispositivos",
+    ],
   },
   {
     id: "s7",
@@ -153,6 +243,12 @@ export const mockProducts: Product[] = [
     price: 4.99,
     description: "Collection of popular web development logos",
     isOnSale: false,
+    features: [
+      "Vinilo de alta calidad resistente al agua",
+      "Adhesivo duradero que no deja residuos",
+      "Colores vibrantes que no se desvanecen",
+      "Tamaño perfecto para laptops y dispositivos",
+    ],
   },
   {
     id: "s8",
@@ -162,6 +258,12 @@ export const mockProducts: Product[] = [
     price: 2.49,
     description: "Visual Studio Code editor logo",
     isOnSale: false,
+    features: [
+      "Vinilo de alta calidad resistente al agua",
+      "Adhesivo duradero que no deja residuos",
+      "Colores vibrantes que no se desvanecen",
+      "Tamaño perfecto para laptops y dispositivos",
+    ],
   },
   {
     id: "s9",
@@ -171,6 +273,12 @@ export const mockProducts: Product[] = [
     price: 2.99,
     description: "GitHub's famous Octocat mascot",
     isOnSale: false,
+    features: [
+      "Vinilo de alta calidad resistente al agua",
+      "Adhesivo duradero que no deja residuos",
+      "Colores vibrantes que no se desvanecen",
+      "Tamaño perfecto para laptops y dispositivos",
+    ],
   },
   {
     id: "s10",
@@ -180,6 +288,12 @@ export const mockProducts: Product[] = [
     price: 2.99,
     description: "Developer's best friend logo",
     isOnSale: false,
+    features: [
+      "Vinilo de alta calidad resistente al agua",
+      "Adhesivo duradero que no deja residuos",
+      "Colores vibrantes que no se desvanecen",
+      "Tamaño perfecto para laptops y dispositivos",
+    ],
   },
   {
     id: "m1",
@@ -189,6 +303,12 @@ export const mockProducts: Product[] = [
     price: 14.99,
     description: "Start your day with essential Git commands",
     isOnSale: false,
+    features: [
+      "Cerámica de alta calidad",
+      "Apta para microondas y lavavajillas",
+      "Capacidad de 325ml",
+      "Diseño que no pierde color con el uso",
+    ],
   },
   {
     id: "m2",
@@ -198,6 +318,12 @@ export const mockProducts: Product[] = [
     price: 13.99,
     description: "JavaScript code that prints coffee",
     isOnSale: false,
+    features: [
+      "Cerámica de alta calidad",
+      "Apta para microondas y lavavajillas",
+      "Capacidad de 325ml",
+      "Diseño que no pierde color con el uso",
+    ],
   },
   {
     id: "m3",
@@ -207,6 +333,12 @@ export const mockProducts: Product[] = [
     price: 12.99,
     description: "While not coffee: drink()",
     isOnSale: false,
+    features: [
+      "Cerámica de alta calidad",
+      "Apta para microondas y lavavajillas",
+      "Capacidad de 325ml",
+      "Diseño que no pierde color con el uso",
+    ],
   },
   {
     id: "m4",
@@ -216,6 +348,12 @@ export const mockProducts: Product[] = [
     price: 15.99,
     description: "useState(coffee)",
     isOnSale: false,
+    features: [
+      "Cerámica de alta calidad",
+      "Apta para microondas y lavavajillas",
+      "Capacidad de 325ml",
+      "Diseño que no pierde color con el uso",
+    ],
   },
   {
     id: "m5",
@@ -225,6 +363,12 @@ export const mockProducts: Product[] = [
     price: 13.99,
     description: "No bugs, just features",
     isOnSale: false,
+    features: [
+      "Cerámica de alta calidad",
+      "Apta para microondas y lavavajillas",
+      "Capacidad de 325ml",
+      "Diseño que no pierde color con el uso",
+    ],
   },
   {
     id: "m6",
@@ -234,6 +378,12 @@ export const mockProducts: Product[] = [
     price: 14.99,
     description: "SELECT * FROM coffee WHERE energy = LOW",
     isOnSale: false,
+    features: [
+      "Cerámica de alta calidad",
+      "Apta para microondas y lavavajillas",
+      "Capacidad de 325ml",
+      "Diseño que no pierde color con el uso",
+    ],
   },
   {
     id: "m7",
@@ -243,6 +393,12 @@ export const mockProducts: Product[] = [
     price: 15.99,
     description: "Containerize your coffee",
     isOnSale: false,
+    features: [
+      "Cerámica de alta calidad",
+      "Apta para microondas y lavavajillas",
+      "Capacidad de 325ml",
+      "Diseño que no pierde color con el uso",
+    ],
   },
   {
     id: "m8",
@@ -252,6 +408,12 @@ export const mockProducts: Product[] = [
     price: 13.99,
     description: "sudo make coffee",
     isOnSale: false,
+    features: [
+      "Cerámica de alta calidad",
+      "Apta para microondas y lavavajillas",
+      "Capacidad de 325ml",
+      "Diseño que no pierde color con el uso",
+    ],
   },
   {
     id: "m9",
@@ -261,6 +423,12 @@ export const mockProducts: Product[] = [
     price: 14.99,
     description: "Copy Paste Expert",
     isOnSale: false,
+    features: [
+      "Cerámica de alta calidad",
+      "Apta para microondas y lavavajillas",
+      "Capacidad de 325ml",
+      "Diseño que no pierde color con el uso",
+    ],
   },
   {
     id: "m10",
@@ -270,5 +438,11 @@ export const mockProducts: Product[] = [
     price: 13.99,
     description: "This mug is #000000",
     isOnSale: false,
+    features: [
+      "Cerámica de alta calidad",
+      "Apta para microondas y lavavajillas",
+      "Capacidad de 325ml",
+      "Diseño que no pierde color con el uso",
+    ],
   },
 ];

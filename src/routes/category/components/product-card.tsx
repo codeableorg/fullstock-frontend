@@ -5,7 +5,7 @@ export function ProductCard({ product }: { product: Product }) {
   return (
     <Link to={`/products/${product.id}`} className="block group">
       <div className="border border-separator rounded-xl relative overflow-hidden flex flex-col">
-        <div className="object-cover aspect-[3/4] bg-muted ">
+        <div className="aspect-[3/4] bg-muted ">
           <img
             src={product.imgSrc}
             alt={product.title}
