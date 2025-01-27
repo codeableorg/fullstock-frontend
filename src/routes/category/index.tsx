@@ -8,7 +8,7 @@ import {
 import { ProductService } from "@/services/products/product.service";
 import { PriceFilter } from "./components/price-filter";
 import { ProductCard } from "./components/product-card";
-import { ContentSpinner } from "@/components/ui/spinner";
+import { Spinner } from "@/components/ui/spinner";
 import { Container } from "@/components/ui/container";
 import { capitalize } from "@/lib/utils";
 
@@ -63,7 +63,7 @@ export default function Category() {
     );
   }
 
-  if (loading) return <ContentSpinner />;
+  if (loading) return <Spinner variant="main" />;
 
   return (
     <>

@@ -104,7 +104,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     CartService.getCart().then((items) => {
-      console.log(items);
       dispatch({ type: "LOAD_CART", payload: items });
     });
   }, []);

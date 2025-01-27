@@ -2,7 +2,7 @@ import { type Product } from "@/services/products/product.types";
 import { ProductService } from "@/services/products/product.service";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
-import { ContentSpinner } from "@/components/ui/spinner";
+import { Spinner } from "@/components/ui/spinner";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -31,7 +31,7 @@ export default function Product() {
     fetchProduct();
   }, [id]);
 
-  if (loading) return <ContentSpinner />;
+  if (loading) return <Spinner variant="main" />;
 
   if (!product)
     return <div className="text-center mt-10">Product not found.</div>;
