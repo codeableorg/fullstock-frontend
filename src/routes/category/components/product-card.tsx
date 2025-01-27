@@ -9,7 +9,7 @@ export function ProductCard({ product }: { product: Product }) {
           <img
             src={product.imgSrc}
             alt={product.title}
-            className="object-cover w-full h-full group-hover:scale-105 transition-transform"
+            className="object-contain w-full h-full group-hover:scale-105 transition-transform"
           />
         </div>
         <div className="p-4 flex flex-col gap-2 grow">

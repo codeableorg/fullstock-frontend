@@ -13,7 +13,7 @@ export default function Root() {
         <AuthNav />
         <HeaderMain />
       </header>
-      <main>
+      <main className="min-h-[calc(100vh-140px)] md:min-h-[calc(100vh-90px)]">
         <Outlet />
       </main>
       <footer className="border-t border-border">
