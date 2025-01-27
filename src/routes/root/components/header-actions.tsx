@@ -1,6 +1,7 @@
 import { Search, ShoppingCart, User2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { Link } from "react-router";
 
 export default function HeaderActions() {
   return (
@@ -12,8 +13,15 @@ export default function HeaderActions() {
         <User2 />
       </Button>
       <Separator orientation="vertical" className="h-6" />
-      <Button size="xl-icon" variant="ghost" aria-label="Carrito de compras">
-        <ShoppingCart />
+      <Button
+        size="xl-icon"
+        variant="ghost"
+        aria-label="Carrito de compras"
+        asChild
+      >
+        <Link to="/cart">
+          <ShoppingCart />
+        </Link>
       </Button>
     </div>
   );

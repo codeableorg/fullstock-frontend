@@ -8,6 +8,8 @@ import Root from "./routes/root";
 import Category from "./routes/category";
 import { ThemeProvider } from "./providers/theme";
 import Product from "./routes/product";
+import Cart from "./routes/cart";
+import { CartProvider } from "./providers/cart";
 
 const router = createBrowserRouter([
   {
@@ -25,6 +27,10 @@ const router = createBrowserRouter([
         path: "/products/:id",
         element: <Product />,
       },
+      {
+        path: "/cart",
+        element: <Cart />,
+      },
     ],
   },
 ]);
@@ -32,7 +38,9 @@ const router = createBrowserRouter([
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ThemeProvider storageKey="fullstock-ui-theme">
-      <RouterProvider router={router} />
+      <CartProvider>
+        <RouterProvider router={router} />
+      </CartProvider>
     </ThemeProvider>
   </StrictMode>
 );

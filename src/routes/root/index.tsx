@@ -16,7 +16,7 @@ export default function Root() {
       <main>
         <Outlet />
       </main>
-      <footer>
+      <footer className="border-t border-border">
         <Container>
           <div className="py-12 md:py-16 flex flex-col gap-8 lg:flex-row">
             <div className="flex flex-wrap gap-x-4 gap-y-8 grow">

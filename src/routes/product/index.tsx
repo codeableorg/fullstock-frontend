@@ -6,8 +6,10 @@ import { ContentSpinner } from "@/components/ui/spinner";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { useCart } from "@/providers/cart";
 
 export default function Product() {
+  const { addItem } = useCart();
   const { id } = useParams<{ id: string }>();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -51,7 +53,11 @@ export default function Product() {
             <p className="text-sm text-muted-foreground mb-10">
               {product.description}
             </p>
-            <Button size="xl" className="w-full md:w-80">
+            <Button
+              size="xl"
+              className="w-full md:w-80"
+              onClick={() => addItem(product)}
+            >
               Agregar al Carrito
             </Button>
             <Separator className="my-6" />
