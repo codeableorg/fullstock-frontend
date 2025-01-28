@@ -11,6 +11,7 @@ import Product from "./routes/product";
 import Cart from "./routes/cart";
 import { CartProvider } from "./providers/cart";
 import Checkout from "./routes/checkout";
+import OrderConfirmation from "./routes/order-confirmation";
 
 const router = createBrowserRouter([
   {
@@ -35,6 +36,10 @@ const router = createBrowserRouter([
       {
         path: "/checkout",
         element: <Checkout />,
+      },
+      {
+        path: "/order-confirmation/:orderId",
+        element: <OrderConfirmation />,
       },
     ],
   },

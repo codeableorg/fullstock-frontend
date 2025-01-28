@@ -1,185 +1,171 @@
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { InputField } from "@/components/ui/input-field";
+import { SelectField } from "@/components/ui/select-field";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/providers/cart";
+import { OrderService } from "@/services/orders/order.service";
 import { X } from "lucide-react";
+import { useState } from "react";
+import { useNavigate } from "react-router";
+
+const countryOptions = [
+  { value: "AR", label: "Argentina" },
+  { value: "BO", label: "Bolivia" },
+  { value: "BR", label: "Brasil" },
+  { value: "CL", label: "Chile" },
+  { value: "CO", label: "Colombia" },
+  { value: "CR", label: "Costa Rica" },
+  { value: "CU", label: "Cuba" },
+  { value: "DO", label: "República Dominicana" },
+  { value: "EC", label: "Ecuador" },
+  { value: "SV", label: "El Salvador" },
+  { value: "GT", label: "Guatemala" },
+  { value: "HT", label: "Haití" },
+  { value: "HN", label: "Honduras" },
+  { value: "MX", label: "México" },
+  { value: "NI", label: "Nicaragua" },
+  { value: "PA", label: "Panamá" },
+  { value: "PY", label: "Paraguay" },
+  { value: "PE", label: "Perú" },
+  { value: "PR", label: "Puerto Rico" },
+  { value: "UY", label: "Uruguay" },
+  { value: "VE", label: "Venezuela" },
+];
 
 export default function Checkout() {
   const { state } = useCart();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!state.items) return;
+
+    setLoading(true);
+    try {
+      const formData = new FormData(e.currentTarget);
+
+      const { orderId } = await OrderService.createOrder(state.items, formData);
+      navigate(`/order-confirmation/${orderId}`);
+    } catch (error) {
+      console.error("Failed to create order:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <section className="py-12 md:py-16 bg-muted">
-      <Container className="flex flex-col gap-12 max-w-2xl mx-auto lg:flex-row lg:max-w-full">
-        <div className="grow lg:order-1">
-          <h2 className="text-lg font-medium mb-4">Resumen de la orden</h2>
-          <div className="divide-y divide-border border border-border rounded-xl">
-            {state.items?.map(({ product, quantity }) => (
-              <div key={product.id} className="flex gap-6 p-6">
-                <div className="w-20 rounded-xl bg-muted">
-                  <img
-                    src={product.imgSrc}
-                    alt={product.title}
-                    className="w-full aspect-square object-contain"
-                  />
-                </div>
-                <div className="flex flex-col justify-between grow">
-                  <h3 className="text-sm">{product.title}</h3>
-                  <div className="flex text-sm font-medium gap-4 items-center self-end">
-                    <p>{quantity}</p>
-                    <X className="w-4 h-4" />
-                    <p>${product.price.toFixed(2)}</p>
+      <Container>
+        <div className="flex flex-col gap-12 max-w-2xl mx-auto lg:flex-row lg:max-w-full">
+          <div className="grow lg:order-1">
+            <h2 className="text-lg font-medium mb-4">Resumen de la orden</h2>
+            <div className="divide-y divide-border border border-border rounded-xl bg-background">
+              {state.items?.map(({ product, quantity }) => (
+                <div key={product.id} className="flex gap-6 p-6">
+                  <div className="w-20 rounded-xl bg-muted">
+                    <img
+                      src={product.imgSrc}
+                      alt={product.title}
+                      className="w-full aspect-square object-contain"
+                    />
+                  </div>
+                  <div className="flex flex-col justify-between grow">
+                    <h3 className="text-sm">{product.title}</h3>
+                    <div className="flex text-sm font-medium gap-4 items-center self-end">
+                      <p>{quantity}</p>
+                      <X className="w-4 h-4" />
+                      <p>${product.price.toFixed(2)}</p>
+                    </div>
                   </div>
                 </div>
+              ))}
+              <div className="flex justify-between p-6 text-base font-medium">
+                <p>Total</p>
+                <p>${state.total.toFixed(2)}</p>
               </div>
-            ))}
-            <div className="flex justify-between p-6 text-base font-medium">
-              <p>Total</p>
-              <p>${state.total.toFixed(2)}</p>
             </div>
           </div>
+          <form className="lg:max-w-[600px] grow" onSubmit={handleSubmit}>
+            <fieldset>
+              <legend className="text-xl font-medium mb-6">
+                Información de contacto
+              </legend>
+              <InputField
+                label="Correo electrónico"
+                name="email"
+                type="email"
+                required
+                autoComplete="email"
+              />
+            </fieldset>
+            <Separator className="my-6" />
+            <fieldset>
+              <legend className="text-xl font-medium mb-6">
+                Información de envío
+              </legend>
+              <div className="flex flex-col gap-6">
+                <InputField
+                  label="Nombre"
+                  name="firstName"
+                  required
+                  autoComplete="given-name"
+                />
+                <InputField
+                  label="Apellido"
+                  name="lastName"
+                  required
+                  autoComplete="family-name"
+                />
+                <InputField
+                  label="Compañia"
+                  name="company"
+                  autoComplete="organization"
+                />
+                <InputField
+                  label="Dirección"
+                  name="address"
+                  required
+                  autoComplete="street-address"
+                />
+                <InputField
+                  label="Ciudad"
+                  name="city"
+                  required
+                  autoComplete="address-level2"
+                />
+                <SelectField
+                  label="País"
+                  name="country"
+                  options={countryOptions}
+                  required
+                />
+                <InputField
+                  label="Provincia/Estado"
+                  name="region"
+                  required
+                  autoComplete="address-level1"
+                />
+                <InputField
+                  label="Código Postal"
+                  name="zip"
+                  required
+                  autoComplete="postal-code"
+                />
+                <InputField
+                  label="Teléfono"
+                  name="phone"
+                  required
+                  autoComplete="tel"
+                />
+              </div>
+            </fieldset>
+            <Button size="xl" className="w-full mt-6" disabled={loading}>
+              {loading ? "Procesando..." : "Confirmar Orden"}
+            </Button>
+          </form>
         </div>
-        <form className="lg:max-w-[600px] grow">
-          <fieldset>
-            <legend className="text-xl font-medium mb-6">
-              Información de contacto
-            </legend>
-            <div className="flex flex-col gap-2">
-              <label
-                className="text-sm font-medium leading-none"
-                htmlFor="email"
-              >
-                Correo electrónico
-              </label>
-              <Input id="email" type="email" name="email" />
-            </div>
-          </fieldset>
-          <Separator className="my-6" />
-          <fieldset>
-            <legend className="text-xl font-medium mb-6">
-              Información de envío
-            </legend>
-            <div className="flex flex-col gap-6">
-              <div className="flex flex-col gap-2">
-                <label
-                  className="text-sm font-medium leading-none"
-                  htmlFor="name"
-                >
-                  Nombre
-                </label>
-                <Input id="name" name="firstName" />
-              </div>
-              <div className="flex flex-col gap-2">
-                <label
-                  className="text-sm font-medium leading-none"
-                  htmlFor="lastname"
-                >
-                  Apellido
-                </label>
-                <Input id="lastname" name="lastName" />
-              </div>
-              <div className="flex flex-col gap-2">
-                <label
-                  className="text-sm font-medium leading-none"
-                  htmlFor="company"
-                >
-                  Compañia
-                </label>
-                <Input id="company" name="company" />
-              </div>
-              <div className="flex flex-col gap-2">
-                <label
-                  className="text-sm font-medium leading-none"
-                  htmlFor="address"
-                >
-                  Dirección
-                </label>
-                <Input id="address" name="address" />
-              </div>
-              <div className="flex flex-col gap-2">
-                <label
-                  className="text-sm font-medium leading-none"
-                  htmlFor="city"
-                >
-                  Ciudad
-                </label>
-                <Input id="city" name="city" />
-              </div>
-              <div className="flex flex-col gap-2">
-                <label
-                  className="text-sm font-medium leading-none"
-                  htmlFor="country"
-                >
-                  País
-                </label>
-                <Select name="country">
-                  <SelectTrigger id="country">
-                    <SelectValue placeholder="Select" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-background">
-                    <SelectItem value="AR">Argentina</SelectItem>
-                    <SelectItem value="BO">Bolivia</SelectItem>
-                    <SelectItem value="BR">Brasil</SelectItem>
-                    <SelectItem value="CL">Chile</SelectItem>
-                    <SelectItem value="CO">Colombia</SelectItem>
-                    <SelectItem value="CR">Costa Rica</SelectItem>
-                    <SelectItem value="CU">Cuba</SelectItem>
-                    <SelectItem value="DO">República Dominicana</SelectItem>
-                    <SelectItem value="EC">Ecuador</SelectItem>
-                    <SelectItem value="SV">El Salvador</SelectItem>
-                    <SelectItem value="GT">Guatemala</SelectItem>
-                    <SelectItem value="HT">Haití</SelectItem>
-                    <SelectItem value="HN">Honduras</SelectItem>
-                    <SelectItem value="MX">México</SelectItem>
-                    <SelectItem value="NI">Nicaragua</SelectItem>
-                    <SelectItem value="PA">Panamá</SelectItem>
-                    <SelectItem value="PY">Paraguay</SelectItem>
-                    <SelectItem value="PE">Perú</SelectItem>
-                    <SelectItem value="PR">Puerto Rico</SelectItem>
-                    <SelectItem value="UY">Uruguay</SelectItem>
-                    <SelectItem value="VE">Venezuela</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex flex-col gap-2">
-                <label
-                  className="text-sm font-medium leading-none"
-                  htmlFor="region"
-                >
-                  Provincia/Estado
-                </label>
-                <Input id="region" name="region" />
-              </div>
-              <div className="flex flex-col gap-2">
-                <label
-                  className="text-sm font-medium leading-none"
-                  htmlFor="zip"
-                >
-                  Código Postal
-                </label>
-                <Input id="zip" name="zip" />
-              </div>
-              <div className="flex flex-col gap-2">
-                <label
-                  className="text-sm font-medium leading-none"
-                  htmlFor="phone"
-                >
-                  Teléfono
-                </label>
-                <Input id="phone" name="phone" />
-              </div>
-              <Button size="xl" className="w-full">
-                Confirmar Orden
-              </Button>
-            </div>
-          </fieldset>
-        </form>
       </Container>
     </section>
   );
