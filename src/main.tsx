@@ -10,6 +10,7 @@ import { ThemeProvider } from "./providers/theme";
 import Product from "./routes/product";
 import Cart from "./routes/cart";
 import { CartProvider } from "./providers/cart";
+import Checkout from "./routes/checkout";
 
 const router = createBrowserRouter([
   {
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
       {
         path: "/cart",
         element: <Cart />,
+      },
+      {
+        path: "/checkout",
+        element: <Checkout />,
       },
     ],
   },

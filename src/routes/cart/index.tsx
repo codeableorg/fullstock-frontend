@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { useCart } from "@/providers/cart";
 import { Minus, Plus, Trash2 } from "lucide-react";
+import { Link } from "react-router";
 
 export default function Cart() {
   const { state, updateQuantity, removeItem } = useCart();
@@ -66,8 +67,8 @@ export default function Cart() {
             <p>${state.total.toFixed(2)}</p>
           </div>
           <div className="p-6">
-            <Button size="lg" className="w-full">
-              Continuar Compra
+            <Button size="lg" className="w-full" asChild>
+              <Link to="/checkout">Continuar Compra</Link>
             </Button>
           </div>
         </div>
