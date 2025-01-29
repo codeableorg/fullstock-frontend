@@ -1,4 +1,5 @@
 export const VALID_CATEGORIES = ["polos", "stickers", "tazas"] as const;
+
 export type ProductCategory = (typeof VALID_CATEGORIES)[number];
 
 export interface Product {

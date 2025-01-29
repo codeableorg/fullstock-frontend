@@ -6,7 +6,7 @@ import { Container } from "@/components/ui/container";
 import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
 import { useCart } from "@/providers/cart";
-import { ProductService } from "@/services/products/product.service";
+import { getProductById } from "@/services/products/product.service";
 import { type Product } from "@/services/products/product.types";
 
 export default function Product() {
@@ -20,7 +20,7 @@ export default function Product() {
 
     const fetchProduct = async () => {
       try {
-        const data = await ProductService.getProductById(id);
+        const data = await getProductById(id);
         setProduct(data);
       } catch (error) {
         console.error("Error fetching product:", error);

@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useReducer } from "react";
 import { Product } from "@/services/products/product.types";
-import { type CartItem } from "@/services/cart/cart.types";
-import { CartService } from "@/services/cart/cart.service";
+import { type CartItem } from "@/services/carts/cart.types";
+import { getCart, updateCart } from "@/services/carts/cart.service";
 
 interface CartState {
   items?: CartItem[];
@@ -103,7 +103,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   });
 
   useEffect(() => {
-    CartService.getCart().then((items) => {
+    getCart().then((items) => {
       dispatch({ type: "LOAD_CART", payload: items });
     });
   }, []);
@@ -111,7 +111,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!state.items) return;
 
-    CartService.updateCart(state.items);
+    updateCart(state.items);
   }, [state.items]);
 
   const addItem = (product: Product) => {

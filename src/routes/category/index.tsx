@@ -4,7 +4,7 @@ import { useParams, useSearchParams } from "react-router";
 import { Container } from "@/components/ui/container";
 import { Spinner } from "@/components/ui/spinner";
 import { capitalize } from "@/lib/utils";
-import { ProductService } from "@/services/products/product.service";
+import { getProductsByCategory } from "@/services/products/product.service";
 import {
   isValidCategory,
   Product,
@@ -36,7 +36,7 @@ export default function Category() {
     if (!isValidCategory(category)) return;
 
     setLoading(true);
-    ProductService.getProductsByCategory(category)
+    getProductsByCategory(category)
       .then(setProducts)
       .finally(() => setLoading(false));
   }, [category]);

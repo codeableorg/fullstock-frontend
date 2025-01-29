@@ -8,7 +8,7 @@ import { InputField } from "@/components/ui/input-field";
 import { SelectField } from "@/components/ui/select-field";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/providers/cart";
-import { OrderService } from "@/services/orders/order.service";
+import { createOrder } from "@/services/orders/order.service";
 
 const countryOptions = [
   { value: "AR", label: "Argentina" },
@@ -47,7 +47,7 @@ export default function Checkout() {
     try {
       const formData = new FormData(e.currentTarget);
 
-      const { orderId } = await OrderService.createOrder(state.items, formData);
+      const { orderId } = await createOrder(state.items, formData);
       navigate(`/order-confirmation/${orderId}`);
     } catch (error) {
       console.error("Failed to create order:", error);
