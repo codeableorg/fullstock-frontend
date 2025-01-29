@@ -1,16 +1,18 @@
-import { useParams, useSearchParams } from "react-router";
 import { useEffect, useState } from "react";
+import { useParams, useSearchParams } from "react-router";
+
+import { Container } from "@/components/ui/container";
+import { Spinner } from "@/components/ui/spinner";
+import { capitalize } from "@/lib/utils";
+import { ProductService } from "@/services/products/product.service";
 import {
   isValidCategory,
   Product,
   ProductCategory,
 } from "@/services/products/product.types";
-import { ProductService } from "@/services/products/product.service";
+
 import { PriceFilter } from "./components/price-filter";
 import { ProductCard } from "./components/product-card";
-import { Spinner } from "@/components/ui/spinner";
-import { Container } from "@/components/ui/container";
-import { capitalize } from "@/lib/utils";
 
 const categoryDescription = {
   polos:

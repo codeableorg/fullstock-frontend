@@ -1,10 +1,12 @@
 import { Link, Outlet, ScrollRestoration } from "react-router";
-import AuthNav from "./components/auth-nav";
-import HeaderMain from "./components/header-main";
+
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+
+import AuthNav from "./components/auth-nav";
+import HeaderMain from "./components/header-main";
 
 export default function Root() {
   return (

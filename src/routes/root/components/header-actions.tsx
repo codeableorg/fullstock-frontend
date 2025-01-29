@@ -1,7 +1,8 @@
+import { Link } from "react-router";
 import { Search, ShoppingCart, User2 } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Link } from "react-router";
 
 export default function HeaderActions() {
   return (

@@ -1,7 +1,12 @@
-import { Product } from "@/services/products/product.types";
 import { Link } from "react-router";
 
-export function ProductCard({ product }: { product: Product }) {
+import { Product } from "@/services/products/product.types";
+
+interface ProductCardProps {
+  product: Product;
+}
+
+export function ProductCard({ product }: ProductCardProps) {
   return (
     <Link to={`/products/${product.id}`} className="block group">
       <div className="border border-separator rounded-xl relative overflow-hidden flex flex-col">

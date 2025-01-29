@@ -1,5 +1,6 @@
-import { cn } from "@/lib/utils";
 import { NavLink } from "react-router";
+
+import { cn } from "@/lib/utils";
 
 interface MainNavProps {
   items: {

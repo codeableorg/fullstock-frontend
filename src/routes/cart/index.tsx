@@ -1,8 +1,9 @@
+import { Minus, Plus, Trash2 } from "lucide-react";
+import { Link } from "react-router";
+
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { useCart } from "@/providers/cart";
-import { Minus, Plus, Trash2 } from "lucide-react";
-import { Link } from "react-router";
 
 export default function Cart() {
   const { state, updateQuantity, removeItem } = useCart();

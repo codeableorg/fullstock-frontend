@@ -1,11 +1,13 @@
+import { Link } from "react-router";
+
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
+import { Truck, Return, Ribbon, Idea } from "@/components/icons";
+
 import heroSrc from "@/assets/hero.jpg";
 import polosSrc from "@/assets/polos.jpg";
-import tazasSrc from "@/assets/tazas.jpg";
 import stickersSrc from "@/assets/stickers.jpg";
-import { Truck, Return, Ribbon, Idea } from "@/components/icons";
-import { Link } from "react-router";
+import tazasSrc from "@/assets/tazas.jpg";
 
 const categoriesContent = [
   {

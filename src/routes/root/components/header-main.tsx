@@ -1,9 +1,11 @@
 import { Link } from "react-router";
+
 import { Container } from "@/components/ui/container";
 import { Separator } from "@/components/ui/separator";
-import MainNav from "./main-nav";
-import HeaderActions from "./header-actions";
 import logo from "@/assets/fullstock-logo.svg";
+
+import HeaderActions from "./header-actions";
+import MainNav from "./main-nav";
 
 const navigation = [
   { to: "polos", label: "Polos" },

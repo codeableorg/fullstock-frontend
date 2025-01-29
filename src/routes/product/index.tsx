@@ -1,12 +1,13 @@
-import { type Product } from "@/services/products/product.types";
-import { ProductService } from "@/services/products/product.service";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
-import { Spinner } from "@/components/ui/spinner";
-import { Container } from "@/components/ui/container";
+
 import { Button } from "@/components/ui/button";
+import { Container } from "@/components/ui/container";
 import { Separator } from "@/components/ui/separator";
+import { Spinner } from "@/components/ui/spinner";
 import { useCart } from "@/providers/cart";
+import { ProductService } from "@/services/products/product.service";
+import { type Product } from "@/services/products/product.types";
 
 export default function Product() {
   const { addItem } = useCart();

@@ -1,11 +1,12 @@
 import { createBrowserRouter } from "react-router";
-import Root from "./routes/root";
-import Home from "./routes/home";
-import Category from "./routes/category";
-import Product from "./routes/product";
+
 import Cart from "./routes/cart";
+import Category from "./routes/category";
 import Checkout from "./routes/checkout";
+import Home from "./routes/home";
 import OrderConfirmation from "./routes/order-confirmation";
+import Product from "./routes/product";
+import Root from "./routes/root";
 
 const router = createBrowserRouter([
   {

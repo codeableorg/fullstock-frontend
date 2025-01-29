@@ -1,3 +1,7 @@
+import { X } from "lucide-react";
+import { useState } from "react";
+import { useNavigate } from "react-router";
+
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { InputField } from "@/components/ui/input-field";
@@ -5,9 +9,6 @@ import { SelectField } from "@/components/ui/select-field";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/providers/cart";
 import { OrderService } from "@/services/orders/order.service";
-import { X } from "lucide-react";
-import { useState } from "react";
-import { useNavigate } from "react-router";
 
 const countryOptions = [
   { value: "AR", label: "Argentina" },

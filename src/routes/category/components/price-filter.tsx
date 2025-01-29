@@ -1,18 +1,20 @@
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
+
+interface PriceFilterProps {
+  minPrice: string;
+  maxPrice: string;
+  onPriceChange: (min: string, max: string) => void;
+  className?: string;
+}
 
 export function PriceFilter({
   minPrice,
   maxPrice,
   onPriceChange,
   className,
-}: {
-  minPrice: string;
-  maxPrice: string;
-  onPriceChange: (min: string, max: string) => void;
-  className?: string;
-}) {
+}: PriceFilterProps) {
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
