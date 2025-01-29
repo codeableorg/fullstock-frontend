@@ -83,7 +83,7 @@
     --secondary-background: var(--neutral-3);
     --secondary-foreground: var(--neutral-11);
     --border: var(--neutral-7);
-    --outline: 206 100% 50%;
+    --outline: var(--accent-11);
     --separator: var(--neutral-7);
     --primary-background-hover: var(--accent-10);
     --secondary-background-hover: var(--neutral-4);
@@ -156,6 +156,6 @@
   }
 
   :focus-visible {
-    @apply outline outline-2 outline-ring -outline-offset-2;
+    @apply outline outline-2 outline-ring outline-offset-2;
   }
 }
