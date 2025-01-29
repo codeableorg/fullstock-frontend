@@ -69,7 +69,11 @@ export default function Cart() {
           </div>
           <div className="p-6">
             <Button size="lg" className="w-full" asChild>
-              <Link to="/checkout">Continuar Compra</Link>
+              {state.items && state.items.length > 0 ? (
+                <Link to="/checkout">Continuar Compra</Link>
+              ) : (
+                <Link to="/">Ir a la tienda</Link>
+              )}
             </Button>
           </div>
         </div>
