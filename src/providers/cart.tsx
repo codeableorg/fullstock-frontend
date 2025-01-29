@@ -7,6 +7,7 @@ import { Product } from "@/services/products/product.types";
 interface CartState {
   items?: CartItem[];
   total: number;
+  isLoading: boolean;
 }
 
 type CartAction =
@@ -16,7 +17,8 @@ type CartAction =
       type: "UPDATE_QUANTITY";
       payload: { productId: Product["id"]; quantity: number };
     }
-  | { type: "LOAD_CART"; payload: CartItem[] };
+  | { type: "LOAD_CART"; payload: CartItem[] }
+  | { type: "SET_LOADING" };
 
 function cartReducer(state: CartState, action: CartAction): CartState {
   switch (action.type) {
@@ -36,6 +38,7 @@ function cartReducer(state: CartState, action: CartAction): CartState {
         return {
           items: updatedItems,
           total: calculateTotal(updatedItems),
+          isLoading: false,
         };
       }
 
@@ -46,6 +49,7 @@ function cartReducer(state: CartState, action: CartAction): CartState {
       return {
         items: newItems,
         total: calculateTotal(newItems),
+        isLoading: false,
       };
     }
     case "REMOVE_ITEM": {
@@ -57,6 +61,7 @@ function cartReducer(state: CartState, action: CartAction): CartState {
       return {
         items: newItems,
         total: calculateTotal(newItems),
+        isLoading: false,
       };
     }
     case "UPDATE_QUANTITY": {
@@ -70,14 +75,18 @@ function cartReducer(state: CartState, action: CartAction): CartState {
       return {
         items: newItems,
         total: calculateTotal(newItems),
+        isLoading: false,
       };
     }
     case "LOAD_CART": {
       return {
         items: action.payload,
         total: calculateTotal(action.payload),
+        isLoading: false,
       };
     }
+    case "SET_LOADING":
+      return { ...state, isLoading: true };
     default:
       return state;
   }
@@ -92,21 +101,25 @@ function calculateTotal(items: CartItem[]): number {
 
 const CartContext = createContext<{
   state: CartState;
-  addItem: (product: Product) => void;
-  removeItem: (productId: Product["id"]) => void;
-  updateQuantity: (productId: Product["id"], quantity: number) => void;
+  addItem: (product: Product) => Promise<void>;
+  removeItem: (productId: Product["id"]) => Promise<void>;
+  updateQuantity: (productId: Product["id"], quantity: number) => Promise<void>;
 } | null>(null);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(cartReducer, {
     items: undefined,
     total: 0,
+    isLoading: false,
   });
 
   useEffect(() => {
-    getCart().then((items) => {
+    const fetchCart = async () => {
+      dispatch({ type: "SET_LOADING" });
+      const items = await getCart();
       dispatch({ type: "LOAD_CART", payload: items });
-    });
+    };
+    fetchCart();
   }, []);
 
   useEffect(() => {
@@ -115,15 +128,21 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     updateCart(state.items);
   }, [state.items]);
 
-  const addItem = (product: Product) => {
+  const addItem = async (product: Product) => {
+    dispatch({ type: "SET_LOADING" });
+    await new Promise((resolve) => setTimeout(resolve, 300)); // Simulate API delay
     dispatch({ type: "ADD_ITEM", payload: product });
   };
 
-  const removeItem = (productId: Product["id"]) => {
+  const removeItem = async (productId: Product["id"]) => {
+    dispatch({ type: "SET_LOADING" });
+    await new Promise((resolve) => setTimeout(resolve, 300)); // Simulate API delay
     dispatch({ type: "REMOVE_ITEM", payload: productId });
   };
 
-  const updateQuantity = (productId: Product["id"], quantity: number) => {
+  const updateQuantity = async (productId: Product["id"], quantity: number) => {
+    dispatch({ type: "SET_LOADING" });
+    await new Promise((resolve) => setTimeout(resolve, 300)); // Simulate API delay
     dispatch({ type: "UPDATE_QUANTITY", payload: { productId, quantity } });
   };
 
