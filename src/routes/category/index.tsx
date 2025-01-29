@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "react-router";
 
 import { Container } from "@/components/ui/container";
-import { Spinner } from "@/components/ui/spinner";
+import { ContainerLoader } from "@/components/ui/container-loader";
 import { capitalize } from "@/lib/utils";
 import { getProductsByCategory } from "@/services/products/product.service";
 import {
@@ -65,7 +65,7 @@ export default function Category() {
     );
   }
 
-  if (loading) return <Spinner variant="main" />;
+  if (loading) return <ContainerLoader />;
 
   return (
     <>

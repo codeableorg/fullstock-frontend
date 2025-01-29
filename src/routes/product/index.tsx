@@ -4,7 +4,7 @@ import { useParams } from "react-router";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Separator } from "@/components/ui/separator";
-import { Spinner } from "@/components/ui/spinner";
+import { ContainerLoader } from "@/components/ui/container-loader";
 import { useCart } from "@/providers/cart";
 import { getProductById } from "@/services/products/product.service";
 import { type Product } from "@/services/products/product.types";
@@ -32,7 +32,7 @@ export default function Product() {
     fetchProduct();
   }, [id]);
 
-  if (loading) return <Spinner variant="main" />;
+  if (loading) return <ContainerLoader />;
 
   if (!product)
     return <div className="text-center mt-10">Product not found.</div>;
