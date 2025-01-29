@@ -88,7 +88,10 @@ export default function Checkout() {
               </div>
             </div>
           </div>
-          <form className="lg:max-w-[600px] grow" onSubmit={handleSubmit}>
+          <form
+            className="lg:max-w-[600px] grow [&_:invalid]:scroll-mt-[200px] md:[&_:invalid]:scroll-mt-[160px]"
+            onSubmit={handleSubmit}
+          >
             <fieldset>
               <legend className="text-xl font-medium mb-6">
                 Información de contacto
