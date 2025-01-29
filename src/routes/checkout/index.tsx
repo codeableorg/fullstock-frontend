@@ -38,7 +38,7 @@ export default function Checkout() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!state.items) return;
 
@@ -53,7 +53,7 @@ export default function Checkout() {
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   return (
     <section className="py-12 md:py-16 bg-muted">
