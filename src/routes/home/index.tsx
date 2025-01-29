@@ -4,29 +4,24 @@ import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Truck, Return, Ribbon, Idea } from "@/components/icons";
 
-import heroSrc from "@/assets/hero.jpg";
-import polosSrc from "@/assets/polos.jpg";
-import stickersSrc from "@/assets/stickers.jpg";
-import tazasSrc from "@/assets/tazas.jpg";
-
 const categoriesContent = [
   {
     title: "Polos",
-    imageSrc: polosSrc,
+    imageSrc: "/images/polos.jpg",
     alt: "Hombre luciendo polo azul",
     description:
       "Polos exclusivos con diseños que todo desarrollador querrá lucir. Ideales para llevar el código a donde vayas.",
   },
   {
     title: "Tazas",
-    imageSrc: tazasSrc,
+    imageSrc: "/images/tazas.jpg",
     alt: "Tazas con diseño de código",
     description:
       "Tazas que combinan perfectamente con tu café matutino y tu pasión por la programación. ¡Empieza el día con estilo!",
   },
   {
     title: "Stickers",
-    imageSrc: stickersSrc,
+    imageSrc: "/images/stickers.jpg",
     alt: "Stickers de desarrollo web",
     description:
       "Personaliza tu espacio de trabajo con nuestros stickers únicos y muestra tu amor por el desarrollo web.",
@@ -39,7 +34,7 @@ export default function Home() {
       <section
         className="text-center bg-cover bg-no-repeat bg-center text-white"
         style={{
-          backgroundImage: `linear-gradient(0deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.5) 100%), url('${heroSrc}')`,
+          backgroundImage: `linear-gradient(0deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.5) 100%), url('/images/hero.jpg')`,
         }}
       >
         <Container className="py-32 max-w-3xl">
