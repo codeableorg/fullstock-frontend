@@ -1,7 +1,8 @@
 import { createContext, useContext, useEffect, useReducer } from "react";
-import { Product } from "@/services/products/product.types";
+
 import { type CartItem } from "@/services/carts/cart.types";
 import { getCart, updateCart } from "@/services/carts/cart.service";
+import { Product } from "@/services/products/product.types";
 
 interface CartState {
   items?: CartItem[];
