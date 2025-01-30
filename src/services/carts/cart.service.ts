@@ -5,13 +5,13 @@ export function getCart(): Promise<CartItem[]> {
     const savedCart = localStorage.getItem("cart-items");
     setTimeout(() => {
       resolve(savedCart ? JSON.parse(savedCart) : []);
-    }, 100);
+    }, 350);
   });
 }
 
 export function updateCart(items: CartItem[]): Promise<void> {
   return new Promise((resolve) => {
     localStorage.setItem("cart-items", JSON.stringify(items));
-    setTimeout(resolve, 100);
+    setTimeout(resolve, 350);
   });
 }

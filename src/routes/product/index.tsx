@@ -10,10 +10,7 @@ import { getProductById } from "@/services/products/product.service";
 import { type Product } from "@/services/products/product.types";
 
 export default function Product() {
-  const {
-    addItem,
-    state: { isLoading },
-  } = useCart();
+  const { addItem, state } = useCart();
   const { id } = useParams<{ id: string }>();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -61,9 +58,9 @@ export default function Product() {
               size="xl"
               className="w-full md:w-80"
               onClick={() => addItem(product)}
-              disabled={isLoading}
+              disabled={state.loading}
             >
-              {isLoading ? "Agregando..." : "Agregar al Carrito"}
+              {state.loading ? "Agregando..." : "Agregar al Carrito"}
             </Button>
             <Separator className="my-6" />
             <div>

@@ -1,102 +1,14 @@
-import { createContext, useContext, useEffect, useReducer } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 import { type CartItem } from "@/services/carts/cart.types";
 import { getCart, updateCart } from "@/services/carts/cart.service";
 import { Product } from "@/services/products/product.types";
 
 interface CartState {
-  items?: CartItem[];
+  items: CartItem[];
   total: number;
-  isLoading: boolean;
-}
-
-type CartAction =
-  | { type: "ADD_ITEM"; payload: Product }
-  | { type: "REMOVE_ITEM"; payload: Product["id"] }
-  | {
-      type: "UPDATE_QUANTITY";
-      payload: { productId: Product["id"]; quantity: number };
-    }
-  | { type: "LOAD_CART"; payload: CartItem[] }
-  | { type: "SET_LOADING" };
-
-function cartReducer(state: CartState, action: CartAction): CartState {
-  switch (action.type) {
-    case "ADD_ITEM": {
-      if (state.items === undefined) return state;
-
-      const existingItem = state.items.find(
-        (item) => item.product.id === action.payload.id
-      );
-
-      if (existingItem) {
-        const updatedItems = state.items.map((item) =>
-          item.product.id === action.payload.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-        return {
-          items: updatedItems,
-          total: calculateTotal(updatedItems),
-          isLoading: false,
-        };
-      }
-
-      const newItems = [
-        ...state.items,
-        { product: action.payload, quantity: 1 },
-      ];
-      return {
-        items: newItems,
-        total: calculateTotal(newItems),
-        isLoading: false,
-      };
-    }
-    case "REMOVE_ITEM": {
-      if (state.items === undefined) return state;
-
-      const newItems = state.items.filter(
-        (item) => item.product.id !== action.payload
-      );
-      return {
-        items: newItems,
-        total: calculateTotal(newItems),
-        isLoading: false,
-      };
-    }
-    case "UPDATE_QUANTITY": {
-      if (state.items === undefined) return state;
-
-      const newItems = state.items.map((item) =>
-        item.product.id === action.payload.productId
-          ? { ...item, quantity: action.payload.quantity }
-          : item
-      );
-      return {
-        items: newItems,
-        total: calculateTotal(newItems),
-        isLoading: false,
-      };
-    }
-    case "LOAD_CART": {
-      return {
-        items: action.payload,
-        total: calculateTotal(action.payload),
-        isLoading: false,
-      };
-    }
-    case "SET_LOADING":
-      return { ...state, isLoading: true };
-    default:
-      return state;
-  }
-}
-
-function calculateTotal(items: CartItem[]): number {
-  return items.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
-    0
-  );
+  loading: boolean;
+  error: string | null;
 }
 
 const CartContext = createContext<{
@@ -107,48 +19,117 @@ const CartContext = createContext<{
 } | null>(null);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [state, dispatch] = useReducer(cartReducer, {
-    items: undefined,
-    total: 0,
-    isLoading: false,
-  });
+  const [items, setItems] = useState<CartItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchCart = async () => {
-      dispatch({ type: "SET_LOADING" });
-      const items = await getCart();
-      dispatch({ type: "LOAD_CART", payload: items });
+      setLoading(true);
+      try {
+        const items = await getCart();
+        setItems(items);
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(error.message);
+          setError("Failed to load cart");
+        } else {
+          throw error;
+        }
+      } finally {
+        setLoading(false);
+      }
     };
     fetchCart();
   }, []);
 
-  useEffect(() => {
-    if (!state.items) return;
-
-    updateCart(state.items);
-  }, [state.items]);
+  const calculateTotal = (items: CartItem[]): number => {
+    return items.reduce(
+      (sum, item) => sum + item.product.price * item.quantity,
+      0
+    );
+  };
 
   const addItem = async (product: Product) => {
-    dispatch({ type: "SET_LOADING" });
-    await new Promise((resolve) => setTimeout(resolve, 300)); // Simulate API delay
-    dispatch({ type: "ADD_ITEM", payload: product });
+    setLoading(true);
+    try {
+      const updatedItems = [...items];
+      const existingItem = updatedItems.find(
+        (item) => item.product.id === product.id
+      );
+
+      if (existingItem) {
+        existingItem.quantity += 1;
+      } else {
+        updatedItems.push({ product, quantity: 1 });
+      }
+
+      await updateCart(updatedItems);
+      setItems(updatedItems);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(error.message);
+        setError("Failed to add item");
+      } else {
+        throw error;
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   const removeItem = async (productId: Product["id"]) => {
-    dispatch({ type: "SET_LOADING" });
-    await new Promise((resolve) => setTimeout(resolve, 300)); // Simulate API delay
-    dispatch({ type: "REMOVE_ITEM", payload: productId });
+    setLoading(true);
+    try {
+      const updatedItems = items.filter(
+        (item) => item.product.id !== productId
+      );
+
+      await updateCart(updatedItems);
+      setItems(updatedItems);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(error.message);
+        setError("Failed to remove item");
+      } else {
+        throw error;
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   const updateQuantity = async (productId: Product["id"], quantity: number) => {
-    dispatch({ type: "SET_LOADING" });
-    await new Promise((resolve) => setTimeout(resolve, 300)); // Simulate API delay
-    dispatch({ type: "UPDATE_QUANTITY", payload: { productId, quantity } });
+    setLoading(true);
+    try {
+      const updatedItems = items.map((item) =>
+        item.product.id === productId ? { ...item, quantity } : item
+      );
+
+      await updateCart(updatedItems);
+      setItems(updatedItems);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(error.message);
+        setError("Failed to update quantity");
+      } else {
+        throw error;
+      }
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const total = calculateTotal(items);
 
   return (
     <CartContext.Provider
-      value={{ state, addItem, removeItem, updateQuantity }}
+      value={{
+        state: { items, total, loading, error },
+        addItem,
+        removeItem,
+        updateQuantity,
+      }}
     >
       {children}
     </CartContext.Provider>
