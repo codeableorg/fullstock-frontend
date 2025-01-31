@@ -1,4 +1,4 @@
-import { CartItem } from "@/services/carts/cart.types";
+import { CartItem } from "@/models/cart";
 
 export function createOrder(
   items: CartItem[],

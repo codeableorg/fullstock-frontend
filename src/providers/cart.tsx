@@ -1,8 +1,8 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
-import { type CartItem } from "@/services/carts/cart.types";
-import { getCart, updateCart } from "@/services/carts/cart.service";
-import { Product } from "@/services/products/product.types";
+import { type CartItem } from "@/models/cart";
+import { getCart, updateCart } from "@/services/cart.service";
+import { Product } from "@/models/product";
 
 interface CartState {
   items: CartItem[];

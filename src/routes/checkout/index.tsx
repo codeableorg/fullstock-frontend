@@ -9,7 +9,7 @@ import { SelectField } from "@/components/ui/select-field";
 import { Separator } from "@/components/ui/separator";
 import { Section } from "@/components/ui/section";
 import { useCart } from "@/providers/cart";
-import { createOrder } from "@/services/orders/order.service";
+import { createOrder } from "@/services/order.service";
 
 const countryOptions = [
   { value: "AR", label: "Argentina" },

@@ -6,8 +6,8 @@ import { Container } from "@/components/ui/container";
 import { Separator } from "@/components/ui/separator";
 import { ContainerLoader } from "@/components/ui/container-loader";
 import { useCart } from "@/providers/cart";
-import { getProductById } from "@/services/products/product.service";
-import { type Product } from "@/services/products/product.types";
+import { getProductById } from "@/services/product.service";
+import { type Product } from "@/models/product";
 
 export default function Product() {
   const { addItem, state } = useCart();

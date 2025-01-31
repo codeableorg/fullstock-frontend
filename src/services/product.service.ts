@@ -1,5 +1,5 @@
-import { mockProducts } from "./mockProducts";
-import { Product, ProductCategory } from "./product.types";
+import { Product, ProductCategory } from "@/models/product";
+import { mockProducts } from "./products.mock";
 
 export function getProductsByCategory(
   category: ProductCategory

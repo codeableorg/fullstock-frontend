@@ -1,7 +1,7 @@
 import { createContext, useContext, useState } from "react";
 
 import { User } from "@/models/user";
-import * as authService from "@/services/auth/auth.service";
+import * as authService from "@/services/auth.service";
 
 interface AuthContextType {
   user: Omit<User, "password"> | null;
