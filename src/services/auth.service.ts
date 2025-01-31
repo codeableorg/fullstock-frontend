@@ -1,13 +1,5 @@
+import { users } from "@/fixtures/users.fixture";
 import { User } from "@/models/user.model";
-
-const mockUserDatabase: { [email: string]: User } = {
-  "diego@mail.com": {
-    id: "1",
-    email: "diego@mail.com",
-    name: "Diego Torres",
-    password: "letmein",
-  },
-};
 
 const TOKEN_KEY = "auth_token";
 
@@ -50,7 +42,7 @@ export function getCurrentUser(): Promise<Omit<User, "password"> | null> {
       // In a real implementation, validate the token with the backend
       setTimeout(() => {
         const userEmail = payload.email;
-        const user = mockUserDatabase[userEmail];
+        const user = users[userEmail];
         if (!user) {
           resolve(null);
           return;
@@ -69,7 +61,7 @@ export function getCurrentUser(): Promise<Omit<User, "password"> | null> {
 export function login(email: string, password: string): Promise<AuthResponse> {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      const userRecord = mockUserDatabase[email];
+      const userRecord = users[email];
       if (userRecord && userRecord.password === password) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { password: userPassword, ...userWithoutPassword } = userRecord;
@@ -86,7 +78,7 @@ export function login(email: string, password: string): Promise<AuthResponse> {
 export function signup(email: string, password: string): Promise<AuthResponse> {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      if (mockUserDatabase[email]) {
+      if (users[email]) {
         reject(new Error("Ya existe una cuenta con este correo electrónico"));
       } else {
         const newUser: User = {
@@ -94,7 +86,7 @@ export function signup(email: string, password: string): Promise<AuthResponse> {
           email,
           password,
         };
-        mockUserDatabase[email] = newUser;
+        users[email] = newUser;
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { password: userPassword, ...userWithoutPassword } = newUser;
         const token = generateMockToken(newUser);

@@ -1,6 +1,6 @@
 import { Product } from "@/models/product.model";
 
-export const mockProducts: Product[] = [
+export const products: Product[] = [
   {
     id: "1",
     title: "Polo React",
