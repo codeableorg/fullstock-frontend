@@ -1,23 +1,45 @@
-import { Link } from "react-router";
-
+import { Link, useNavigate } from "react-router";
+import { useAuth } from "@/providers/auth";
 import { Container } from "@/components/ui/container";
+import { Button } from "@/components/ui/button";
 
 export default function AuthNav() {
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
+
+  function onLogout() {
+    logout();
+    navigate("/");
+  }
+
   return (
     <div className="bg-black text-white text-sm font-medium">
       <Container className=" h-10 flex justify-end items-center">
         <nav aria-label="Autenticación de usuario">
-          <ul className="flex gap-4">
-            <li>
-              <Link to="#" className="hover:underline">
-                Iniciar sesión
-              </Link>
-            </li>
-            <li>
-              <Link to="#" className="hover:underline">
-                Crear una cuenta
-              </Link>
-            </li>
+          <ul className="flex items-center gap-4">
+            {user ? (
+              <>
+                <li>Bienvenido {user.name || user.email}</li>
+                <li>
+                  <Button variant="ghost" onClick={onLogout}>
+                    Cerrar sesión
+                  </Button>
+                </li>
+              </>
+            ) : (
+              <>
+                <li>
+                  <Link to="/login" className="hover:underline">
+                    Iniciar sesión
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/signup" className="hover:underline">
+                    Crear una cuenta
+                  </Link>
+                </li>
+              </>
+            )}
           </ul>
         </nav>
       </Container>

@@ -7,6 +7,8 @@ import Home from "./routes/home";
 import OrderConfirmation from "./routes/order-confirmation";
 import Product from "./routes/product";
 import Root from "./routes/root";
+import Login from "./routes/login";
+import Signup from "./routes/signup";
 
 const router = createBrowserRouter([
   {
@@ -35,6 +37,14 @@ const router = createBrowserRouter([
       {
         path: "/order-confirmation/:orderId",
         element: <OrderConfirmation />,
+      },
+      {
+        path: "/login",
+        element: <Login />,
+      },
+      {
+        path: "/signup",
+        element: <Signup />,
       },
     ],
   },
