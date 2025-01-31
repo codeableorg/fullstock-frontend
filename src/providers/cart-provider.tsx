@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 
+import { useAuth } from "@/contexts/auth.context";
 import { CartContext } from "@/contexts/cart.context";
 import { CartItem } from "@/models/cart.model";
 import { Product } from "@/models/product.model";
-import { getCart, updateCart } from "@/services/cart.service";
+import { clearLocalCart, getCart, updateCart } from "@/services/cart.service";
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth();
   const [items, setItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -14,8 +16,20 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const fetchCart = async () => {
       setLoading(true);
       try {
-        const items = await getCart();
-        setItems(items);
+        const localCart = await getCart();
+        const userCart = user?.id ? await getCart(user.id) : null;
+
+        if (user?.id) {
+          if (userCart?.length) {
+            setItems(userCart);
+          } else {
+            setItems(localCart);
+            await updateCart(localCart, user.id);
+          }
+          clearLocalCart();
+        } else {
+          setItems(localCart);
+        }
       } catch (error) {
         if (error instanceof Error) {
           console.error(error.message);
@@ -27,8 +41,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         setLoading(false);
       }
     };
+
     fetchCart();
-  }, []);
+  }, [user]);
 
   const calculateTotal = (items: CartItem[]): number => {
     return items.reduce(
@@ -51,7 +66,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         updatedItems.push({ product, quantity: 1 });
       }
 
-      await updateCart(updatedItems);
+      await updateCart(updatedItems, user?.id);
       setItems(updatedItems);
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -72,7 +87,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         (item) => item.product.id !== productId
       );
 
-      await updateCart(updatedItems);
+      await updateCart(updatedItems, user?.id);
       setItems(updatedItems);
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -93,7 +108,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         item.product.id === productId ? { ...item, quantity } : item
       );
 
-      await updateCart(updatedItems);
+      await updateCart(updatedItems, user?.id);
       setItems(updatedItems);
     } catch (error: unknown) {
       if (error instanceof Error) {

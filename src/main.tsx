@@ -11,11 +11,11 @@ import router from "./router";
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ThemeProvider storageKey="fullstock-ui-theme">
-      <CartProvider>
-        <AuthProvider>
+      <AuthProvider>
+        <CartProvider>
           <RouterProvider router={router} />
-        </AuthProvider>
-      </CartProvider>
+        </CartProvider>
+      </AuthProvider>
     </ThemeProvider>
   </StrictMode>
 );
