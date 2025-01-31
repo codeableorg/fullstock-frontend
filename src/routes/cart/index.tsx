@@ -3,13 +3,14 @@ import { Link } from "react-router";
 
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
+import { Section } from "@/components/ui/section";
 import { useCart } from "@/providers/cart";
 
 export default function Cart() {
   const { state, updateQuantity, removeItem } = useCart();
 
   return (
-    <section className="py-12 md:py-16">
+    <Section>
       <Container className="max-w-xl mx-auto">
         <h1 className="text-3xl font-bold text-center mb-12">
           Carrito de compras
@@ -78,6 +79,6 @@ export default function Cart() {
           </div>
         </div>
       </Container>
-    </section>
+    </Section>
   );
 }

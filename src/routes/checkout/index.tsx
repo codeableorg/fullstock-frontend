@@ -7,6 +7,7 @@ import { Container } from "@/components/ui/container";
 import { InputField } from "@/components/ui/input-field";
 import { SelectField } from "@/components/ui/select-field";
 import { Separator } from "@/components/ui/separator";
+import { Section } from "@/components/ui/section";
 import { useCart } from "@/providers/cart";
 import { createOrder } from "@/services/orders/order.service";
 
@@ -57,7 +58,7 @@ export default function Checkout() {
   }
 
   return (
-    <section className="py-12 md:py-16 bg-muted">
+    <Section className="bg-muted">
       <Container>
         <div className="flex flex-col gap-12 max-w-2xl mx-auto lg:flex-row lg:max-w-full">
           <div className="grow lg:order-1">
@@ -171,6 +172,6 @@ export default function Checkout() {
           </form>
         </div>
       </Container>
-    </section>
+    </Section>
   );
 }

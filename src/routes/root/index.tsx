@@ -7,6 +7,7 @@ import { Separator } from "@/components/ui/separator";
 
 import AuthNav from "./components/auth-nav";
 import HeaderMain from "./components/header-main";
+import { Section } from "@/components/ui/section";
 
 export default function Root() {
   return (
@@ -20,7 +21,7 @@ export default function Root() {
       </main>
       <footer className="border-t border-border">
         <Container>
-          <div className="py-12 md:py-16 flex flex-col gap-8 lg:flex-row">
+          <Section className="flex flex-col gap-8 lg:flex-row">
             <div className="flex flex-wrap gap-x-4 gap-y-8 grow">
               <ul className="basis-36 grow flex flex-col gap-6 text-sm text-muted-foreground">
                 <li className="font-medium text-foreground">Tienda</li>
@@ -76,7 +77,7 @@ export default function Root() {
                 </Button>
               </form>
             </div>
-          </div>
+          </Section>
           <Separator orientation="horizontal" decorative={true} />
           <small className="text-center text-sm text-muted-foreground py-6 block">
             Todos los derechos reservados © Full Stock
