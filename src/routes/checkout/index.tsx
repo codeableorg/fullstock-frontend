@@ -8,7 +8,7 @@ import { InputField } from "@/components/ui/input-field";
 import { SelectField } from "@/components/ui/select-field";
 import { Separator } from "@/components/ui/separator";
 import { Section } from "@/components/ui/section";
-import { useCart } from "@/providers/cart";
+import { useCart } from "@/contexts/cart.context";
 import { createOrder } from "@/services/order.service";
 
 const countryOptions = [

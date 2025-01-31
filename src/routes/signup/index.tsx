@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { InputField } from "@/components/ui/input-field";
 import { Section } from "@/components/ui/section";
-import { useAuth } from "@/providers/auth";
+import { useAuth } from "@/contexts/auth.context";
 
 export default function Signup() {
   const navigate = useNavigate();

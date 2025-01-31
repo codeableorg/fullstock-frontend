@@ -1,4 +1,4 @@
-import { type CartItem } from "@/models/cart";
+import { type CartItem } from "@/models/cart.model";
 
 export function getCart(): Promise<CartItem[]> {
   return new Promise((resolve) => {

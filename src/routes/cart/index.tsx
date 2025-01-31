@@ -4,7 +4,7 @@ import { Link } from "react-router";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Section } from "@/components/ui/section";
-import { useCart } from "@/providers/cart";
+import { useCart } from "@/contexts/cart.context";
 
 export default function Cart() {
   const { state, updateQuantity, removeItem } = useCart();

@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Separator } from "@/components/ui/separator";
 import { ContainerLoader } from "@/components/ui/container-loader";
-import { useCart } from "@/providers/cart";
+import { useCart } from "@/contexts/cart.context";
 import { getProductById } from "@/services/product.service";
-import { type Product } from "@/models/product";
+import { type Product } from "@/models/product.model";
 
 export default function Product() {
   const { addItem, state } = useCart();

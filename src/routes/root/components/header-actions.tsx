@@ -3,7 +3,7 @@ import { Search, ShoppingCart, User2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { useCart } from "@/providers/cart";
+import { useCart } from "@/contexts/cart.context";
 
 export default function HeaderActions() {
   const {

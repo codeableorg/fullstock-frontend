@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 
-import { Product } from "@/models/product";
+import { Product } from "@/models/product.model";
 
 interface ProductCardProps {
   product: Product;
