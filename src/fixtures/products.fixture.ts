@@ -148,10 +148,11 @@ export const products: Product[] = [
   {
     id: "s1",
     category: "stickers",
-    title: "JavaScript Logo Sticker",
-    imgSrc: "/images/polos/polo-react.png",
+    title: "Sticker JavaScript",
+    imgSrc: "/images/stickers/sticker-js.png",
     price: 2.99,
-    description: "Classic JavaScript hexagon logo sticker",
+    description:
+      "Muestra tu amor por JavaScript con este elegante sticker clásico.",
     isOnSale: false,
     features: [
       "Vinilo de alta calidad resistente al agua",
@@ -163,10 +164,11 @@ export const products: Product[] = [
   {
     id: "s2",
     category: "stickers",
-    title: "React Native Sticker",
-    imgSrc: "/images/polos/polo-react.png",
+    title: "Sticker React",
+    imgSrc: "/images/stickers/sticker-react.png",
     price: 2.49,
-    description: "React Native logo with mobile devices",
+    description:
+      "Decora tus dispositivos con el icónico átomo giratorio de React.",
     isOnSale: false,
     features: [
       "Vinilo de alta calidad resistente al agua",
@@ -178,25 +180,11 @@ export const products: Product[] = [
   {
     id: "s3",
     category: "stickers",
-    title: "Git Branch Master",
-    imgSrc: "/images/polos/polo-react.png",
+    title: "Sticker Git",
+    imgSrc: "/images/stickers/sticker-git.png",
     price: 3.99,
-    description: "Large Git branching visualization",
-    isOnSale: false,
-    features: [
-      "Vinilo de alta calidad resistente al agua",
-      "Adhesivo duradero que no deja residuos",
-      "Colores vibrantes que no se desvanecen",
-      "Tamaño perfecto para laptops y dispositivos",
-    ],
-  },
-  {
-    id: "s4",
-    category: "stickers",
-    title: "Python Powered",
-    imgSrc: "/images/polos/polo-react.png",
-    price: 2.99,
-    description: "Official Python programming language logo",
+    description:
+      "Visualiza el poder del control de versiones con este sticker de Git.",
     isOnSale: false,
     features: [
       "Vinilo de alta calidad resistente al agua",
@@ -208,10 +196,11 @@ export const products: Product[] = [
   {
     id: "s5",
     category: "stickers",
-    title: "Docker Whale",
-    imgSrc: "/images/polos/polo-react.png",
+    title: "Sticker Docker",
+    imgSrc: "/images/stickers/sticker-docker.png",
     price: 2.99,
-    description: "Cute Docker whale carrying containers",
+    description:
+      "La adorable ballena de Docker llevando contenedores en un sticker único.",
     isOnSale: false,
     features: [
       "Vinilo de alta calidad resistente al agua",
@@ -223,25 +212,11 @@ export const products: Product[] = [
   {
     id: "s6",
     category: "stickers",
-    title: "Linux Penguin",
-    imgSrc: "/images/polos/polo-react.png",
+    title: "Sticker Linux",
+    imgSrc: "/images/stickers/sticker-linux.png",
     price: 2.49,
-    description: "Tux the Linux penguin",
-    isOnSale: false,
-    features: [
-      "Vinilo de alta calidad resistente al agua",
-      "Adhesivo duradero que no deja residuos",
-      "Colores vibrantes que no se desvanecen",
-      "Tamaño perfecto para laptops y dispositivos",
-    ],
-  },
-  {
-    id: "s7",
-    category: "stickers",
-    title: "Full Stack Developer Pack",
-    imgSrc: "/images/polos/polo-react.png",
-    price: 4.99,
-    description: "Collection of popular web development logos",
+    description:
+      "El querido pingüino Tux, mascota oficial de Linux, en formato sticker.",
     isOnSale: false,
     features: [
       "Vinilo de alta calidad resistente al agua",
@@ -253,10 +228,10 @@ export const products: Product[] = [
   {
     id: "s8",
     category: "stickers",
-    title: "VS Code Logo",
-    imgSrc: "/images/polos/polo-react.png",
+    title: "Sticker VS Code",
+    imgSrc: "/images/stickers/sticker-vscode.png",
     price: 2.49,
-    description: "Visual Studio Code editor logo",
+    description: "El elegante logo del editor favorito de los desarrolladores.",
     isOnSale: false,
     features: [
       "Vinilo de alta calidad resistente al agua",
@@ -268,10 +243,11 @@ export const products: Product[] = [
   {
     id: "s9",
     category: "stickers",
-    title: "GitHub Octocat",
-    imgSrc: "/images/polos/polo-react.png",
+    title: "Sticker GitHub",
+    imgSrc: "/images/stickers/sticker-github.png",
     price: 2.99,
-    description: "GitHub's famous Octocat mascot",
+    description:
+      "El alojamiento de repositorios más popular en un sticker de alta calidad.",
     isOnSale: false,
     features: [
       "Vinilo de alta calidad resistente al agua",
@@ -283,10 +259,11 @@ export const products: Product[] = [
   {
     id: "s10",
     category: "stickers",
-    title: "Stack Overflow",
-    imgSrc: "/images/polos/polo-react.png",
+    title: "Sticker HTML",
+    imgSrc: "/images/stickers/sticker-html.png",
     price: 2.99,
-    description: "Developer's best friend logo",
+    description:
+      "El escudo naranja de HTML5, el lenguaje que estructura la web.",
     isOnSale: false,
     features: [
       "Vinilo de alta calidad resistente al agua",
@@ -298,10 +275,11 @@ export const products: Product[] = [
   {
     id: "m1",
     category: "tazas",
-    title: "Git Command Mug",
-    imgSrc: "/images/polos/polo-react.png",
+    title: "Taza JavaScript",
+    imgSrc: "/images/tazas/taza-js.png",
     price: 14.99,
-    description: "Start your day with essential Git commands",
+    description:
+      "Disfruta tu café mientras programas con el logo de JavaScript.",
     isOnSale: false,
     features: [
       "Cerámica de alta calidad",
@@ -313,10 +291,11 @@ export const products: Product[] = [
   {
     id: "m2",
     category: "tazas",
-    title: "Coffee.js Mug",
-    imgSrc: "/images/polos/polo-react.png",
+    title: "Taza React",
+    imgSrc: "/images/tazas/taza-react.png",
     price: 13.99,
-    description: "JavaScript code that prints coffee",
+    description:
+      "Una taza que hace render de tu bebida favorita con estilo React.",
     isOnSale: false,
     features: [
       "Cerámica de alta calidad",
@@ -328,10 +307,10 @@ export const products: Product[] = [
   {
     id: "m3",
     category: "tazas",
-    title: "Python Loop Mug",
-    imgSrc: "/images/polos/polo-react.png",
+    title: "Taza Git",
+    imgSrc: "/images/tazas/taza-git.png",
     price: 12.99,
-    description: "While not coffee: drink()",
+    description: "Commit a tu rutina diaria de café con esta taza de Git.",
     isOnSale: false,
     features: [
       "Cerámica de alta calidad",
@@ -343,10 +322,10 @@ export const products: Product[] = [
   {
     id: "m4",
     category: "tazas",
-    title: "React State Mug",
-    imgSrc: "/images/polos/polo-react.png",
+    title: "Taza SQL",
+    imgSrc: "/images/tazas/taza-sql.png",
     price: 15.99,
-    description: "useState(coffee)",
+    description: "Tu amor por los lenguajes estructurados en una taza de SQL.",
     isOnSale: false,
     features: [
       "Cerámica de alta calidad",
@@ -358,10 +337,10 @@ export const products: Product[] = [
   {
     id: "m5",
     category: "tazas",
-    title: "Code Bug Mug",
-    imgSrc: "/images/polos/polo-react.png",
+    title: "Taza Linux",
+    imgSrc: "/images/tazas/taza-linux.png",
     price: 13.99,
-    description: "No bugs, just features",
+    description: "Toma tu café con la libertad que solo Linux puede ofrecer.",
     isOnSale: false,
     features: [
       "Cerámica de alta calidad",
@@ -373,70 +352,10 @@ export const products: Product[] = [
   {
     id: "m6",
     category: "tazas",
-    title: "SQL Query Mug",
-    imgSrc: "/images/polos/polo-react.png",
+    title: "Taza GitHub",
+    imgSrc: "/images/tazas/taza-github.png",
     price: 14.99,
-    description: "SELECT * FROM coffee WHERE energy = LOW",
-    isOnSale: false,
-    features: [
-      "Cerámica de alta calidad",
-      "Apta para microondas y lavavajillas",
-      "Capacidad de 325ml",
-      "Diseño que no pierde color con el uso",
-    ],
-  },
-  {
-    id: "m7",
-    category: "tazas",
-    title: "Docker Container Mug",
-    imgSrc: "/images/polos/polo-react.png",
-    price: 15.99,
-    description: "Containerize your coffee",
-    isOnSale: false,
-    features: [
-      "Cerámica de alta calidad",
-      "Apta para microondas y lavavajillas",
-      "Capacidad de 325ml",
-      "Diseño que no pierde color con el uso",
-    ],
-  },
-  {
-    id: "m8",
-    category: "tazas",
-    title: "Terminal Command Mug",
-    imgSrc: "/images/polos/polo-react.png",
-    price: 13.99,
-    description: "sudo make coffee",
-    isOnSale: false,
-    features: [
-      "Cerámica de alta calidad",
-      "Apta para microondas y lavavajillas",
-      "Capacidad de 325ml",
-      "Diseño que no pierde color con el uso",
-    ],
-  },
-  {
-    id: "m9",
-    category: "tazas",
-    title: "Stack Overflow Mug",
-    imgSrc: "/images/polos/polo-react.png",
-    price: 14.99,
-    description: "Copy Paste Expert",
-    isOnSale: false,
-    features: [
-      "Cerámica de alta calidad",
-      "Apta para microondas y lavavajillas",
-      "Capacidad de 325ml",
-      "Diseño que no pierde color con el uso",
-    ],
-  },
-  {
-    id: "m10",
-    category: "tazas",
-    title: "CSS Mug",
-    imgSrc: "/images/polos/polo-react.png",
-    price: 13.99,
-    description: "This mug is #000000",
+    description: "Colabora con tu café en esta taza con el logo de GitHub.",
     isOnSale: false,
     features: [
       "Cerámica de alta calidad",
