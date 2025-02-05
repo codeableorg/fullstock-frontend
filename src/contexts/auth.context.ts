@@ -1,8 +1,9 @@
 import { User } from "@/models/user.model";
-import { createContext, useContext } from "react";
+import React, { createContext, useContext } from "react";
 
 interface AuthContextType {
   user: Omit<User, "password"> | null;
+  setUser: React.Dispatch<React.SetStateAction<Omit<User, "password"> | null>>;
   login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string) => Promise<void>;
   logout: () => void;

@@ -22,7 +22,11 @@ export default function AuthNav() {
               <>
                 <li>Bienvenido {user.name || user.email}</li>
                 <li>
-                  <Button variant="ghost" onClick={onLogout}>
+                  <Button
+                    variant="ghost"
+                    className="text-white"
+                    onClick={onLogout}
+                  >
                     Cerrar sesión
                   </Button>
                 </li>
@@ -30,12 +34,18 @@ export default function AuthNav() {
             ) : (
               <>
                 <li>
-                  <Link to="/login" className="hover:underline">
+                  <Link
+                    to="/login"
+                    className="hover:underline decoration-white underline-offset-2"
+                  >
                     Iniciar sesión
                   </Link>
                 </li>
                 <li>
-                  <Link to="/signup" className="hover:underline">
+                  <Link
+                    to="/signup"
+                    className="hover:underline decoration-white underline-offset-2"
+                  >
                     Crear una cuenta
                   </Link>
                 </li>

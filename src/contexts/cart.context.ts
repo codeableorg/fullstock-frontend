@@ -14,6 +14,7 @@ export const CartContext = createContext<{
   addItem: (product: Product) => Promise<void>;
   removeItem: (productId: Product["id"]) => Promise<void>;
   updateQuantity: (productId: Product["id"], quantity: number) => Promise<void>;
+  clearCart: () => Promise<void>;
 } | null>(null);
 
 export const useCart = () => {

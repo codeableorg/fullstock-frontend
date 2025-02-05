@@ -31,6 +31,10 @@ export function updateCart(items: CartItem[], userId?: string): Promise<void> {
   });
 }
 
-export function clearLocalCart(): void {
-  localStorage.removeItem("cart-items");
+export function deleteCart(userId?: string): void {
+  if (userId) {
+    carts.delete(userId);
+  } else {
+    localStorage.removeItem("cart-items");
+  }
 }

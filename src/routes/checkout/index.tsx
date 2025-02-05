@@ -8,6 +8,7 @@ import { InputField } from "@/components/ui/input-field";
 import { SelectField } from "@/components/ui/select-field";
 import { Separator } from "@/components/ui/separator";
 import { Section } from "@/components/ui/section";
+import { useAuth } from "@/contexts/auth.context";
 import { useCart } from "@/contexts/cart.context";
 import { createOrder } from "@/services/order.service";
 
@@ -36,7 +37,8 @@ const countryOptions = [
 ];
 
 export default function Checkout() {
-  const { state } = useCart();
+  const { state, clearCart } = useCart();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
@@ -49,6 +51,7 @@ export default function Checkout() {
       const formData = new FormData(e.currentTarget);
 
       const { orderId } = await createOrder(state.items, formData);
+      await clearCart();
       navigate(`/order-confirmation/${orderId}`);
     } catch (error) {
       console.error("Failed to create order:", error);
@@ -103,6 +106,8 @@ export default function Checkout() {
                 type="email"
                 required
                 autoComplete="email"
+                value={user?.email}
+                readOnly={Boolean(user)}
               />
             </fieldset>
             <Separator className="my-6" />

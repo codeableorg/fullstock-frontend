@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/auth.context";
 import { CartContext } from "@/contexts/cart.context";
 import { CartItem } from "@/models/cart.model";
 import { Product } from "@/models/product.model";
-import { clearLocalCart, getCart, updateCart } from "@/services/cart.service";
+import { deleteCart, getCart, updateCart } from "@/services/cart.service";
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
@@ -17,16 +17,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       setLoading(true);
       try {
         const localCart = await getCart();
-        const userCart = user?.id ? await getCart(user.id) : null;
+        const userCart = user ? await getCart(user.id) : null;
 
-        if (user?.id) {
+        if (user) {
           if (userCart?.length) {
             setItems(userCart);
           } else {
             setItems(localCart);
             await updateCart(localCart, user.id);
           }
-          clearLocalCart();
+          deleteCart();
         } else {
           setItems(localCart);
         }
@@ -122,6 +122,23 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const clearCart = async () => {
+    setLoading(true);
+    try {
+      await deleteCart(user?.id);
+      setItems([]);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message);
+        setError("Failed to clear cart");
+      } else {
+        throw error;
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const total = calculateTotal(items);
 
   return (
@@ -131,6 +148,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         addItem,
         removeItem,
         updateQuantity,
+        clearCart,
       }}
     >
       {children}

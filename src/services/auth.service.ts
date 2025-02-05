@@ -1,5 +1,6 @@
 import { users } from "@/fixtures/users.fixture";
 import { User } from "@/models/user.model";
+import { getUserByEmail } from "@/services/user.service";
 
 const TOKEN_KEY = "auth_token";
 
@@ -42,7 +43,7 @@ export function getCurrentUser(): Promise<Omit<User, "password"> | null> {
       // In a real implementation, validate the token with the backend
       setTimeout(() => {
         const userEmail = payload.email;
-        const user = users[userEmail];
+        const user = getUserByEmail(userEmail);
         if (!user) {
           resolve(null);
           return;
@@ -61,7 +62,7 @@ export function getCurrentUser(): Promise<Omit<User, "password"> | null> {
 export function login(email: string, password: string): Promise<AuthResponse> {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      const userRecord = users[email];
+      const userRecord = getUserByEmail(email);
       if (userRecord && userRecord.password === password) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { password: userPassword, ...userWithoutPassword } = userRecord;
@@ -78,21 +79,36 @@ export function login(email: string, password: string): Promise<AuthResponse> {
 export function signup(email: string, password: string): Promise<AuthResponse> {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      if (users[email]) {
+      const existingUser = getUserByEmail(email);
+
+      if (existingUser && !existingUser.isGuest) {
         reject(new Error("Ya existe una cuenta con este correo electrónico"));
+        return;
+      }
+
+      let user: User;
+
+      if (existingUser) {
+        user = {
+          ...existingUser,
+          password,
+          isGuest: false,
+        };
       } else {
-        const newUser: User = {
+        user = {
           id: crypto.randomUUID(),
           email,
           password,
+          isGuest: false,
         };
-        users[email] = newUser;
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { password: userPassword, ...userWithoutPassword } = newUser;
-        const token = generateMockToken(newUser);
-        localStorage.setItem(TOKEN_KEY, token);
-        resolve({ user: userWithoutPassword, token });
       }
+
+      users.push(user);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { password: userPassword, ...userWithoutPassword } = user;
+      const token = generateMockToken(user);
+      localStorage.setItem(TOKEN_KEY, token);
+      resolve({ user: userWithoutPassword, token });
     }, 1000);
   });
 }
