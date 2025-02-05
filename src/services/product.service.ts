@@ -1,5 +1,6 @@
-import { products } from "../fixtures/products.fixture";
 import { Product, ProductCategory } from "@/models/product.model";
+
+import { products } from "../fixtures/products.fixture";
 
 export function getProductsByCategory(
   category: ProductCategory

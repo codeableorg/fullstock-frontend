@@ -1,7 +1,8 @@
+import { orders } from "@/fixtures/orders.fixture";
 import { CartItem } from "@/models/cart.model";
 import { Order, OrderDetails } from "@/models/order.model";
+
 import { findOrCreateGuestUser } from "./user.service";
-import { orders } from "@/fixtures/orders.fixture";
 
 export async function createOrder(
   items: CartItem[],

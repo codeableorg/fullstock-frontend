@@ -1,9 +1,10 @@
+import { useEffect, useState } from "react";
+import { Navigate } from "react-router";
+
 import { ContainerLoader } from "@/components/ui/container-loader";
 import { useAuth } from "@/contexts/auth.context";
 import { Order } from "@/models/order.model";
 import { getOrdersByUser } from "@/services/order.service";
-import { useEffect, useState } from "react";
-import { Navigate } from "react-router";
 
 export default function Orders() {
   const { user } = useAuth();

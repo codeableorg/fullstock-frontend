@@ -1,7 +1,9 @@
-import type { Cart, CartItem } from "@/models/cart.model";
 import { products } from "@/fixtures/products.fixture";
-import { users } from "./users.fixture";
+import type { Cart, CartItem } from "@/models/cart.model";
 import { calculateTotal } from "@/services/cart.service";
+
+import { users } from "./users.fixture";
+
 
 const items: CartItem[] = [
   { product: products[0], quantity: 1 },

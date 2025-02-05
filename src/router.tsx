@@ -1,17 +1,17 @@
 import { createBrowserRouter, Navigate } from "react-router";
 
+import Account from "./routes/account";
+import Orders from "./routes/account/orders";
+import Profile from "./routes/account/profile";
 import Cart from "./routes/cart";
 import Category from "./routes/category";
 import Checkout from "./routes/checkout";
 import Home from "./routes/home";
+import Login from "./routes/login";
 import OrderConfirmation from "./routes/order-confirmation";
 import Product from "./routes/product";
 import Root from "./routes/root";
-import Login from "./routes/login";
 import Signup from "./routes/signup";
-import Account from "./routes/account";
-import Profile from "./routes/account/profile";
-import Orders from "./routes/account/orders";
 
 const router = createBrowserRouter([
   {

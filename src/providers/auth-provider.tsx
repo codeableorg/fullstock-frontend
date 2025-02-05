@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 
+import { ContainerLoader } from "@/components/ui/container-loader";
+import { AuthContext } from "@/contexts/auth.context";
 import { User } from "@/models/user.model";
 import * as authService from "@/services/auth.service";
-import { AuthContext } from "@/contexts/auth.context";
-import { ContainerLoader } from "@/components/ui/container-loader";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<Omit<User, "password"> | null>(null);

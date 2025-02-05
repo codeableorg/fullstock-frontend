@@ -3,11 +3,11 @@ import { Link, Outlet, ScrollRestoration } from "react-router";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Input } from "@/components/ui/input";
+import { Section } from "@/components/ui/section";
 import { Separator } from "@/components/ui/separator";
 
 import AuthNav from "./components/auth-nav";
 import HeaderMain from "./components/header-main";
-import { Section } from "@/components/ui/section";
 
 export default function Root() {
   return (

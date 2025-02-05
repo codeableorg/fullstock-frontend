@@ -4,12 +4,12 @@ import { useParams, useSearchParams } from "react-router";
 import { Container } from "@/components/ui/container";
 import { ContainerLoader } from "@/components/ui/container-loader";
 import { capitalize } from "@/lib/utils";
-import { getProductsByCategory } from "@/services/product.service";
 import {
   isValidCategory,
   Product,
   ProductCategory,
 } from "@/models/product.model";
+import { getProductsByCategory } from "@/services/product.service";
 
 import { PriceFilter } from "./components/price-filter";
 import { ProductCard } from "./components/product-card";

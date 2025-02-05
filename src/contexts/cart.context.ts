@@ -1,6 +1,7 @@
+import { createContext, useContext } from "react";
+
 import type { Cart } from "@/models/cart.model";
 import { Product } from "@/models/product.model";
-import { createContext, useContext } from "react";
 
 export const CartContext = createContext<{
   cart: Cart | null;

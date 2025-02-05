@@ -3,11 +3,11 @@ import { useParams } from "react-router";
 
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
-import { Separator } from "@/components/ui/separator";
 import { ContainerLoader } from "@/components/ui/container-loader";
+import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/cart.context";
-import { getProductById } from "@/services/product.service";
 import { type Product } from "@/models/product.model";
+import { getProductById } from "@/services/product.service";
 
 export default function Product() {
   const { loading: cartLoading, addItem } = useCart();

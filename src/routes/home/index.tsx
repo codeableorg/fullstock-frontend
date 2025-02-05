@@ -1,8 +1,8 @@
 import { Link } from "react-router";
 
+import { Truck, Return, Ribbon, Idea } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
-import { Truck, Return, Ribbon, Idea } from "@/components/icons";
 
 const categoriesContent = [
   {

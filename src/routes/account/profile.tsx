@@ -1,9 +1,10 @@
+import { useState } from "react";
+import { Navigate } from "react-router";
+
 import { Button } from "@/components/ui/button";
 import { InputField } from "@/components/ui/input-field";
 import { useAuth } from "@/contexts/auth.context";
 import { updateUser } from "@/services/user.service";
-import { Navigate } from "react-router";
-import { useState } from "react";
 
 export default function Profile() {
   const { user, setUser } = useAuth();
