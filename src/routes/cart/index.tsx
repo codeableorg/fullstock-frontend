@@ -7,7 +7,7 @@ import { Section } from "@/components/ui/section";
 import { useCart } from "@/contexts/cart.context";
 
 export default function Cart() {
-  const { state, updateQuantity, removeItem } = useCart();
+  const { cart, updateQuantity, removeItem } = useCart();
 
   return (
     <Section>
@@ -16,7 +16,7 @@ export default function Cart() {
           Carrito de compras
         </h1>
         <div className="divide-y divide-border border border-border rounded-xl">
-          {state.items?.map(({ product, quantity }) => (
+          {cart?.items?.map(({ product, quantity }) => (
             <div key={product.id} className="flex gap-6 p-6">
               <div className="w-20 rounded-xl bg-muted">
                 <img
@@ -66,11 +66,11 @@ export default function Cart() {
           ))}
           <div className="flex justify-between p-6 text-base font-medium">
             <p>Total</p>
-            <p>${state.total.toFixed(2)}</p>
+            <p>${(cart?.total || 0).toFixed(2)}</p>
           </div>
           <div className="p-6">
             <Button size="lg" className="w-full" asChild>
-              {state.items && state.items.length > 0 ? (
+              {cart?.items && cart.items.length > 0 ? (
                 <Link to="/checkout">Continuar Compra</Link>
               ) : (
                 <Link to="/">Ir a la tienda</Link>

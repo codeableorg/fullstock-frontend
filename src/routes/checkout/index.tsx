@@ -37,20 +37,20 @@ const countryOptions = [
 ];
 
 export default function Checkout() {
-  const { state, clearCart } = useCart();
+  const { cart, clearCart } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!state.items) return;
+    if (!cart) return;
 
     setLoading(true);
     try {
       const formData = new FormData(e.currentTarget);
 
-      const { orderId } = await createOrder(state.items, formData);
+      const { orderId } = await createOrder(cart.items, formData);
       await clearCart();
       navigate(`/order-confirmation/${orderId}`);
     } catch (error) {
@@ -67,7 +67,7 @@ export default function Checkout() {
           <div className="grow lg:order-1">
             <h2 className="text-lg font-medium mb-4">Resumen de la orden</h2>
             <div className="divide-y divide-border border border-border rounded-xl bg-background">
-              {state.items?.map(({ product, quantity }) => (
+              {cart?.items?.map(({ product, quantity }) => (
                 <div key={product.id} className="flex gap-6 p-6">
                   <div className="w-20 rounded-xl bg-muted">
                     <img
@@ -88,7 +88,7 @@ export default function Checkout() {
               ))}
               <div className="flex justify-between p-6 text-base font-medium">
                 <p>Total</p>
-                <p>${state.total.toFixed(2)}</p>
+                <p>${(cart?.total || 0).toFixed(2)}</p>
               </div>
             </div>
           </div>

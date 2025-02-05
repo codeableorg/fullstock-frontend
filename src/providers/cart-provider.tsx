@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 
 import { useAuth } from "@/contexts/auth.context";
 import { CartContext } from "@/contexts/cart.context";
-import { CartItem } from "@/models/cart.model";
+import { Cart } from "@/models/cart.model";
 import { Product } from "@/models/product.model";
 import { deleteCart, getCart, updateCart } from "@/services/cart.service";
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
-  const [items, setItems] = useState<CartItem[]>([]);
+  const [cart, setCart] = useState<Cart | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -19,21 +19,23 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         const localCart = await getCart();
 
         if (!user) {
-          setItems(localCart);
+          setCart(localCart);
           return;
         }
 
         const remoteCart = await getCart(user.id);
 
-        if (remoteCart?.length) {
-          setItems(remoteCart);
+        if (remoteCart?.items.length) {
+          setCart(remoteCart);
           deleteCart();
           return;
         }
 
-        setItems(localCart);
-        await updateCart(localCart, user.id);
-        deleteCart();
+        if (localCart) {
+          setCart(localCart);
+          await updateCart(localCart.items, user.id);
+          deleteCart();
+        }
       } catch (error) {
         if (error instanceof Error) {
           console.error(error.message);
@@ -49,17 +51,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     fetchCart();
   }, [user]);
 
-  const calculateTotal = (items: CartItem[]): number => {
-    return items.reduce(
-      (sum, item) => sum + item.product.price * item.quantity,
-      0
-    );
-  };
-
   const addItem = async (product: Product) => {
     setLoading(true);
     try {
-      const updatedItems = [...items];
+      const updatedItems = cart ? [...cart.items] : [];
       const existingItem = updatedItems.find(
         (item) => item.product.id === product.id
       );
@@ -70,8 +65,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         updatedItems.push({ product, quantity: 1 });
       }
 
-      await updateCart(updatedItems, user?.id);
-      setItems(updatedItems);
+      const updatedCart = await updateCart(updatedItems, user?.id);
+      setCart(updatedCart);
     } catch (error: unknown) {
       if (error instanceof Error) {
         console.error(error.message);
@@ -85,14 +80,15 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   };
 
   const removeItem = async (productId: Product["id"]) => {
+    if (!cart) return;
     setLoading(true);
     try {
-      const updatedItems = items.filter(
+      const updatedItems = cart.items.filter(
         (item) => item.product.id !== productId
       );
 
-      await updateCart(updatedItems, user?.id);
-      setItems(updatedItems);
+      const updatedCart = await updateCart(updatedItems, user?.id);
+      setCart(updatedCart);
     } catch (error: unknown) {
       if (error instanceof Error) {
         console.error(error.message);
@@ -106,14 +102,15 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   };
 
   const updateQuantity = async (productId: Product["id"], quantity: number) => {
+    if (!cart) return;
     setLoading(true);
     try {
-      const updatedItems = items.map((item) =>
+      const updatedItems = cart.items.map((item) =>
         item.product.id === productId ? { ...item, quantity } : item
       );
 
-      await updateCart(updatedItems, user?.id);
-      setItems(updatedItems);
+      const updatedCart = await updateCart(updatedItems, user?.id);
+      setCart(updatedCart);
     } catch (error: unknown) {
       if (error instanceof Error) {
         console.error(error.message);
@@ -130,7 +127,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setLoading(true);
     try {
       await deleteCart(user?.id);
-      setItems([]);
+      setCart(null);
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message);
@@ -143,12 +140,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const total = calculateTotal(items);
-
   return (
     <CartContext.Provider
       value={{
-        state: { items, total, loading, error },
+        cart,
+        loading,
+        error,
         addItem,
         removeItem,
         updateQuantity,

@@ -8,10 +8,9 @@ import { useCart } from "@/contexts/cart.context";
 
 export default function HeaderActions() {
   const { user } = useAuth();
-  const {
-    state: { items },
-  } = useCart();
-  const totalItems = items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
+  const { cart } = useCart();
+  const totalItems =
+    cart?.items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
 
   return (
     <div className="flex gap-2 items-center">
