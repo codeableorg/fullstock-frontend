@@ -17,19 +17,23 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       setLoading(true);
       try {
         const localCart = await getCart();
-        const userCart = user ? await getCart(user.id) : null;
 
-        if (user) {
-          if (userCart?.length) {
-            setItems(userCart);
-          } else {
-            setItems(localCart);
-            await updateCart(localCart, user.id);
-          }
-          deleteCart();
-        } else {
+        if (!user) {
           setItems(localCart);
+          return;
         }
+
+        const remoteCart = await getCart(user.id);
+
+        if (remoteCart?.length) {
+          setItems(remoteCart);
+          deleteCart();
+          return;
+        }
+
+        setItems(localCart);
+        await updateCart(localCart, user.id);
+        deleteCart();
       } catch (error) {
         if (error instanceof Error) {
           console.error(error.message);
