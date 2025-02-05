@@ -24,45 +24,37 @@ export function getStoredToken(): string | null {
   return localStorage.getItem(TOKEN_KEY);
 }
 
-export function getCurrentUser(): Promise<Omit<User, "password"> | null> {
-  return new Promise((resolve) => {
-    const token = getStoredToken();
-    if (!token) {
-      resolve(null);
-      return;
+export async function getCurrentUser(): Promise<Omit<User, "password"> | null> {
+  const token = getStoredToken();
+  if (!token) {
+    return null;
+  }
+
+  try {
+    const payload = JSON.parse(atob(token));
+    if (payload.exp < Date.now()) {
+      localStorage.removeItem(TOKEN_KEY);
+      return null;
     }
 
-    try {
-      const payload = JSON.parse(atob(token));
-      if (payload.exp < Date.now()) {
-        localStorage.removeItem(TOKEN_KEY);
-        resolve(null);
-        return;
-      }
-
-      // In a real implementation, validate the token with the backend
-      setTimeout(() => {
-        const userEmail = payload.email;
-        const user = getUserByEmail(userEmail);
-        if (!user) {
-          resolve(null);
-          return;
-        }
-
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { password, ...userWithoutPassword } = user;
-        resolve(userWithoutPassword);
-      }, 500);
-    } catch {
-      resolve(null);
+    const userEmail = payload.email;
+    const user = await getUserByEmail(userEmail);
+    if (!user) {
+      return null;
     }
-  });
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...userWithoutPassword } = user;
+    return userWithoutPassword;
+  } catch {
+    return null;
+  }
 }
 
 export function login(email: string, password: string): Promise<AuthResponse> {
   return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      const userRecord = getUserByEmail(email);
+    setTimeout(async () => {
+      const userRecord = await getUserByEmail(email);
       if (userRecord && userRecord.password === password) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { password: userPassword, ...userWithoutPassword } = userRecord;
@@ -78,8 +70,8 @@ export function login(email: string, password: string): Promise<AuthResponse> {
 
 export function signup(email: string, password: string): Promise<AuthResponse> {
   return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      const existingUser = getUserByEmail(email);
+    setTimeout(async () => {
+      const existingUser = await getUserByEmail(email);
 
       if (existingUser && !existingUser.isGuest) {
         reject(new Error("Ya existe una cuenta con este correo electrónico"));

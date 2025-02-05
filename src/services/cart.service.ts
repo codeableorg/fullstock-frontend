@@ -31,10 +31,15 @@ export function updateCart(items: CartItem[], userId?: string): Promise<void> {
   });
 }
 
-export function deleteCart(userId?: string): void {
-  if (userId) {
-    carts.delete(userId);
-  } else {
-    localStorage.removeItem("cart-items");
-  }
+export function deleteCart(userId?: string): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      if (userId) {
+        carts.delete(userId);
+      } else {
+        localStorage.removeItem("cart-items");
+      }
+      resolve();
+    }, 350);
+  });
 }
