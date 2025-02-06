@@ -1,4 +1,4 @@
-export { Truck } from "./truck";
-export { Return } from "./return";
-export { Ribbon } from "./ribbon";
-export { Idea } from "./idea";
+export * from "./truck";
+export * from "./return";
+export * from "./ribbon";
+export * from "./idea";
