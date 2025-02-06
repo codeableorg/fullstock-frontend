@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Navigate } from "react-router";
 
-import { Button } from "@/components/ui/button";
-import { InputField } from "@/components/ui/input-field";
+import { Button, InputField } from "@/components/ui";
 import { useAuth } from "@/contexts/auth.context";
 import { updateUser } from "@/services/user.service";
 

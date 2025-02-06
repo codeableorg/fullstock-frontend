@@ -1,9 +1,7 @@
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { Link } from "react-router";
 
-import { Button } from "@/components/ui/button";
-import { Container } from "@/components/ui/container";
-import { Section } from "@/components/ui/section";
+import { Button, Container, Section } from "@/components/ui";
 import { useCart } from "@/contexts/cart.context";
 
 export default function Cart() {

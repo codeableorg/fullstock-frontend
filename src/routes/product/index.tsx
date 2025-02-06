@@ -1,10 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 
-import { Button } from "@/components/ui/button";
-import { Container } from "@/components/ui/container";
-import { ContainerLoader } from "@/components/ui/container-loader";
-import { Separator } from "@/components/ui/separator";
+import { Button, Container, ContainerLoader, Separator } from "@/components/ui";
 import { useCart } from "@/contexts/cart.context";
 import { type Product } from "@/models/product.model";
 import { getProductById } from "@/services/product.service";

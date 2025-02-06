@@ -1,6 +1,6 @@
 import { useParams } from "react-router";
 
-import { Container } from "@/components/ui/container";
+import { Container } from "@/components/ui";
 
 export default function OrderConfirmation() {
   const { orderId } = useParams<{ orderId: string }>();

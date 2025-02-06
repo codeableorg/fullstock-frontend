@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { ContainerLoader } from "@/components/ui/container-loader";
+import { ContainerLoader } from "@/components/ui";
 import { AuthContext } from "@/contexts/auth.context";
 import { User } from "@/models/user.model";
 import * as authService from "@/services/auth.service";

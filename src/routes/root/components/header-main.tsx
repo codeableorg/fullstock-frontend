@@ -1,8 +1,7 @@
 import { Link } from "react-router";
 
 import logo from "@/assets/fullstock-logo.svg";
-import { Container } from "@/components/ui/container";
-import { Separator } from "@/components/ui/separator";
+import { Container, Separator } from "@/components/ui";
 
 import HeaderActions from "./header-actions";
 import MainNav from "./main-nav";

@@ -2,9 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router";
 
 import { Truck, Return, Ribbon, Idea } from "@/components/icons";
-import { Button } from "@/components/ui/button";
-import { Container } from "@/components/ui/container";
-import { ContainerLoader } from "@/components/ui/container-loader";
+import { Button, Container, ContainerLoader } from "@/components/ui";
 import { Category } from "@/models/category.model";
 import { getAllCategories } from "@/services/category.service";
 

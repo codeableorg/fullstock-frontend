@@ -1,7 +1,6 @@
 import { Navigate, Outlet, NavLink } from "react-router";
 
-import { Container } from "@/components/ui/container";
-import { Section } from "@/components/ui/section";
+import { Container, Section } from "@/components/ui";
 import { useAuth } from "@/contexts/auth.context";
 
 export default function Account() {

@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "react-router";
 
-import { Container } from "@/components/ui/container";
-import { ContainerLoader } from "@/components/ui/container-loader";
+import { Container, ContainerLoader } from "@/components/ui";
 import { isValidCategorySlug, type Category } from "@/models/category.model";
 import { Product } from "@/models/product.model";
 import { getCategoryBySlug } from "@/services/category.service";

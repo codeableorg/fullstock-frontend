@@ -1,8 +1,6 @@
 import { Link } from "react-router";
 
-import { Button } from "@/components/ui/button";
-import { Container } from "@/components/ui/container";
-import { Section } from "@/components/ui/section";
+import { Button, Container, Section } from "@/components/ui";
 
 export default function NotFound() {
   return (

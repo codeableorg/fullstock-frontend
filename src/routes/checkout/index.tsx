@@ -2,12 +2,14 @@ import { X } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 
-import { Button } from "@/components/ui/button";
-import { Container } from "@/components/ui/container";
-import { InputField } from "@/components/ui/input-field";
-import { Section } from "@/components/ui/section";
-import { SelectField } from "@/components/ui/select-field";
-import { Separator } from "@/components/ui/separator";
+import {
+  Button,
+  Container,
+  InputField,
+  Section,
+  SelectField,
+  Separator,
+} from "@/components/ui";
 import { useAuth } from "@/contexts/auth.context";
 import { useCart } from "@/contexts/cart.context";
 import { createOrder } from "@/services/order.service";

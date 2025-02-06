@@ -1,8 +1,7 @@
 import { ShoppingCart, User2 } from "lucide-react";
 import { Link } from "react-router";
 
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
+import { Button, Separator } from "@/components/ui";
 import { useAuth } from "@/contexts/auth.context";
 import { useCart } from "@/contexts/cart.context";
 
