@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, Outlet, ScrollRestoration } from "react-router";
 
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,24 @@ import AuthNav from "./components/auth-nav";
 import HeaderMain from "./components/header-main";
 
 export default function Root() {
+  const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      console.log("Suscripción exitosa");
+      setEmail("");
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="grid grid-rows-[auto_1fr_auto] min-h-screen bg-background">
       <header className="sticky top-0 bg-background border-b border-border z-50">
@@ -70,10 +89,23 @@ export default function Root() {
                 Recibe las últimas ofertas y descuentos en tu correo
                 semanalmente.
               </p>
-              <form className="flex gap-2">
-                <Input type="email" aria-label="email" required />
-                <Button size="lg" variant="secondary">
-                  Suscribirse
+              <form className="flex gap-2" onSubmit={handleSubmit}>
+                <Input
+                  type="email"
+                  aria-label="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={isLoading}
+                  placeholder="ejemplo@mail.com"
+                />
+                <Button
+                  size="lg"
+                  variant="secondary"
+                  type="submit"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Enviando..." : "Suscribirse"}
                 </Button>
               </form>
             </div>
