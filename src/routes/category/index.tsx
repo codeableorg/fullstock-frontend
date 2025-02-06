@@ -11,6 +11,7 @@ import {
 } from "@/models/product.model";
 import { getProductsByCategory } from "@/services/product.service";
 
+import NotFound from "../not-found";
 import { PriceFilter } from "./components/price-filter";
 import { ProductCard } from "./components/product-card";
 
@@ -57,12 +58,7 @@ export default function Category() {
   });
 
   if (!isValidCategory(category)) {
-    return (
-      <div className="p-4">
-        <h1 className="text-2xl font-bold text-red-600">Invalid Category</h1>
-        <p>"{category}" is not a valid category.</p>
-      </div>
-    );
+    return <NotFound />;
   }
 
   if (loading) return <ContainerLoader />;

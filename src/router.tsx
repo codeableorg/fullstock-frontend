@@ -8,6 +8,7 @@ import Category from "./routes/category";
 import Checkout from "./routes/checkout";
 import Home from "./routes/home";
 import Login from "./routes/login";
+import NotFound from "./routes/not-found";
 import OrderConfirmation from "./routes/order-confirmation";
 import Product from "./routes/product";
 import Root from "./routes/root";
@@ -57,6 +58,10 @@ const router = createBrowserRouter([
           { path: "profile", element: <Profile /> },
           { path: "orders", element: <Orders /> },
         ],
+      },
+      {
+        path: "*",
+        element: <NotFound />,
       },
     ],
   },
