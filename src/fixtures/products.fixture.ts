@@ -8,7 +8,7 @@ export const products: Product[] = [
     price: 20,
     description:
       "Viste tu pasión por React con estilo y comodidad en cada línea de código.",
-    category: "polos",
+    categorySlug: "polos",
     isOnSale: false,
     features: [
       "Estampado resistente que mantiene sus colores vibrantes lavado tras lavado.",
@@ -24,7 +24,7 @@ export const products: Product[] = [
     price: 20,
     description:
       "Deja que tu amor por JavaScript hable a través de cada hilo de este polo.",
-    category: "polos",
+    categorySlug: "polos",
     isOnSale: false,
     features: [
       "Logo de JavaScript bordado con precisión y detalle.",
@@ -40,7 +40,7 @@ export const products: Product[] = [
     price: 20,
     description:
       "Conéctate al estilo con este polo de Node.js, tan robusto como tu código.",
-    category: "polos",
+    categorySlug: "polos",
     isOnSale: false,
     features: [
       "Diseño minimalista con el logo de Node.js.",
@@ -56,7 +56,7 @@ export const products: Product[] = [
     price: 20,
     description:
       "Tipa tu estilo con precisión: lleva tu pasión por TypeScript en cada hilo.",
-    category: "polos",
+    categorySlug: "polos",
     isOnSale: false,
     features: [
       "Logo de TypeScript estampado en alta calidad.",
@@ -72,7 +72,7 @@ export const products: Product[] = [
     price: 25,
     description:
       "Domina el servidor con estilo: viste con orgullo tu título de Backend Developer.",
-    category: "polos",
+    categorySlug: "polos",
     isOnSale: false,
     features: [
       "Diseño exclusivo para desarrolladores backend.",
@@ -88,7 +88,7 @@ export const products: Product[] = [
     price: 25,
     description:
       "Construye experiencias con estilo: luce con orgullo tu polo de Frontend Developer.",
-    category: "polos",
+    categorySlug: "polos",
     isOnSale: false,
     features: [
       "Diseño inspirado en elementos de UI/UX.",
@@ -104,7 +104,7 @@ export const products: Product[] = [
     price: 25,
     description:
       "Domina ambos mundos con estilo: lleva tu título de FullStack Developer en cada línea de tu look.",
-    category: "polos",
+    categorySlug: "polos",
     isOnSale: false,
     features: [
       "Diseño que representa ambos mundos del desarrollo.",
@@ -120,7 +120,7 @@ export const products: Product[] = [
     price: 15,
     description:
       "Cuando el bug se convierte en arte: lleva con orgullo tu polo 'It's a feature'.",
-    category: "polos",
+    categorySlug: "polos",
     isOnSale: true,
     features: [
       "Estampado humorístico de alta calidad.",
@@ -136,7 +136,7 @@ export const products: Product[] = [
     price: 15,
     description:
       "El clásico del desarrollador: presume tu confianza con 'It works on my machine'.",
-    category: "polos",
+    categorySlug: "polos",
     isOnSale: true,
     features: [
       "Frase icónica del mundo del desarrollo.",
@@ -147,7 +147,7 @@ export const products: Product[] = [
   },
   {
     id: "s1",
-    category: "stickers",
+    categorySlug: "stickers",
     title: "Sticker JavaScript",
     imgSrc: "/images/stickers/sticker-js.png",
     price: 2.99,
@@ -163,7 +163,7 @@ export const products: Product[] = [
   },
   {
     id: "s2",
-    category: "stickers",
+    categorySlug: "stickers",
     title: "Sticker React",
     imgSrc: "/images/stickers/sticker-react.png",
     price: 2.49,
@@ -179,7 +179,7 @@ export const products: Product[] = [
   },
   {
     id: "s3",
-    category: "stickers",
+    categorySlug: "stickers",
     title: "Sticker Git",
     imgSrc: "/images/stickers/sticker-git.png",
     price: 3.99,
@@ -195,7 +195,7 @@ export const products: Product[] = [
   },
   {
     id: "s5",
-    category: "stickers",
+    categorySlug: "stickers",
     title: "Sticker Docker",
     imgSrc: "/images/stickers/sticker-docker.png",
     price: 2.99,
@@ -211,7 +211,7 @@ export const products: Product[] = [
   },
   {
     id: "s6",
-    category: "stickers",
+    categorySlug: "stickers",
     title: "Sticker Linux",
     imgSrc: "/images/stickers/sticker-linux.png",
     price: 2.49,
@@ -227,7 +227,7 @@ export const products: Product[] = [
   },
   {
     id: "s8",
-    category: "stickers",
+    categorySlug: "stickers",
     title: "Sticker VS Code",
     imgSrc: "/images/stickers/sticker-vscode.png",
     price: 2.49,
@@ -242,7 +242,7 @@ export const products: Product[] = [
   },
   {
     id: "s9",
-    category: "stickers",
+    categorySlug: "stickers",
     title: "Sticker GitHub",
     imgSrc: "/images/stickers/sticker-github.png",
     price: 2.99,
@@ -258,7 +258,7 @@ export const products: Product[] = [
   },
   {
     id: "s10",
-    category: "stickers",
+    categorySlug: "stickers",
     title: "Sticker HTML",
     imgSrc: "/images/stickers/sticker-html.png",
     price: 2.99,
@@ -274,7 +274,7 @@ export const products: Product[] = [
   },
   {
     id: "m1",
-    category: "tazas",
+    categorySlug: "tazas",
     title: "Taza JavaScript",
     imgSrc: "/images/tazas/taza-js.png",
     price: 14.99,
@@ -290,7 +290,7 @@ export const products: Product[] = [
   },
   {
     id: "m2",
-    category: "tazas",
+    categorySlug: "tazas",
     title: "Taza React",
     imgSrc: "/images/tazas/taza-react.png",
     price: 13.99,
@@ -306,7 +306,7 @@ export const products: Product[] = [
   },
   {
     id: "m3",
-    category: "tazas",
+    categorySlug: "tazas",
     title: "Taza Git",
     imgSrc: "/images/tazas/taza-git.png",
     price: 12.99,
@@ -321,7 +321,7 @@ export const products: Product[] = [
   },
   {
     id: "m4",
-    category: "tazas",
+    categorySlug: "tazas",
     title: "Taza SQL",
     imgSrc: "/images/tazas/taza-sql.png",
     price: 15.99,
@@ -336,7 +336,7 @@ export const products: Product[] = [
   },
   {
     id: "m5",
-    category: "tazas",
+    categorySlug: "tazas",
     title: "Taza Linux",
     imgSrc: "/images/tazas/taza-linux.png",
     price: 13.99,
@@ -351,7 +351,7 @@ export const products: Product[] = [
   },
   {
     id: "m6",
-    category: "tazas",
+    categorySlug: "tazas",
     title: "Taza GitHub",
     imgSrc: "/images/tazas/taza-github.png",
     price: 14.99,

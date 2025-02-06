@@ -1,34 +1,25 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router";
 
 import { Truck, Return, Ribbon, Idea } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
-
-const categoriesContent = [
-  {
-    title: "Polos",
-    imageSrc: "/images/polos.jpg",
-    alt: "Hombre luciendo polo azul",
-    description:
-      "Polos exclusivos con diseños que todo desarrollador querrá lucir. Ideales para llevar el código a donde vayas.",
-  },
-  {
-    title: "Tazas",
-    imageSrc: "/images/tazas.jpg",
-    alt: "Tazas con diseño de código",
-    description:
-      "Tazas que combinan perfectamente con tu café matutino y tu pasión por la programación. ¡Empieza el día con estilo!",
-  },
-  {
-    title: "Stickers",
-    imageSrc: "/images/stickers.jpg",
-    alt: "Stickers de desarrollo web",
-    description:
-      "Personaliza tu espacio de trabajo con nuestros stickers únicos y muestra tu amor por el desarrollo web.",
-  },
-];
+import { ContainerLoader } from "@/components/ui/container-loader";
+import { Category } from "@/models/category.model";
+import { getAllCategories } from "@/services/category.service";
 
 export default function Home() {
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getAllCategories()
+      .then(setCategories)
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <ContainerLoader />;
+
   return (
     <>
       <section
@@ -46,7 +37,9 @@ export default function Home() {
             <br />
             Agrega tus favoritos al carrito antes que se agoten.
           </p>
-          <Button size="xl">Compra ahora</Button>
+          <Button size="xl" asChild>
+            <Link to="/polos"> Compra ahora</Link>
+          </Button>
         </Container>
       </section>
       <section className="py-12 md:py-24">
@@ -63,7 +56,7 @@ export default function Home() {
             </p>
           </div>
           <div className="flex flex-col gap-8 md:flex-row">
-            {categoriesContent.map((category) => (
+            {categories.map((category) => (
               <Link
                 to={category.title.toLowerCase()}
                 className="basis-0 grow group"

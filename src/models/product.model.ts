@@ -1,6 +1,4 @@
-export const VALID_CATEGORIES = ["polos", "stickers", "tazas"] as const;
-
-export type ProductCategory = (typeof VALID_CATEGORIES)[number];
+import { Category } from "./category.model";
 
 export interface Product {
   id: string;
@@ -8,13 +6,7 @@ export interface Product {
   imgSrc: string;
   price: number;
   description: string;
-  category: ProductCategory;
+  categorySlug: Category["slug"];
   isOnSale: boolean;
   features: string[];
-}
-
-export function isValidCategory(
-  category: unknown
-): category is ProductCategory {
-  return VALID_CATEGORIES.includes(category as ProductCategory);
 }
