@@ -2,19 +2,19 @@ import { Link } from "react-router";
 
 import { Button, Container, Section } from "@/components/ui";
 
+import styles from "./styles.module.css";
+
 export default function NotFound() {
   return (
     <Container>
-      <Section className="flex justify-center items-center">
-        <div className="text-center">
-          <p className="text-base font-semibold text-accent-foreground">404</p>
-          <h1 className="mt-4 text-4xl font-bold tracking-tight text-foreground sm:text-6xl">
-            Página no encontrada
-          </h1>
-          <p className="mt-6 text-lg font-medium text-muted-foreground sm:text-xl/8">
+      <Section className={styles["not-found"]}>
+        <div className={styles["not-found__content"]}>
+          <p className={styles["not-found__code"]}>404</p>
+          <h1 className={styles["not-found__title"]}>Página no encontrada</h1>
+          <p className={styles["not-found__description"]}>
             No pudimos encontrar la página que estás buscando.
           </p>
-          <Button className="mt-10" asChild size="xl">
+          <Button className={styles["not-found__button"]} asChild size="xl">
             <Link to="/">Regresar al inicio</Link>
           </Button>
         </div>

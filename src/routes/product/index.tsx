@@ -6,6 +6,8 @@ import { useCart } from "@/contexts/cart.context";
 import { type Product } from "@/models/product.model";
 import { getProductById } from "@/services/product.service";
 
+import styles from "./styles.module.css";
+
 export default function Product() {
   const { loading: cartLoading, addItem } = useCart();
   const { id } = useParams<{ id: string }>();
@@ -31,40 +33,39 @@ export default function Product() {
 
   if (loading) return <ContainerLoader />;
 
-  if (!product)
-    return <div className="text-center mt-10">Product not found.</div>;
+  if (!product) {
+    return <div className={styles.error}>Product not found.</div>;
+  }
 
   return (
     <>
-      <section className="py-12">
-        <Container className="flex flex-col gap-8 md:flex-row md:items-start">
-          <div className="bg-muted rounded-xl min-w-[min(100%,448px)] self-center basis-0 grow max-w-xl md:min-w-fit md:self-start">
+      <section className={styles.product}>
+        <Container className={styles.product__container}>
+          <div className={styles.product__image}>
             <img
               src={product.imgSrc}
               alt={product.title}
-              className="object-cover w-full aspect-square"
+              className={styles.product__image_content}
             />
           </div>
-          <div className="grow basis-0">
-            <h1 className="text-3xl font-bold mb-3">{product.title}</h1>
-            <p className="text-3xl mb-6">${product.price}</p>
-            <p className="text-sm text-muted-foreground mb-10">
-              {product.description}
-            </p>
+          <div className={styles.product__info}>
+            <h1 className={styles.product__title}>{product.title}</h1>
+            <p className={styles.product__price}>${product.price}</p>
+            <p className={styles.product__description}>{product.description}</p>
             <Button
               size="xl"
-              className="w-full md:w-80"
+              className={styles.product__button}
               onClick={() => addItem(product)}
               disabled={cartLoading}
             >
               {cartLoading ? "Agregando..." : "Agregar al Carrito"}
             </Button>
-            <Separator className="my-6" />
-            <div>
-              <h2 className="text-sm font-semibold text-accent-foreground mb-6">
+            <Separator className={styles.product__separator} />
+            <div className={styles.product__features}>
+              <h2 className={styles.product__features_title}>
                 Características
               </h2>
-              <ul className="list-disc pl-4 text-sm text-muted-foreground">
+              <ul className={styles.product__features_list}>
                 {product.features.map((feature, index) => (
                   <li key={index}>{feature}</li>
                 ))}

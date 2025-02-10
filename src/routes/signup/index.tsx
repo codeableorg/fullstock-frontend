@@ -4,6 +4,8 @@ import { Link, useNavigate } from "react-router";
 import { Button, Container, InputField, Section } from "@/components/ui";
 import { useAuth } from "@/contexts/auth.context";
 
+import styles from "./styles.module.css";
+
 export default function Signup() {
   const navigate = useNavigate();
   const { signup } = useAuth();
@@ -32,11 +34,9 @@ export default function Signup() {
 
   return (
     <Section>
-      <Container className="max-w-sm mx-auto">
-        <h1 className="text-2xl font-bold text-center mb-10">
-          Crea una cuenta
-        </h1>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+      <Container className={styles.signup}>
+        <h1 className={styles.signup__title}>Crea una cuenta</h1>
+        <form onSubmit={handleSubmit} className={styles.signup__form}>
           <InputField
             label="Correo electrónico"
             name="email"
@@ -51,16 +51,20 @@ export default function Signup() {
             required
             autoComplete="current-password"
           />
-          <Button size="lg" className="w-full" disabled={loading}>
+          <Button
+            size="lg"
+            className={styles.signup__submit}
+            disabled={loading}
+          >
             {loading ? "Creando..." : "Crear cuenta"}
           </Button>
-          {error && (
-            <p className="text-red-500 text-sm text-center mt-2">{error}</p>
-          )}
+          {error && <p className={styles.signup__error}>{error}</p>}
         </form>
-        <div className="flex justify-center gap-2 mt-10 text-sm leading-6">
-          <span className="text-muted-foreground">¿Ya tienes una cuenta?</span>
-          <Link to="/login" className="text-accent-foreground hover:underline">
+        <div className={styles.signup__footer}>
+          <span className={styles.signup__footer_text}>
+            ¿Ya tienes una cuenta?
+          </span>
+          <Link to="/login" className={styles.signup__footer_link}>
             Inicia sesión
           </Link>
         </div>

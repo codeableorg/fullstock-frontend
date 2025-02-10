@@ -2,6 +2,9 @@ import { Navigate, Outlet, NavLink } from "react-router";
 
 import { Container, Section } from "@/components/ui";
 import { useAuth } from "@/contexts/auth.context";
+import { cn } from "@/lib/utils";
+
+import styles from "./styles.module.css";
 
 export default function Account() {
   const { user } = useAuth();
@@ -12,24 +15,23 @@ export default function Account() {
 
   return (
     <Section>
-      <Container className="max-w-3xl">
-        <div className="max-w-3xl mb-10">
-          <h1 className="text-4xl font-bold mb-4">Mi cuenta</h1>
-          <p className="text-sm text-muted-foreground">
+      <Container className={styles.account}>
+        <div className={styles.account__header}>
+          <h1 className={styles.account__title}>Mi cuenta</h1>
+          <p className={styles.account__description}>
             Actualiza tu perfil y revisa tus historial pedidos.
           </p>
         </div>
 
-        <div className="border-b mb-6">
-          <nav className="flex gap-4">
+        <div className={styles.account__nav_wrapper}>
+          <nav className={styles.account__nav}>
             <NavLink
               to="/account/profile"
               className={({ isActive }) =>
-                `pb-2 px-1 ${
-                  isActive
-                    ? "border-b-2 border-primary font-medium"
-                    : "text-muted-foreground"
-                }`
+                cn(
+                  styles.account__nav_link,
+                  isActive && styles["account__nav_link--active"]
+                )
               }
             >
               Perfil
@@ -37,11 +39,10 @@ export default function Account() {
             <NavLink
               to="/account/orders"
               className={({ isActive }) =>
-                `pb-2 px-1 ${
-                  isActive
-                    ? "border-b-2 border-primary font-medium"
-                    : "text-muted-foreground"
-                }`
+                cn(
+                  styles.account__nav_link,
+                  isActive && styles["account__nav_link--active"]
+                )
               }
             >
               Historial de Pedidos

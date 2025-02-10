@@ -5,6 +5,7 @@ import { Button, Container, Input, Section, Separator } from "@/components/ui";
 
 import AuthNav from "./components/auth-nav";
 import HeaderMain from "./components/header-main";
+import styles from "./styles.module.css";
 
 export default function Root() {
   const [email, setEmail] = useState("");
@@ -26,20 +27,20 @@ export default function Root() {
   };
 
   return (
-    <div className="grid grid-rows-[auto_1fr_auto] min-h-screen bg-background">
-      <header className="sticky top-0 bg-background border-b border-border z-50">
+    <div className={styles.root}>
+      <header className={styles.root__header}>
         <AuthNav />
         <HeaderMain />
       </header>
-      <main>
+      <main className={styles.root__main}>
         <Outlet />
       </main>
-      <footer className="border-t border-border">
+      <footer className={styles.root__footer}>
         <Container>
-          <Section className="flex flex-col gap-8 lg:flex-row">
-            <div className="flex flex-wrap gap-x-4 gap-y-8 grow">
-              <ul className="basis-36 grow flex flex-col gap-6 text-sm text-muted-foreground">
-                <li className="font-medium text-foreground">Tienda</li>
+          <Section className={styles["root__footer-section"]}>
+            <div className={styles["root__footer-links"]}>
+              <ul className={styles["root__footer-list"]}>
+                <li className={styles["root__footer-title"]}>Tienda</li>
                 <li>
                   <Link to="/polos">Polos</Link>
                 </li>
@@ -50,8 +51,8 @@ export default function Root() {
                   <Link to="/stickers">Stickers</Link>
                 </li>
               </ul>
-              <ul className="basis-36 grow flex flex-col gap-6 text-sm text-muted-foreground">
-                <li className="font-medium text-foreground">Compañía</li>
+              <ul className={styles["root__footer-list"]}>
+                <li className={styles["root__footer-title"]}>Compañía</li>
                 <li>
                   <Link to="/quienes-somos">Quienes somos</Link>
                 </li>
@@ -62,8 +63,8 @@ export default function Root() {
                   <Link to="/privacidad">Privacidad</Link>
                 </li>
               </ul>
-              <ul className="basis-36 grow flex flex-col gap-6 text-sm text-muted-foreground">
-                <li className="font-medium text-foreground">Conecta</li>
+              <ul className={styles["root__footer-list"]}>
+                <li className={styles["root__footer-title"]}>Conecta</li>
                 <li>
                   <Link to="/contacto">Contáctanos</Link>
                 </li>
@@ -79,13 +80,18 @@ export default function Root() {
                 </li>
               </ul>
             </div>
-            <div className="text-sm max-w-md">
-              <p className="font-medium mb-6">Suscríbete a nuestro boletín</p>
-              <p className="text-muted-foreground mb-2">
+            <div className={styles["root__footer-newsletter"]}>
+              <p className={styles["root__footer-newsletter-title"]}>
+                Suscríbete a nuestro boletín
+              </p>
+              <p className={styles["root__footer-newsletter-text"]}>
                 Recibe las últimas ofertas y descuentos en tu correo
                 semanalmente.
               </p>
-              <form className="flex gap-2" onSubmit={handleSubmit}>
+              <form
+                className={styles["root__footer-form"]}
+                onSubmit={handleSubmit}
+              >
                 <Input
                   type="email"
                   aria-label="email"
@@ -107,7 +113,7 @@ export default function Root() {
             </div>
           </Section>
           <Separator orientation="horizontal" decorative={true} />
-          <small className="text-center text-sm text-muted-foreground py-6 block">
+          <small className={styles["root__footer-copyright"]}>
             Todos los derechos reservados © Full Stock
           </small>
         </Container>

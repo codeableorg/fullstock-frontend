@@ -7,12 +7,14 @@ import {
   Container,
   InputField,
   Section,
-  SelectField,
   Separator,
+  SelectField,
 } from "@/components/ui";
 import { useAuth } from "@/contexts/auth.context";
 import { useCart } from "@/contexts/cart.context";
 import { createOrder } from "@/services/order.service";
+
+import styles from "./styles.module.css";
 
 const countryOptions = [
   { value: "AR", label: "Argentina" },
@@ -63,43 +65,44 @@ export default function Checkout() {
   }
 
   return (
-    <Section className="bg-muted">
+    <Section className={styles.checkout}>
       <Container>
-        <div className="flex flex-col gap-12 max-w-2xl mx-auto lg:flex-row lg:max-w-full">
-          <div className="grow lg:order-1">
-            <h2 className="text-lg font-medium mb-4">Resumen de la orden</h2>
-            <div className="divide-y divide-border border border-border rounded-xl bg-background">
+        <div className={styles.checkout__layout}>
+          <div className={styles.checkout__summary}>
+            <h2 className={styles.checkout__summary_title}>
+              Resumen de la orden
+            </h2>
+            <div className={styles.checkout__summary_container}>
               {cart?.items?.map(({ product, quantity }) => (
-                <div key={product.id} className="flex gap-6 p-6">
-                  <div className="w-20 rounded-xl bg-muted">
+                <div key={product.id} className={styles.checkout__item}>
+                  <div className={styles["checkout__item-image"]}>
                     <img
                       src={product.imgSrc}
                       alt={product.title}
-                      className="w-full aspect-square object-contain"
+                      className={styles["checkout__item-image-content"]}
                     />
                   </div>
-                  <div className="flex flex-col justify-between grow">
-                    <h3 className="text-sm">{product.title}</h3>
-                    <div className="flex text-sm font-medium gap-4 items-center self-end">
+                  <div className={styles["checkout__item-details"]}>
+                    <h3 className={styles["checkout__item-title"]}>
+                      {product.title}
+                    </h3>
+                    <div className={styles["checkout__item-price"]}>
                       <p>{quantity}</p>
-                      <X className="w-4 h-4" />
+                      <X className={styles["checkout__item-price-icon"]} />
                       <p>${product.price.toFixed(2)}</p>
                     </div>
                   </div>
                 </div>
               ))}
-              <div className="flex justify-between p-6 text-base font-medium">
+              <div className={styles.checkout__total}>
                 <p>Total</p>
                 <p>${(cart?.total || 0).toFixed(2)}</p>
               </div>
             </div>
           </div>
-          <form
-            className="lg:max-w-[600px] grow [&_:invalid]:scroll-mt-[200px] md:[&_:invalid]:scroll-mt-[160px]"
-            onSubmit={handleSubmit}
-          >
+          <form className={styles.checkout__form} onSubmit={handleSubmit}>
             <fieldset>
-              <legend className="text-xl font-medium mb-6">
+              <legend className={styles.checkout__legend}>
                 Información de contacto
               </legend>
               <InputField
@@ -112,12 +115,12 @@ export default function Checkout() {
                 readOnly={Boolean(user)}
               />
             </fieldset>
-            <Separator className="my-6" />
+            <Separator className={styles.checkout__separator} />
             <fieldset>
-              <legend className="text-xl font-medium mb-6">
+              <legend className={styles.checkout__legend}>
                 Información de envío
               </legend>
-              <div className="flex flex-col gap-6">
+              <div className={styles["checkout__form-fields"]}>
                 <InputField
                   label="Nombre"
                   name="firstName"
@@ -151,6 +154,7 @@ export default function Checkout() {
                   label="País"
                   name="country"
                   options={countryOptions}
+                  placeholder="Seleccionar país"
                   required
                 />
                 <InputField
@@ -173,7 +177,11 @@ export default function Checkout() {
                 />
               </div>
             </fieldset>
-            <Button size="xl" className="w-full mt-6" disabled={loading}>
+            <Button
+              size="xl"
+              className={styles.checkout__submit}
+              disabled={loading}
+            >
               {loading ? "Procesando..." : "Confirmar Orden"}
             </Button>
           </form>

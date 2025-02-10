@@ -6,6 +6,35 @@ import { Button, Container, ContainerLoader } from "@/components/ui";
 import { Category } from "@/models/category.model";
 import { getAllCategories } from "@/services/category.service";
 
+import styles from "./styles.module.css";
+
+const features = [
+  {
+    Icon: Truck,
+    title: "Entrega rápida",
+    description:
+      "Recibe tus productos en tiempo récord, directo a tu puerta, para que puedas disfrutar de ellos cuanto antes.",
+  },
+  {
+    Icon: Return,
+    title: "Satisfacción Garantizada",
+    description:
+      "Tu felicidad es nuestra prioridad. Si no estás 100% satisfecho, estamos aquí para ayudarte con cambios o devoluciones.",
+  },
+  {
+    Icon: Ribbon,
+    title: "Materiales de Alta Calidad",
+    description:
+      "Nos aseguramos de que todos nuestros productos estén hechos con materiales de la más alta calidad.",
+  },
+  {
+    Icon: Idea,
+    title: "Diseños Exclusivos",
+    description:
+      "Cada producto está diseñado pensando en los desarrolladores, con estilos únicos que no encontrarás en ningún otro lugar.",
+  },
+];
+
 export default function Home() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -20,58 +49,45 @@ export default function Home() {
 
   return (
     <>
-      <section
-        className="text-center bg-cover bg-no-repeat bg-center text-white"
-        style={{
-          backgroundImage: `linear-gradient(0deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.5) 100%), url('/images/hero.jpg')`,
-        }}
-      >
-        <Container className="py-32 max-w-3xl">
-          <h2 className="text-4xl font-bold mb-4 md:text-6xl">
-            Nuevos productos disponibles
-          </h2>
-          <p className="text-xl mb-8">
+      <section className={styles.hero}>
+        <Container className={styles.hero__container}>
+          <h2 className={styles.hero__title}>Nuevos productos disponibles</h2>
+          <p className={styles.hero__text}>
             Un pequeño lote de increíbles productos acaba de llegar.
             <br />
             Agrega tus favoritos al carrito antes que se agoten.
           </p>
           <Button size="xl" asChild>
-            <Link to="/polos"> Compra ahora</Link>
+            <Link to="/polos">Compra ahora</Link>
           </Button>
         </Container>
       </section>
-      <section className="py-12 md:py-24">
+
+      <section className={styles.categories}>
         <Container>
-          <div className="max-w-3xl">
-            <h2 className="text-2xl font-bold mb-4 md:text-4xl">
-              Compra por categoría
-            </h2>
-            <p className="text-muted-foreground mb-10">
+          <div className={styles.categories__header}>
+            <h2 className={styles.categories__title}>Compra por categoría</h2>
+            <p className={styles.categories__description}>
               Explora nuestra selección de productos especialmente diseñados
-              para desarrolladores web. <br className="hidden md:block" />
+              para desarrolladores web.{" "}
+              <br className={styles["categories__description-break"]} />
               Encuentra lo que buscas navegando por nuestras categorías de
               polos, tazas, stickers y más.
             </p>
           </div>
-          <div className="flex flex-col gap-8 md:flex-row">
+          <div className={styles.categories__grid}>
             {categories.map((category) => (
               <Link
                 to={category.title.toLowerCase()}
-                className="basis-0 grow group"
+                className={styles.category}
                 key={category.title}
               >
-                <div className="rounded-xl overflow-hidden mb-4">
-                  <img
-                    src={category.imageSrc}
-                    alt={category.alt}
-                    className="w-full aspect-[3/2] md:aspect-[4/5] object-cover"
-                  />
+                <div className={styles.category__image}>
+                  <img src={category.imageSrc} alt={category.alt} />
                 </div>
                 <div>
-                  <h3 className="font-semibold mb-2 group-hover:underline">
-                    {category.title}
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
+                  <h3 className={styles.category__title}>{category.title}</h3>
+                  <p className={styles.category__description}>
                     {category.description}
                   </p>
                 </div>
@@ -80,48 +96,18 @@ export default function Home() {
           </div>
         </Container>
       </section>
-      <section className="py-12 md:py-24 bg-muted">
-        <Container className="text-center">
-          <h2 className="text-2xl font-bold mb-12">
-            Nuestra Promesa de Calidad
-          </h2>
-          <div className="flex flex-col gap-8 sm:grid sm:grid-cols-2 md:grid-cols-4">
-            <div>
-              <Truck className="mb-6 inline-block" />
-              <h3 className="font-medium mb-2 text-sm">Entrega rápida</h3>
-              <p className=" text-sm text-muted-foreground">
-                Recibe tus productos en tiempo récord, directo a tu puerta, para
-                que puedas disfrutar de ellos cuanto antes.
-              </p>
-            </div>
-            <div>
-              <Return className="mb-6 inline-block" />
-              <h3 className="font-medium mb-2 text-sm">
-                Satisfacción Garantizada
-              </h3>
-              <p className=" text-sm text-muted-foreground">
-                Tu felicidad es nuestra prioridad. Si no estás 100% satisfecho,
-                estamos aquí para ayudarte con cambios o devoluciones.
-              </p>
-            </div>
-            <div>
-              <Ribbon className="mb-6 inline-block" />
-              <h3 className="font-medium mb-2 text-sm">
-                Materiales de Alta Calidad
-              </h3>
-              <p className=" text-sm text-muted-foreground">
-                Nos aseguramos de que todos nuestros productos estén hechos con
-                materiales de la más alta calidad.
-              </p>
-            </div>
-            <div>
-              <Idea className="mb-6 inline-block" />
-              <h3 className="font-medium mb-2 text-sm">Diseños Exclusivos</h3>
-              <p className=" text-sm text-muted-foreground">
-                Cada producto está diseñado pensando en los desarrolladores, con
-                estilos únicos que no encontrarás en ningún otro lugar.
-              </p>
-            </div>
+
+      <section className={styles.features}>
+        <Container>
+          <h2 className={styles.features__title}>Nuestra Promesa de Calidad</h2>
+          <div className={styles.features__grid}>
+            {features.map(({ Icon, title, description }) => (
+              <div key={title} className={styles.feature}>
+                <Icon className={styles.feature__icon} />
+                <h3 className={styles.feature__title}>{title}</h3>
+                <p className={styles.feature__description}>{description}</p>
+              </div>
+            ))}
           </div>
         </Container>
       </section>

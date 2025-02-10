@@ -1,0 +1,33 @@
+.auth-nav {
+  background-color: var(--black);
+  color: var(--white);
+  font-size: var(--font-size-3-5);
+  font-weight: 500;
+}
+
+.auth-nav__container {
+  height: var(--space-10);
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.auth-nav__list {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.auth-nav__link {
+  text-decoration: none;
+}
+
+.auth-nav__link:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--white);
+  text-underline-offset: 2px;
+}
+
+.auth-nav__button {
+  color: var(--white);
+}

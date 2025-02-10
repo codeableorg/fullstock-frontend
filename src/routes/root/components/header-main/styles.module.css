@@ -1,0 +1,26 @@
+.header-main {
+  position: relative;
+}
+
+.header-main__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: var(--space-12);
+}
+
+.header-main__separator {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .header-main {
+    position: relative;
+  }
+}
+
+@media (max-width: 639px) {
+  .header-main__separator {
+    display: block;
+  }
+}

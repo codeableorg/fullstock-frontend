@@ -1,0 +1,16 @@
+.profile {
+  max-width: var(--width-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.profile__submit {
+  align-self: stretch;
+}
+
+@media (min-width: 640px) {
+  .profile__submit {
+    align-self: flex-start;
+  }
+}

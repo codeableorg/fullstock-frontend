@@ -1,0 +1,113 @@
+.cart {
+  max-width: var(--width-xl);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.cart__title {
+  font-size: var(--font-size-7-5);
+  line-height: var(--leading-8);
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: var(--space-12);
+}
+
+.cart__container {
+  border: 1px solid var(--border);
+  border-radius: var(--rounded-xl);
+  display: flex;
+  flex-direction: column;
+}
+
+.cart__item {
+  display: flex;
+  gap: var(--space-6);
+  padding: var(--space-6);
+  border-bottom: 1px solid var(--border);
+}
+
+.cart__item-image {
+  width: var(--space-20);
+  border-radius: var(--rounded-xl);
+  background-color: var(--muted-background);
+}
+
+.cart__item-image-content {
+  width: 100%;
+  aspect-ratio: 2/3;
+  object-fit: contain;
+}
+
+.cart__item-details {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.cart__item-header {
+  display: flex;
+  gap: var(--space-4);
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cart__item-title {
+  font-size: var(--font-size-3-5);
+  line-height: var(--leading-5);
+}
+
+.cart__item-footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.cart__item-price {
+  font-size: var(--font-size-3-5);
+  line-height: var(--leading-5);
+  font-weight: 500;
+}
+
+.cart__item-quantity {
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+}
+
+.cart__item-quantity-display {
+  height: var(--space-8);
+  width: var(--space-8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: var(--rounded-md);
+  padding: var(--space-2) var(--space-4);
+}
+
+.cart__total {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-6);
+  font-size: var(--font-size-4);
+  line-height: var(--leading-6);
+  font-weight: 500;
+  border-bottom: 1px solid var(--border);
+}
+
+.cart__action {
+  padding: var(--space-6);
+}
+
+.cart__action-button {
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .cart__item-footer {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}

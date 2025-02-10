@@ -1,0 +1,52 @@
+.login {
+  max-width: var(--width-sm);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.login__title {
+  font-size: var(--font-size-6);
+  line-height: var(--leading-7);
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: var(--space-10);
+}
+
+.login__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.login__submit {
+  width: 100%;
+}
+
+.login__error {
+  color: hsl(0 84% 60%); /* TODO: add to color tokens */
+  font-size: var(--font-size-3-5);
+  line-height: var(--leading-5);
+  text-align: center;
+  margin-top: var(--space-2);
+}
+
+.login__footer {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-2);
+  margin-top: var(--space-10);
+  font-size: var(--font-size-3-5);
+  line-height: var(--leading-6);
+}
+
+.login__footer_text {
+  color: var(--muted-foreground);
+}
+
+.login__footer_link {
+  color: var(--accent-foreground);
+}
+
+.login__footer_link:hover {
+  text-decoration: underline;
+}

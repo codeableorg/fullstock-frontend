@@ -1,0 +1,16 @@
+.sticky {
+  position: sticky !important;
+}
+
+.top-0 {
+  top: 0 !important;
+}
+
+.max-w-3xl {
+  max-width: var(--width-3xl) !important;
+}
+
+.margin-x-auto {
+  margin-left: auto !important ;
+  margin-right: auto !important;
+}

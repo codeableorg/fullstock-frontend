@@ -4,28 +4,30 @@ import { Link } from "react-router";
 import { Button, Container, Section } from "@/components/ui";
 import { useCart } from "@/contexts/cart.context";
 
+import styles from "./styles.module.css";
+
 export default function Cart() {
   const { cart, updateQuantity, removeItem } = useCart();
 
   return (
     <Section>
-      <Container className="max-w-xl mx-auto">
-        <h1 className="text-3xl font-bold text-center mb-12">
-          Carrito de compras
-        </h1>
-        <div className="divide-y divide-border border border-border rounded-xl">
+      <Container className={styles.cart}>
+        <h1 className={styles.cart__title}>Carrito de compras</h1>
+        <div className={styles.cart__container}>
           {cart?.items?.map(({ product, quantity }) => (
-            <div key={product.id} className="flex gap-6 p-6">
-              <div className="w-20 rounded-xl bg-muted">
+            <div key={product.id} className={styles.cart__item}>
+              <div className={styles["cart__item-image"]}>
                 <img
                   src={product.imgSrc}
                   alt={product.title}
-                  className="w-full aspect-[2/3] object-contain"
+                  className={styles["cart__item-image-content"]}
                 />
               </div>
-              <div className="grow flex flex-col justify-between">
-                <div className="flex gap-4 justify-between items-center">
-                  <h2 className="text-sm">{product.title}</h2>
+              <div className={styles["cart__item-details"]}>
+                <div className={styles["cart__item-header"]}>
+                  <h2 className={styles["cart__item-title"]}>
+                    {product.title}
+                  </h2>
                   <Button
                     size="sm-icon"
                     variant="outline"
@@ -34,11 +36,11 @@ export default function Cart() {
                     <Trash2 />
                   </Button>
                 </div>
-                <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-                  <p className="text-sm font-medium">
+                <div className={styles["cart__item-footer"]}>
+                  <p className={styles["cart__item-price"]}>
                     ${product.price.toFixed(2)}
                   </p>
-                  <div className="flex gap-4 items-center">
+                  <div className={styles["cart__item-quantity"]}>
                     <Button
                       onClick={() => updateQuantity(product.id, quantity - 1)}
                       variant="outline"
@@ -47,7 +49,7 @@ export default function Cart() {
                     >
                       <Minus />
                     </Button>
-                    <span className="h-8 w-8 flex justify-center items-center border border-border rounded-md px-4 py-2">
+                    <span className={styles["cart__item-quantity-display"]}>
                       {quantity}
                     </span>
                     <Button
@@ -62,12 +64,12 @@ export default function Cart() {
               </div>
             </div>
           ))}
-          <div className="flex justify-between p-6 text-base font-medium">
+          <div className={styles.cart__total}>
             <p>Total</p>
             <p>${(cart?.total || 0).toFixed(2)}</p>
           </div>
-          <div className="p-6">
-            <Button size="lg" className="w-full" asChild>
+          <div className={styles.cart__action}>
+            <Button size="lg" className={styles["cart__action-button"]} asChild>
               {cart?.items && cart.items.length > 0 ? (
                 <Link to="/checkout">Continuar Compra</Link>
               ) : (

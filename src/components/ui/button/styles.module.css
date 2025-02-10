@@ -1,0 +1,131 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  white-space: nowrap;
+  border-radius: var(--rounded-lg);
+  font-size: var(--font-size-3-5);
+  font-weight: 500;
+  transition: colors 0.2s;
+}
+
+.button:disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.button svg {
+  pointer-events: none;
+  width: var(--space-4);
+  height: var(--space-4);
+  flex-shrink: 0;
+}
+
+/* Variants */
+.button--default {
+  background-color: var(--primary-background);
+  color: var(--primary-foreground);
+}
+
+.button--default:hover {
+  background-color: var(--primary-background-hover);
+}
+
+.button--secondary {
+  background-color: var(--secondary-background);
+  color: var(--secondary-foreground);
+}
+
+.button--secondary:hover {
+  background-color: var(--secondary-background-hover);
+}
+
+.button--outline {
+  color: var(--muted-foreground);
+  border: 1px solid var(--border);
+  background-color: var(--background);
+}
+
+.button--outline:hover {
+  background-color: var(--muted-background);
+}
+
+.button--ghost {
+  color: var(--muted-foreground);
+  background-color: transparent;
+}
+
+.button--ghost:hover {
+  background-color: var(--muted-background);
+}
+
+/* Sizes */
+.button--default {
+  height: var(--space-8);
+  padding: var(--space-1-5) var(--space-2-5);
+}
+
+.button--sm {
+  height: var(--space-6);
+  border-radius: var(--rounded-md);
+  padding: var(--space-1) var(--space-2);
+}
+
+.button--lg {
+  height: var(--space-10);
+  border-radius: var(--rounded-lg);
+  padding: var(--space-2-5) var(--space-3-5);
+}
+
+.button--xl {
+  height: var(--space-12);
+  border-radius: var(--rounded-lg);
+  padding: var(--space-3) var(--space-8);
+  font-size: var(--font-size-4);
+}
+
+.button--xl svg {
+  width: var(--space-5);
+  height: var(--space-5);
+}
+
+.button--sm-icon {
+  height: var(--space-7);
+  width: var(--space-7);
+}
+
+.button--sm-icon svg {
+  width: var(--space-5);
+  height: var(--space-5);
+}
+
+.button--icon {
+  height: var(--space-8);
+  width: var(--space-8);
+}
+
+.button--icon svg {
+  width: var(--space-5);
+  height: var(--space-5);
+}
+
+.button--lg-icon {
+  height: var(--space-9);
+  width: var(--space-9);
+}
+
+.button--lg-icon svg {
+  width: var(--space-5);
+  height: var(--space-5);
+}
+
+.button--xl-icon {
+  height: var(--space-10);
+  width: var(--space-10);
+}
+
+.button--xl-icon svg {
+  width: var(--space-6);
+  height: var(--space-6);
+}

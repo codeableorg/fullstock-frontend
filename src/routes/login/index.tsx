@@ -4,6 +4,8 @@ import { Link, useNavigate } from "react-router";
 import { Button, Container, InputField, Section } from "@/components/ui";
 import { useAuth } from "@/contexts/auth.context";
 
+import styles from "./styles.module.css";
+
 export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -32,11 +34,9 @@ export default function Login() {
 
   return (
     <Section>
-      <Container className="max-w-sm mx-auto">
-        <h1 className="text-2xl font-bold text-center mb-10">
-          Inicia sesión en tu cuenta
-        </h1>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+      <Container className={styles.login}>
+        <h1 className={styles.login__title}>Inicia sesión en tu cuenta</h1>
+        <form onSubmit={handleSubmit} className={styles.login__form}>
           <InputField
             label="Correo electrónico"
             name="email"
@@ -51,16 +51,16 @@ export default function Login() {
             required
             autoComplete="current-password"
           />
-          <Button size="lg" className="w-full" disabled={loading}>
+          <Button size="lg" className={styles.login__submit} disabled={loading}>
             {loading ? "Iniciando..." : "Iniciar sesión"}
           </Button>
-          {error && (
-            <p className="text-red-500 text-sm text-center mt-2">{error}</p>
-          )}
+          {error && <p className={styles.login__error}>{error}</p>}
         </form>
-        <div className="flex justify-center gap-2 mt-10 text-sm leading-6">
-          <span className="text-muted-foreground">¿Aún no tienes cuenta?</span>
-          <Link to="/signup" className="text-accent-foreground hover:underline">
+        <div className={styles.login__footer}>
+          <span className={styles.login__footer_text}>
+            ¿Aún no tienes cuenta?
+          </span>
+          <Link to="/signup" className={styles.login__footer_link}>
             Crea una cuenta
           </Link>
         </div>

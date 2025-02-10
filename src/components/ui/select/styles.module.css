@@ -1,0 +1,18 @@
+.basic-select {
+  width: 100%;
+  border-radius: var(--rounded-xl);
+  border: 1px solid var(--border);
+  background-color: var(--background);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-3-5);
+}
+
+/* .basic-select:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--outline), 0 0 0 4px var(--background);
+} */
+
+.basic-select:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}

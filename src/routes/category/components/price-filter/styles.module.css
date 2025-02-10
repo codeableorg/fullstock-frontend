@@ -1,0 +1,33 @@
+.price-filter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.price-filter__legend {
+  font-size: var(--font-size-4);
+  line-height: var(--leading-6);
+  font-weight: 500;
+  margin-bottom: var(--space-4);
+}
+
+.price-filter__inputs {
+  display: flex;
+  gap: var(--space-6);
+}
+
+.price-filter__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.price-filter__label {
+  font-size: var(--font-size-3-5);
+  line-height: var(--leading-5);
+  font-weight: 500;
+}
+
+.price-filter__button {
+  width: 100%;
+}

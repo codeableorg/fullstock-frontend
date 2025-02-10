@@ -1,0 +1,38 @@
+.input {
+  display: flex;
+  height: var(--space-10);
+  width: 100%;
+  border-radius: var(--rounded-xl);
+  border: 1px solid var(--border);
+  background-color: var(--background);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-4);
+}
+
+.input:focus-visible {
+  outline: 2px solid var(--outline);
+  outline-offset: 2px;
+}
+
+.input::file-selector-button {
+  border: 0;
+  background-color: transparent;
+  font-size: var(--font-size-3-5);
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+.input::placeholder {
+  color: var(--muted-foreground);
+}
+
+.input:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+@media (min-width: 768px) {
+  .input {
+    font-size: var(--font-size-3-5);
+  }
+}

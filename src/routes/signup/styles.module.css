@@ -1,0 +1,52 @@
+.signup {
+  max-width: var(--width-sm);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.signup__title {
+  font-size: var(--font-size-6);
+  line-height: var(--leading-7);
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: var(--space-10);
+}
+
+.signup__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.signup__submit {
+  width: 100%;
+}
+
+.signup__error {
+  color: hsl(0 84% 60%); /* TODO: add to color tokens */
+  font-size: var(--font-size-3-5);
+  line-height: var(--leading-5);
+  text-align: center;
+  margin-top: var(--space-2);
+}
+
+.signup__footer {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-2);
+  margin-top: var(--space-10);
+  font-size: var(--font-size-3-5);
+  line-height: var(--leading-6);
+}
+
+.signup__footer_text {
+  color: var(--muted-foreground);
+}
+
+.signup__footer_link {
+  color: var(--accent-foreground);
+}
+
+.signup__footer_link:hover {
+  text-decoration: underline;
+}
