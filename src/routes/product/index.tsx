@@ -7,9 +7,11 @@ import { type Product } from "@/models/product.model";
 import { getProductById } from "@/services/product.service";
 
 import styles from "./styles.module.css";
+import NotFound from "../not-found";
 
 export default function Product() {
   const { loading: cartLoading, addItem } = useCart();
+
   const { id } = useParams<{ id: string }>();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -34,7 +36,7 @@ export default function Product() {
   if (loading) return <ContainerLoader />;
 
   if (!product) {
-    return <div className={styles.error}>Product not found.</div>;
+    return <NotFound />;
   }
 
   return (
