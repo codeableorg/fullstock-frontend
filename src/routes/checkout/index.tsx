@@ -46,6 +46,11 @@ export default function Checkout() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
+  if (!cart || !cart.items.length) {
+    navigate("/");
+    return null;
+  }
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!cart) return;
@@ -55,8 +60,8 @@ export default function Checkout() {
       const formData = new FormData(e.currentTarget);
 
       const { orderId } = await createOrder(cart.items, formData);
-      await clearCart();
       navigate(`/order-confirmation/${orderId}`);
+      clearCart();
     } catch (error) {
       console.error("Failed to create order:", error);
     } finally {
