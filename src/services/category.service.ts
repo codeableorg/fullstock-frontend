@@ -1,8 +1,9 @@
+import { API_URL } from "@/config";
 import { categories } from "@/fixtures/categories.fixture";
 import { Category } from "@/models/category.model";
 
 export async function getAllCategories(): Promise<Category[]> {
-  const response = await fetch("http://localhost:3000/api/categories");
+  const response = await fetch(API_URL + "/categories");
   const data = await response.json();
   return data;
 }
