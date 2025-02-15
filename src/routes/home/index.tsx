@@ -38,10 +38,12 @@ const features = [
 export default function Home() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     getAllCategories()
       .then(setCategories)
+      .catch(setError)
       .finally(() => setLoading(false));
   }, []);
 
@@ -76,6 +78,11 @@ export default function Home() {
             </p>
           </div>
           <div className={styles.categories__grid}>
+            {error && (
+              <div className={styles.error}>
+                <p>Hubo un error al cargar las categorías</p>
+              </div>
+            )}
             {categories.map((category) => (
               <Link
                 to={category.title.toLowerCase()}
@@ -83,7 +90,10 @@ export default function Home() {
                 key={category.title}
               >
                 <div className={styles.category__image}>
-                  <img src={category.imageSrc} alt={category.alt} />
+                  <img
+                    src={category.imgSrc}
+                    alt={category.alt || `${category.title}`}
+                  />
                 </div>
                 <div>
                   <h3 className={styles.category__title}>{category.title}</h3>

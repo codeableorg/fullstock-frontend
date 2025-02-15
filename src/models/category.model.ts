@@ -1,12 +1,12 @@
 export const VALID_SLUGS = ["polos", "stickers", "tazas"] as const;
 
 export interface Category {
-  id: string;
+  id: number;
   title: string;
   slug: (typeof VALID_SLUGS)[number];
-  imageSrc: string;
-  alt: string;
-  description: string;
+  imgSrc: string;
+  alt?: string;
+  description?: string;
 }
 
 export function isValidCategorySlug(
