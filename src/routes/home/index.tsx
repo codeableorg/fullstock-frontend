@@ -83,7 +83,10 @@ export default function Home() {
                 key={category.title}
               >
                 <div className={styles.category__image}>
-                  <img src={category.imageSrc} alt={category.alt} />
+                  <img
+                    src={category.imgSrc}
+                    alt={category.alt || `${category.title}`}
+                  />
                 </div>
                 <div>
                   <h3 className={styles.category__title}>{category.title}</h3>

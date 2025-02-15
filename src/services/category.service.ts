@@ -1,12 +1,10 @@
 import { categories } from "@/fixtures/categories.fixture";
 import { Category } from "@/models/category.model";
 
-export function getAllCategories(): Promise<Category[]> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(categories);
-    }, 500);
-  });
+export async function getAllCategories(): Promise<Category[]> {
+  const response = await fetch("http://localhost:3000/api/categories");
+  const data = await response.json();
+  return data;
 }
 
 export function getCategoryBySlug(slug: string): Promise<Category | null> {
