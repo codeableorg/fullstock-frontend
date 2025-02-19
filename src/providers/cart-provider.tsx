@@ -52,11 +52,15 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, [user]);
 
   const addItem = async (product: Product) => {
+
     setLoading(true);
+    
     try {
       const updatedItems = cart ? [...cart.items] : [];
+           
       const existingItem = updatedItems.find(
         (item) => item.product.id === product.id
+        
       );
 
       if (existingItem) {
@@ -66,6 +70,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       }
 
       const updatedCart = await updateCart(updatedItems, user?.id);
+
       setCart(updatedCart);
     } catch (error: unknown) {
       if (error instanceof Error) {
