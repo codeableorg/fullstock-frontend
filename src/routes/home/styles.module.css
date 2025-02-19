@@ -175,3 +175,19 @@
     grid-template-columns: repeat(4, 1fr);
   }
 }
+
+.error {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: auto;
+  align-items: center;
+}
+
+.errorMessage {
+  color: var(--accent-foreground);
+  font-size: var(--font-size-6);
+  line-height: var(--leading-8);
+  font-weight: bold;
+  margin-bottom: var(--space-4);
+}

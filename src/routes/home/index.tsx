@@ -1,3 +1,4 @@
+import { ServerCrash } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 
@@ -5,6 +6,7 @@ import { Truck, Return, Ribbon, Idea } from "@/components/icons";
 import { Button, Container, ContainerLoader } from "@/components/ui";
 import { Category } from "@/models/category.model";
 import { getAllCategories } from "@/services/category.service";
+
 
 import styles from "./styles.module.css";
 
@@ -80,7 +82,8 @@ export default function Home() {
           <div className={styles.categories__grid}>
             {error && (
               <div className={styles.error}>
-                <p>Hubo un error al cargar las categorías</p>
+                <p className={styles.errorMessage}>Hubo un error al cargar las categorías</p>
+                <p className={styles.errorMessage}><ServerCrash /></p>
               </div>
             )}
             {categories.map((category) => (
