@@ -185,7 +185,7 @@
 }
 
 .errorMessage {
-  color: var(--primary-background);
+  color: var(--accent-foreground);
   font-size: var(--font-size-6);
   line-height: var(--leading-8);
   font-weight: bold;
