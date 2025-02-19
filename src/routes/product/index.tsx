@@ -21,7 +21,7 @@ export default function Product() {
 
     const fetchProduct = async () => {
       try {
-        const data = await getProductById(id);
+        const data = await getProductById(parseInt(id));
         setProduct(data);
       } catch (error) {
         console.error("Error fetching product:", error);
