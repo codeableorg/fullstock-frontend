@@ -3,17 +3,20 @@ import { Product } from "@/models/product.model";
 
 import { products } from "../fixtures/products.fixture";
 
-export function getProductsByCategorySlug(
+export async function getProductsByCategorySlug(
   categorySlug: Category["slug"]
 ): Promise<Product[]> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const filteredProducts = products.filter(
-        (product) => product.categorySlug === categorySlug
-      );
-      resolve(filteredProducts);
-    }, 500);
-  });
+  try {
+    const response = await fetch(`/api/products?category=${categorySlug}`);
+    if (!response.ok) {
+      throw new Error("Error al obtener productos");
+    }
+    const products: Product[] = await response.json();
+    return products;
+  } catch (error) {
+      console.error("Error al obtener productos", error);
+      throw error;
+  }
 }
 
 export function getProductById(id: string): Promise<Product | null> {
