@@ -1,4 +1,6 @@
+import { API_URL } from "@/config";
 import { users } from "@/fixtures/users.fixture";
+import { isApiError } from "@/models/error.model";
 import { User } from "@/models/user.model";
 import { getUserByEmail } from "@/services/user.service";
 
@@ -51,7 +53,25 @@ export async function getCurrentUser(): Promise<Omit<User, "password"> | null> {
   }
 }
 
-export function login(email: string, password: string): Promise<AuthResponse> {
+export async function login(
+  email: string,
+  password: string
+): Promise<AuthResponse> {
+  // try {
+  //   const response = await fetch(API_URL + "/auth/login");
+
+  //   const data = await response.json();
+
+  //   if (!response.ok) {
+  //     if (isApiError(data)) throw new Error(data.error.message);
+  //     throw new Error("Unknown error");
+  //   }
+
+  //   return data as Category[];
+  // } catch (error) {
+  //   console.error(error);
+  //   throw error;
+  // }
   return new Promise((resolve, reject) => {
     setTimeout(async () => {
       const userRecord = await getUserByEmail(email);
@@ -68,41 +88,67 @@ export function login(email: string, password: string): Promise<AuthResponse> {
   });
 }
 
-export function signup(email: string, password: string): Promise<AuthResponse> {
-  return new Promise((resolve, reject) => {
-    setTimeout(async () => {
-      const existingUser = await getUserByEmail(email);
+export async function signup(
+  email: string,
+  password: string
+): Promise<Omit<User, "password">> {
+  try {
+    const response = await fetch(API_URL + "/auth/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
 
-      if (existingUser && !existingUser.isGuest) {
-        reject(new Error("Ya existe una cuenta con este correo electrónico"));
-        return;
-      }
+    const data = await response.json();
 
-      let user: User;
+    if (!response.ok) {
+      if (isApiError(data)) throw new Error(data.error.message);
+      throw new Error("Unknown error");
+    }
 
-      if (existingUser) {
-        user = {
-          ...existingUser,
-          password,
-          isGuest: false,
-        };
-      } else {
-        user = {
-          id: crypto.randomUUID(),
-          email,
-          password,
-          isGuest: false,
-        };
-      }
+    localStorage.setItem(TOKEN_KEY, data.token);
 
-      users.push(user);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { password: userPassword, ...userWithoutPassword } = user;
-      const token = generateMockToken(user);
-      localStorage.setItem(TOKEN_KEY, token);
-      resolve({ user: userWithoutPassword, token });
-    }, 1000);
-  });
+    return data.user as Omit<User, "password">;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+  // return new Promise((resolve, reject) => {
+  //   setTimeout(async () => {
+  //     const existingUser = await getUserByEmail(email);
+
+  //     if (existingUser && !existingUser.isGuest) {
+  //       reject(new Error("Ya existe una cuenta con este correo electrónico"));
+  //       return;
+  //     }
+
+  //     let user: User;
+
+  //     if (existingUser) {
+  //       user = {
+  //         ...existingUser,
+  //         password,
+  //         isGuest: false,
+  //       };
+  //     } else {
+  //       user = {
+  //         id: crypto.randomUUID(),
+  //         email,
+  //         password,
+  //         isGuest: false,
+  //       };
+  //     }
+
+  //     users.push(user);
+  //     // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  //     const { password: userPassword, ...userWithoutPassword } = user;
+  //     const token = generateMockToken(user);
+  //     localStorage.setItem(TOKEN_KEY, token);
+  //     resolve({ user: userWithoutPassword, token });
+  //   }, 1000);
+  // });
 }
 
 export function logout(): void {
