@@ -1,15 +1,7 @@
-import { API_URL } from "@/config";
-import { users } from "@/fixtures/users.fixture";
+import { API_URL, TOKEN_KEY } from "@/config";
 import { isApiError } from "@/models/error.model";
-import { User } from "@/models/user.model";
+import { AuthResponse, User } from "@/models/user.model";
 import { getUserByEmail } from "@/services/user.service";
-
-const TOKEN_KEY = "auth_token";
-
-interface AuthResponse {
-  user: Omit<User, "password">;
-  token: string;
-}
 
 function generateMockToken(user: User): string {
   // Mock JWT token
@@ -91,7 +83,7 @@ export async function login(
 export async function signup(
   email: string,
   password: string
-): Promise<Omit<User, "password">> {
+): Promise<AuthResponse["user"]> {
   try {
     const response = await fetch(API_URL + "/auth/signup", {
       method: "POST",
@@ -101,7 +93,7 @@ export async function signup(
       body: JSON.stringify({ email, password }),
     });
 
-    const data = await response.json();
+    const data = (await response.json()) as AuthResponse;
 
     if (!response.ok) {
       if (isApiError(data)) throw new Error(data.error.message);
@@ -110,7 +102,7 @@ export async function signup(
 
     localStorage.setItem(TOKEN_KEY, data.token);
 
-    return data.user as Omit<User, "password">;
+    return data.user;
   } catch (error) {
     console.error(error);
     throw error;
