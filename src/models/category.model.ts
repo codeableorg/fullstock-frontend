@@ -5,8 +5,8 @@ export interface Category {
   title: string;
   slug: (typeof VALID_SLUGS)[number];
   imgSrc: string;
-  alt?: string;
-  description?: string;
+  alt: string | null;
+  description: string | null;
 }
 
 export function isValidCategorySlug(
