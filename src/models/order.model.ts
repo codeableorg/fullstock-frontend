@@ -4,7 +4,7 @@ export interface OrderDetails {
   email: string;
   firstName: string;
   lastName: string;
-  company?: string;
+  company: string | null;
   address: string;
   city: string;
   country: string;

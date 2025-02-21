@@ -1,108 +1,93 @@
-import { users } from "@/fixtures/users.fixture";
-import { User } from "@/models/user.model";
-import { getUserByEmail } from "@/services/user.service";
+import { API_URL, TOKEN_KEY } from "@/config";
+import { isApiError } from "@/models/error.model";
+import { AuthResponse } from "@/models/user.model";
 
-const TOKEN_KEY = "auth_token";
-
-interface AuthResponse {
-  user: Omit<User, "password">;
-  token: string;
-}
-
-function generateMockToken(user: User): string {
-  // Mock JWT token
-  return btoa(
-    JSON.stringify({
-      sub: user.id,
-      email: user.email,
-      exp: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
-    })
-  );
-}
-
-export function getStoredToken(): string | null {
+function getToken(): string | null {
   return localStorage.getItem(TOKEN_KEY);
 }
 
-export async function getCurrentUser(): Promise<Omit<User, "password"> | null> {
-  const token = getStoredToken();
+function setToken(token: string): void {
+  localStorage.setItem(TOKEN_KEY, token);
+}
+
+export async function getCurrentUser(): Promise<AuthResponse["user"] | null> {
+  const token = getToken();
   if (!token) {
     return null;
   }
 
+  const response = await fetch(API_URL + "/users/me", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const data = (await response.json()) as AuthResponse["user"];
+
+  if (!response.ok) {
+    if (isApiError(data)) throw new Error(data.error.message);
+    throw new Error("Unknown error");
+  }
+
+  return data;
+}
+
+export async function login(
+  email: string,
+  password: string
+): Promise<AuthResponse["user"]> {
   try {
-    const payload = JSON.parse(atob(token));
-    if (payload.exp < Date.now()) {
-      localStorage.removeItem(TOKEN_KEY);
-      return null;
+    const response = await fetch(API_URL + "/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = (await response.json()) as AuthResponse;
+
+    if (!response.ok) {
+      if (isApiError(data)) throw new Error(data.error.message);
+      throw new Error("Unknown error");
     }
 
-    const userEmail = payload.email;
-    const user = await getUserByEmail(userEmail);
-    if (!user) {
-      return null;
-    }
+    setToken(data.token);
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...userWithoutPassword } = user;
-    return userWithoutPassword;
-  } catch {
-    return null;
+    return data.user;
+  } catch (error) {
+    console.error(error);
+    throw error;
   }
 }
 
-export function login(email: string, password: string): Promise<AuthResponse> {
-  return new Promise((resolve, reject) => {
-    setTimeout(async () => {
-      const userRecord = await getUserByEmail(email);
-      if (userRecord && userRecord.password === password) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { password: userPassword, ...userWithoutPassword } = userRecord;
-        const token = generateMockToken(userRecord);
-        localStorage.setItem(TOKEN_KEY, token);
-        resolve({ user: userWithoutPassword, token });
-      } else {
-        reject(new Error("Correo electrónico o contraseña incorrectos"));
-      }
-    }, 1000);
-  });
-}
+export async function signup(
+  email: string,
+  password: string
+): Promise<AuthResponse["user"]> {
+  try {
+    const response = await fetch(API_URL + "/auth/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
 
-export function signup(email: string, password: string): Promise<AuthResponse> {
-  return new Promise((resolve, reject) => {
-    setTimeout(async () => {
-      const existingUser = await getUserByEmail(email);
+    const data = (await response.json()) as AuthResponse;
 
-      if (existingUser && !existingUser.isGuest) {
-        reject(new Error("Ya existe una cuenta con este correo electrónico"));
-        return;
-      }
+    if (!response.ok) {
+      if (isApiError(data)) throw new Error(data.error.message);
+      throw new Error("Unknown error");
+    }
 
-      let user: User;
+    setToken(data.token);
 
-      if (existingUser) {
-        user = {
-          ...existingUser,
-          password,
-          isGuest: false,
-        };
-      } else {
-        user = {
-          id: crypto.randomUUID(),
-          email,
-          password,
-          isGuest: false,
-        };
-      }
-
-      users.push(user);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { password: userPassword, ...userWithoutPassword } = user;
-      const token = generateMockToken(user);
-      localStorage.setItem(TOKEN_KEY, token);
-      resolve({ user: userWithoutPassword, token });
-    }, 1000);
-  });
+    return data.user;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 }
 
 export function logout(): void {
