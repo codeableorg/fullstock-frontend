@@ -1,6 +1,6 @@
 import { API_URL } from "@/config";
 import { Category } from "@/models/category.model";
-import { ApiErrorResponse } from "@/models/error.model";
+import { isApiError } from "@/models/error.model";
 import { Product } from "@/models/product.model";
 
 import { products } from "../fixtures/products.fixture";
@@ -19,24 +19,19 @@ export function getProductsByCategorySlug(
 }
 
 export async function getProductById(id: number): Promise<Product> {
-  const response = await fetch(`${API_URL}/products/${id}`);
-
-  let data;
-
   try {
-    data = await response.json();
-  } catch (error) {
-    console.error(error);
-    throw new Error("Error parsing JSON response");
-  }
+    const response = await fetch(`${API_URL}/products/${id}`);
 
-  if (!response.ok) {
-    const errorMessage =
-      (data as ApiErrorResponse)?.error?.message || "Unknown error";
-    const error = new Error(errorMessage);
+    const data = await response.json();
+
+    if (!response.ok) {
+      if (isApiError(data)) throw new Error(data.error.message);
+      throw new Error("Unknown error");
+    }
+
+    return data as Product;
+  } catch (error) {
     console.error(error);
     throw error;
   }
-
-  return data as Product;
 }
