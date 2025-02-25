@@ -7,6 +7,7 @@ import { useCart } from "@/contexts/cart.context";
 import styles from "./styles.module.css";
 
 export default function Cart() {
+  // console.log("/cart");
   const { cart, updateQuantity, removeItem } = useCart();
 
   return (
@@ -14,46 +15,46 @@ export default function Cart() {
       <Container className={styles.cart}>
         <h1 className={styles.cart__title}>Carrito de compras</h1>
         <div className={styles.cart__container}>
-          {cart?.items?.map(({ product, quantity }) => (
-            <div key={product.id} className={styles.cart__item}>
+          {cart?.items?.map((item) => (
+            <div key={item.id} className={styles.cart__item}>
               <div className={styles["cart__item-image"]}>
                 <img
-                  src={product.imgSrc}
-                  alt={product.title}
+                  src={item.imgSrc}
+                  alt={item.title}
                   className={styles["cart__item-image-content"]}
                 />
               </div>
               <div className={styles["cart__item-details"]}>
                 <div className={styles["cart__item-header"]}>
                   <h2 className={styles["cart__item-title"]}>
-                    {product.title}
+                     {item.title} - {item.productId} {/*BORRAR EL ID */}
                   </h2>
                   <Button
                     size="sm-icon"
                     variant="outline"
-                    onClick={() => removeItem(product.id)}
+                    onClick={() => removeItem(Number(item.id))}
                   >
                     <Trash2 />
                   </Button>
                 </div>
                 <div className={styles["cart__item-footer"]}>
                   <p className={styles["cart__item-price"]}>
-                    ${product.price.toFixed(2)}
+                    ${Number(item.price).toFixed(2)}
                   </p>
                   <div className={styles["cart__item-quantity"]}>
                     <Button
-                      onClick={() => updateQuantity(product.id, quantity - 1)}
+                      onClick={() => updateQuantity(item.productId, item.quantity - 1)}
                       variant="outline"
                       size="sm-icon"
-                      disabled={quantity === 1}
+                      disabled={item.quantity === 1}
                     >
                       <Minus />
                     </Button>
                     <span className={styles["cart__item-quantity-display"]}>
-                      {quantity}
+                      {item.quantity}
                     </span>
                     <Button
-                      onClick={() => updateQuantity(product.id, quantity + 1)}
+                      onClick={() => updateQuantity(item.productId, item.quantity + 1)}
                       variant="outline"
                       size="sm-icon"
                     >
