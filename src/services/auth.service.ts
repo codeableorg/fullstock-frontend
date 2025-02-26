@@ -11,25 +11,30 @@ function setToken(token: string): void {
 }
 
 export async function getCurrentUser(): Promise<AuthResponse["user"] | null> {
-  const token = getToken();
-  if (!token) {
-    return null;
+  try {
+    const token = getToken();
+    if (!token) {
+      return null;
+    }
+
+    const response = await fetch(API_URL + "/users/me", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = (await response.json()) as AuthResponse["user"];
+
+    if (!response.ok) {
+      if (isApiError(data)) throw new Error(data.error.message);
+      throw new Error("Unknown error");
+    }
+
+    return data;
+  } catch (error) {
+    console.error(error);
+    throw error;
   }
-
-  const response = await fetch(API_URL + "/users/me", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  const data = (await response.json()) as AuthResponse["user"];
-
-  if (!response.ok) {
-    if (isApiError(data)) throw new Error(data.error.message);
-    throw new Error("Unknown error");
-  }
-
-  return data;
 }
 
 export async function login(
