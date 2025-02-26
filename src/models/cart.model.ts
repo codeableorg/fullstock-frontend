@@ -1,19 +1,14 @@
-// import { type Product } from "./product.model";
+import { type Product } from "./product.model";
 import { type User } from "./user.model";
 
 export interface CartItem {
-  // product: Product;
-  // quantity: number;
-  id: number
-	productId: number,
-  title: string,
-  price: number,
-	quantity: number,
-	imgSrc: string
+  id: number;
+  product: Product;
+  quantity: number;
 }
 
 export interface Cart {
-  id: string;
+  id: number;
   userId?: User["id"];
   items: CartItem[];
   total: number;
