@@ -1,5 +1,9 @@
+import { API_URL } from "@/config";
 import { carts } from "@/fixtures/carts.fixture";
 import { Cart, type CartItem } from "@/models/cart.model";
+import { User } from "@/models/user.model";
+import { getToken } from "./auth.service";
+import { isApiError } from "@/models/error.model";
 
 export function calculateTotal(items: CartItem[]): number {
   return items.reduce(
@@ -8,23 +12,38 @@ export function calculateTotal(items: CartItem[]): number {
   );
 }
 
-export function getCart(userId?: string): Promise<Cart | null> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      if (userId) {
-        // Get cart from mock backend for authenticated users
-        const cart = carts.find((c) => c.userId === userId);
-        resolve(cart || null);
-      } else {
-        // Get cart from localStorage for anonymous users
-        const savedCart = localStorage.getItem("cart");
-        resolve(savedCart ? JSON.parse(savedCart) : null);
+export async function getCart(userId?: User["id"]): Promise<Cart | null> {
+  if (userId) {
+    try {
+      const response = await fetch(API_URL + "/cart", {
+        headers: {
+          Authorization: "Bearer " + getToken(),
+        },
+      });
+
+      const data = (await response.json()) as Cart;
+
+      if (!response.ok) {
+        if (isApiError(data)) throw new Error(data.error.message);
+        throw new Error("Unknown error");
       }
-    }, 350);
-  });
+
+      return data;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
+  // Get cart from localStorage for anonymous users
+  const savedCart = localStorage.getItem("cart");
+  return savedCart ? JSON.parse(savedCart) : null;
 }
 
-export function updateCart(items: CartItem[], userId?: string): Promise<Cart> {
+export function updateCart(
+  items: CartItem[],
+  userId?: User["id"]
+): Promise<Cart> {
   return new Promise((resolve) => {
     setTimeout(() => {
       const total = calculateTotal(items);
@@ -52,7 +71,7 @@ export function updateCart(items: CartItem[], userId?: string): Promise<Cart> {
   });
 }
 
-export function deleteCart(userId?: string): Promise<void> {
+export function deleteCart(userId?: User["id"]): Promise<void> {
   return new Promise((resolve) => {
     setTimeout(() => {
       if (userId) {
