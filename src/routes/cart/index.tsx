@@ -7,19 +7,19 @@ import { useCart } from "@/contexts/cart.context";
 import styles from "./styles.module.css";
 
 export default function Cart() {
-  const { cart, updateQuantity, removeItem } = useCart();
+  const { cart, changeItemQuantity, removeItem } = useCart();
 
   return (
     <Section>
       <Container className={styles.cart}>
         <h1 className={styles.cart__title}>Carrito de compras</h1>
         <div className={styles.cart__container}>
-          {cart?.items?.map(({ product, quantity }) => (
+          {cart?.items?.map(({ product, quantity, id }) => (
             <div key={product.id} className={styles.cart__item}>
               <div className={styles["cart__item-image"]}>
                 <img
                   src={product.imgSrc}
-                  alt={product.title}
+                  alt={product.alt || product.title}
                   className={styles["cart__item-image-content"]}
                 />
               </div>
@@ -31,7 +31,7 @@ export default function Cart() {
                   <Button
                     size="sm-icon"
                     variant="outline"
-                    onClick={() => removeItem(product.id)}
+                    onClick={() => removeItem(id)}
                   >
                     <Trash2 />
                   </Button>
@@ -42,7 +42,7 @@ export default function Cart() {
                   </p>
                   <div className={styles["cart__item-quantity"]}>
                     <Button
-                      onClick={() => updateQuantity(product.id, quantity - 1)}
+                      onClick={() => changeItemQuantity(product, -1)}
                       variant="outline"
                       size="sm-icon"
                       disabled={quantity === 1}
@@ -53,7 +53,7 @@ export default function Cart() {
                       {quantity}
                     </span>
                     <Button
-                      onClick={() => updateQuantity(product.id, quantity + 1)}
+                      onClick={() => changeItemQuantity(product, 1)}
                       variant="outline"
                       size="sm-icon"
                     >

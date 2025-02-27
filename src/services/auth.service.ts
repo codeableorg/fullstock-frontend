@@ -2,7 +2,7 @@ import { API_URL, TOKEN_KEY } from "@/config";
 import { isApiError } from "@/models/error.model";
 import { AuthResponse } from "@/models/user.model";
 
-function getToken(): string | null {
+export function getToken(): string | null {
   return localStorage.getItem(TOKEN_KEY);
 }
 

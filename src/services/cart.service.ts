@@ -1,67 +1,137 @@
-import { carts } from "@/fixtures/carts.fixture";
+import { API_URL, LOCAL_CART_KEY } from "@/config";
 import { Cart, type CartItem } from "@/models/cart.model";
+import { isApiError } from "@/models/error.model";
 
-export function calculateTotal(items: CartItem[]): number {
-  return items.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
-    0
-  );
+import { getToken } from "./auth.service";
+
+export function getLocalCart(): Cart | null {
+  const cart = localStorage.getItem(LOCAL_CART_KEY);
+  return cart ? JSON.parse(cart) : null;
 }
 
-export function getCart(userId?: string): Promise<Cart | null> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      if (userId) {
-        // Get cart from mock backend for authenticated users
-        const cart = carts.find((c) => c.userId === userId);
-        resolve(cart || null);
-      } else {
-        // Get cart from localStorage for anonymous users
-        const savedCart = localStorage.getItem("cart");
-        resolve(savedCart ? JSON.parse(savedCart) : null);
-      }
-    }, 350);
+export function setLocalCart(cart: Cart): void {
+  localStorage.setItem(LOCAL_CART_KEY, JSON.stringify(cart));
+}
+
+export async function getRemoteCart(): Promise<Cart | null> {
+  try {
+    // Get cart from backend for authenticated users
+    const token = getToken();
+    const response = await fetch(`${API_URL}/cart`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      if (isApiError(data)) throw new Error(data.error.message);
+      throw new Error("Unknown error");
+    }
+
+    return data as Cart;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function createRemoteItems(items: CartItem[]): Promise<Cart> {
+  try {
+    const payload = {
+      items: items.map(({ product, quantity }) => ({
+        productId: product.id,
+        quantity,
+      })),
+    };
+
+    const token = getToken();
+
+    const response = await fetch(`${API_URL}/cart/create-items`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      if (isApiError(data)) throw new Error(data.error.message);
+      throw new Error("Unknown error");
+    }
+
+    return data as Cart;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function alterQuantityCartItem(
+  productId: number,
+  quantity: number = 1
+): Promise<Cart> {
+  try {
+    const token = getToken();
+
+    const response = await fetch(`${API_URL}/cart/add-item`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ productId, quantity }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      if (isApiError(data)) throw new Error(data.error.message);
+      throw new Error("Unknown error");
+    }
+
+    return data as Cart;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function deleteRemoteCartItem(itemId: CartItem["id"]): Promise<Cart> {
+  try {
+    const token = getToken();
+    const response = await fetch(`${API_URL}/cart/delete-item/${itemId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      if (isApiError(data)) throw new Error(data.error.message);
+      throw new Error("Unknown error");
+    }
+
+    return data as Cart;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function deleteRemoteCart(): Promise<void> {
+  const token = getToken();
+  fetch(`${API_URL}/cart`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   });
 }
 
-export function updateCart(items: CartItem[], userId?: string): Promise<Cart> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const total = calculateTotal(items);
-      if (userId) {
-        const cart = carts.find((c) => c.userId === userId);
-        if (cart) {
-          cart.items = items;
-          cart.total = total;
-          resolve(cart);
-        } else {
-          const cart = { id: crypto.randomUUID(), userId, items, total };
-          carts.push(cart);
-          resolve(cart);
-        }
-      } else {
-        const cart = {
-          id: crypto.randomUUID(),
-          items,
-          total,
-        };
-        localStorage.setItem("cart", JSON.stringify(cart));
-        resolve(cart);
-      }
-    }, 350);
-  });
-}
-
-export function deleteCart(userId?: string): Promise<void> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      if (userId) {
-        const cartIndex = carts.findIndex((c) => c.userId === userId);
-        carts.splice(cartIndex, 1);
-      } else {
-        localStorage.removeItem("cart");
-      }
-      resolve();
-    }, 350);
-  });
+export function deleteLocalCart(): void {
+  localStorage.removeItem(LOCAL_CART_KEY);
 }
