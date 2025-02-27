@@ -63,7 +63,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const changeQuantityItem = async (product: Product, quantity: number = 1) => {
     // MODIFICAR PARA GRABAR EN LA BBDD
     setLoading(true);
-    console.log("quantity", quantity);
     try {
       if (user) {
         const updatedCart = await alterQuantityCartItem(product.id, quantity);
