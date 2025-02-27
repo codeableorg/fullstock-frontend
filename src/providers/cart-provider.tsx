@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import { useAuth } from "@/contexts/auth.context";
 import { CartContext } from "@/contexts/cart.context";
-import { Cart } from "@/models/cart.model";
+import { Cart, CartItem } from "@/models/cart.model";
 import { Product } from "@/models/product.model";
 import {
   getLocalCart,
@@ -60,7 +60,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, [user]);
 
   // Method to change quantity of item in cart
-  const changeQuantityItem = async (product: Product, quantity: number = 1) => {
+  const changeItemQuantity = async (product: Product, quantity: number = 1) => {
     // MODIFICAR PARA GRABAR EN LA BBDD
     setLoading(true);
     try {
@@ -104,21 +104,23 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   };
 
   // Method to remove item from cart
-  const removeItem = async (productId: Product["id"]) => { 
+  const removeItem = async (itemId: CartItem["id"]) => {
     setLoading(true);
     try {
       if (user) {
-        const deletedCartItem = await deleteRemoteCartItem(productId);
+        const deletedCartItem = await deleteRemoteCartItem(itemId);
         setCart(deletedCartItem);
-      }else{
+      } else {
         // deleteLocalCartItem
       }
     } catch (error) {
       console.error(error);
       setError("Failed to remove item");
+    } finally {
+      setLoading(false);
     }
-  }
-  
+  };
+
   // Method to clear cart
   const clearCart = async () => {
     setLoading(true);
@@ -140,7 +142,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         cart,
         loading,
         error,
-        changeQuantityItem,
+        changeQuantityItem: changeItemQuantity,
         removeItem,
         clearCart,
       }}
