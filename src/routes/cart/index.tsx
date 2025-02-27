@@ -42,7 +42,7 @@ export default function Cart() {
                   </p>
                   <div className={styles["cart__item-quantity"]}>
                     <Button
-                      onClick={() => changeQuantityItem(product, quantity - 1)}
+                      onClick={() => changeQuantityItem(product, -1)}
                       variant="outline"
                       size="sm-icon"
                       disabled={quantity === 1}
@@ -53,7 +53,7 @@ export default function Cart() {
                       {quantity}
                     </span>
                     <Button
-                      onClick={() => changeQuantityItem(product, quantity + 1)}
+                      onClick={() => changeQuantityItem(product, 1)}
                       variant="outline"
                       size="sm-icon"
                     >
