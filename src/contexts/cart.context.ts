@@ -7,7 +7,8 @@ export const CartContext = createContext<{
   cart: Cart | null;
   loading: boolean;
   error: string | null;
-  addItem: (product: Product, quantity?: number) => Promise<void>;
+  changeQuantityItem: (product: Product, quantity?: number) => Promise<void>;
+  removeItem: (productId: Product["id"]) => Promise<void>;
   clearCart: () => Promise<void>;
 } | null>(null);
 

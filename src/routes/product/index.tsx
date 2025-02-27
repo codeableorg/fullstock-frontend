@@ -10,7 +10,7 @@ import styles from "./styles.module.css";
 import NotFound from "../not-found";
 
 export default function Product() {
-  const { loading: cartLoading, addItem } = useCart();
+  const { loading: cartLoading, changeQuantityItem } = useCart();
 
   const { id } = useParams<{ id: string }>();
   const [product, setProduct] = useState<Product | null>(null);
@@ -57,7 +57,7 @@ export default function Product() {
             <Button
               size="xl"
               className={styles.product__button}
-              onClick={() => addItem(product)}
+              onClick={() => changeQuantityItem(product)}
               disabled={cartLoading}
             >
               {cartLoading ? "Agregando..." : "Agregar al Carrito"}

@@ -1,7 +1,8 @@
 import { API_URL, LOCAL_CART_KEY } from "@/config";
 import { Cart, type CartItem } from "@/models/cart.model";
-import { getToken } from "./auth.service";
 import { isApiError } from "@/models/error.model";
+
+import { getToken } from "./auth.service";
 
 export function getLocalCart(): Cart | null {
   const cart = localStorage.getItem(LOCAL_CART_KEY);
@@ -9,7 +10,7 @@ export function getLocalCart(): Cart | null {
 }
 
 export function setLocalCart(cart: Cart): void {
-  localStorage.set(LOCAL_CART_KEY, JSON.stringify(cart));
+  localStorage.setItem(LOCAL_CART_KEY, JSON.stringify(cart));
 }
 
 export async function getRemoteCart(): Promise<Cart | null> {
@@ -68,7 +69,7 @@ export async function createRemoteItems(items: CartItem[]): Promise<Cart> {
   }
 }
 
-export async function addCartItem(
+export async function alterQuantityCartItem(
   productId: number,
   quantity: number = 1
 ): Promise<Cart> {
@@ -97,7 +98,7 @@ export async function addCartItem(
   }
 }
 
-export async function deleteCartItem(itemId: CartItem["id"]): Promise<Cart> {
+export async function deleteRemoteCartItem(itemId: CartItem["id"]): Promise<Cart> {
   try {
     const token = getToken();
     const response = await fetch(`${API_URL}/cart/delete-item/${itemId}`, {
@@ -121,7 +122,7 @@ export async function deleteCartItem(itemId: CartItem["id"]): Promise<Cart> {
   }
 }
 
-export async function deleteCart(): Promise<void> {
+export async function deleteRemoteCart(): Promise<void> {
   const token = getToken();
   fetch(`${API_URL}/cart`, {
     method: "DELETE",

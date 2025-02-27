@@ -5,13 +5,14 @@ import { CartContext } from "@/contexts/cart.context";
 import { Cart } from "@/models/cart.model";
 import { Product } from "@/models/product.model";
 import {
-  deleteCart,
   getLocalCart,
   getRemoteCart,
-  deleteLocalCart,
-  createRemoteItems,
-  addCartItem,
   setLocalCart,
+  alterQuantityCartItem,
+  createRemoteItems,
+  deleteRemoteCartItem,
+  deleteRemoteCart,
+  deleteLocalCart,
 } from "@/services/cart.service";
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
@@ -48,6 +49,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           deleteLocalCart(); // borra carrito del localstorage
         }
       } catch (error) {
+        console.error(error);
         setError("Failed to load cart");
       } finally {
         setLoading(false);
@@ -57,12 +59,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     fetchCart();
   }, [user]);
 
-  const addItem = async (product: Product, quantity: number = 1) => {
+  // Method to change quantity of item in cart
+  const changeQuantityItem = async (product: Product, quantity: number = 1) => {
     // MODIFICAR PARA GRABAR EN LA BBDD
     setLoading(true);
     try {
       if (user) {
-        const updatedCart = await addCartItem(product.id, quantity);
+        const updatedCart = await alterQuantityCartItem(product.id, quantity);
         setCart(updatedCart);
         return;
       }
@@ -93,19 +96,38 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       setLocalCart(updatedCart);
       setCart(updatedCart);
     } catch (error) {
+      console.error(error);
       setError("Failed to add item");
     } finally {
       setLoading(false);
     }
   };
 
+  // Method to remove item from cart
+  const removeItem = async (productId: Product["id"]) => { 
+    setLoading(true);
+    try {
+      if (user) {
+        const deletedCartItem = await deleteRemoteCartItem(productId);
+        setCart(deletedCartItem);
+      }else{
+        // deleteLocalCartItem
+      }
+    } catch (error) {
+      console.error(error);
+      setError("Failed to remove item");
+    }
+  }
+  
+  // Method to clear cart
   const clearCart = async () => {
     setLoading(true);
     try {
-      if (user) deleteCart();
+      if (user) deleteRemoteCart();
       else deleteLocalCart();
       setCart(null);
     } catch (error) {
+      console.error(error);
       setError("Failed to clear cart");
     } finally {
       setLoading(false);
@@ -118,7 +140,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         cart,
         loading,
         error,
-        addItem,
+        changeQuantityItem,
+        removeItem,
         clearCart,
       }}
     >
