@@ -142,7 +142,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         cart,
         loading,
         error,
-        changeQuantityItem: changeItemQuantity,
+        changeItemQuantity,
         removeItem,
         clearCart,
       }}

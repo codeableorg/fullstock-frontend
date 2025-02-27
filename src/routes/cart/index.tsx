@@ -7,7 +7,7 @@ import { useCart } from "@/contexts/cart.context";
 import styles from "./styles.module.css";
 
 export default function Cart() {
-  const { cart, changeQuantityItem, removeItem } = useCart();
+  const { cart, changeItemQuantity, removeItem } = useCart();
 
   return (
     <Section>
@@ -42,7 +42,7 @@ export default function Cart() {
                   </p>
                   <div className={styles["cart__item-quantity"]}>
                     <Button
-                      onClick={() => changeQuantityItem(product, -1)}
+                      onClick={() => changeItemQuantity(product, -1)}
                       variant="outline"
                       size="sm-icon"
                       disabled={quantity === 1}
@@ -53,7 +53,7 @@ export default function Cart() {
                       {quantity}
                     </span>
                     <Button
-                      onClick={() => changeQuantityItem(product, 1)}
+                      onClick={() => changeItemQuantity(product, 1)}
                       variant="outline"
                       size="sm-icon"
                     >
