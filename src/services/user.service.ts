@@ -1,5 +1,8 @@
+import { API_URL } from "@/config";
 import { users } from "@/fixtures/users.fixture";
-import { User } from "@/models/user.model";
+import { AuthResponse, User } from "@/models/user.model";
+import { getToken, setToken } from "./auth.service";
+import { isApiError } from "@/models/error.model";
 
 export function findOrCreateGuestUser(email: string): Promise<User> {
   return new Promise((resolve) => {
@@ -19,26 +22,36 @@ export function findOrCreateGuestUser(email: string): Promise<User> {
   });
 }
 
-export function getUserByEmail(email: string): Promise<User | null> {
-  return new Promise((resolve) => {
-    const user = users.find((u) => u.email === email);
-    setTimeout(() => resolve(user || null), 1000);
-  });
-}
+export async function updateUser(
+  updatedUser: Partial<User>
+): Promise<AuthResponse["user"]> {
 
-export function updateUser(
-  updatedUser: Partial<User> & { id: string }
-): Promise<User> {
-  return new Promise((resolve, reject) => {
-    const index = users.findIndex((u) => u.id === updatedUser.id);
-    if (index === -1) {
-      return reject(new Error("User not found"));
+  try {
+
+    const token = getToken();
+
+      const response = await fetch(API_URL + "/users/me", {
+        method: "PATCH",
+         headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+        body: JSON.stringify({ updatedUser}),
+      });
+  
+      const data = (await response.json()) as AuthResponse;
+  
+      if (!response.ok) {
+        if (isApiError(data)) throw new Error(data.error.message);
+        throw new Error("Unknown error");
+      }
+  
+      setToken(data.token);
+  
+      return data.user;
+    } catch (error) {
+      console.error(error);
+      throw error;
     }
-    const user = { ...users[index], ...updatedUser };
-    users[index] = user;
 
-    setTimeout(() => {
-      resolve(user);
-    }, 1000);
-  });
 }

@@ -6,7 +6,7 @@ export function getToken(): string | null {
   return localStorage.getItem(TOKEN_KEY);
 }
 
-function setToken(token: string): void {
+export function setToken(token: string): void {
   localStorage.setItem(TOKEN_KEY, token);
 }
 
