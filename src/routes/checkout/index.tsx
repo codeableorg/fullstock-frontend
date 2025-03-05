@@ -1,5 +1,5 @@
 import { X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 
 import {
@@ -46,10 +46,11 @@ export default function Checkout() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  if (!cart || !cart.items.length) {
-    navigate("/");
-    return null;
+  useEffect(() => {
+    if (!cart || !cart.items.length) {
+      navigate("/");
   }
+  },[cart, navigate]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -75,6 +76,10 @@ export default function Checkout() {
     } finally {
       setLoading(false);
     }
+  }
+
+  if (!cart || !cart.items.length) {
+    return null;
   }
 
   return (
