@@ -18,7 +18,6 @@ export default function Profile() {
     setIsLoading(true);
     try {
       const updatedUser = await updateUser({
-        id: user!.id,
         name,
         ...(newPassword ? { password: newPassword } : {}),
       });

@@ -16,7 +16,7 @@ export default function Orders() {
   useEffect(() => {
     if (!user) return;
 
-    getOrdersByUser(user.id)
+    getOrdersByUser()
       .then((orders) =>
         setOrders(
           orders.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())

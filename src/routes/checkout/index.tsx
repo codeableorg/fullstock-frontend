@@ -59,7 +59,15 @@ export default function Checkout() {
     try {
       const formData = new FormData(e.currentTarget);
 
-      const { orderId } = await createOrder(cart.items, formData);
+      const items = cart.items.map((item) => ({
+        productId: item.product.id,
+        quantity: item.quantity,
+        title: item.product.title,
+        price: item.product.price,
+        imgSrc: item.product.imgSrc,
+      }));
+
+      const { orderId } = await createOrder(items, formData);
       navigate(`/order-confirmation/${orderId}`);
       clearCart();
     } catch (error) {

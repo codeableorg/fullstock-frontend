@@ -5,8 +5,13 @@ export interface ApiError {
   };
 }
 
-export function isApiError(data: any): data is ApiError {
+export function isApiError(data: unknown): data is ApiError {
   return (
-    "error" in data && typeof data.error === "object" && "message" in data.error
+    typeof data === "object" &&
+    data !== null &&
+    "error" in data &&
+    typeof data.error === "object" &&
+    data.error !== null &&
+    "message" in data.error
   );
 }
