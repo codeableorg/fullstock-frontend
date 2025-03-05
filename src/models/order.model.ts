@@ -1,4 +1,5 @@
 import { CartItem } from "@/models/cart.model";
+
 import { User } from "./user.model";
 
 export interface OrderDetails {

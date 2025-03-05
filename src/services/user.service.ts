@@ -1,7 +1,8 @@
 import { API_URL } from "@/config";
-import { AuthResponse, User } from "@/models/user.model";
-import { getToken, setToken } from "./auth.service";
 import { isApiError } from "@/models/error.model";
+import { AuthResponse, User } from "@/models/user.model";
+
+import { getToken, setToken } from "./auth.service";
 
 export async function findOrCreateGuestUser(email: string): Promise<void> {
 

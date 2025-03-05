@@ -13,3 +13,11 @@ export interface Cart {
   items: CartItem[];
   total: number;
 }
+
+export interface CartItemInput {
+  productId: Product["id"];
+  quantity: number;
+  title: Product["title"];
+  price: Product["price"];
+  imgSrc: Product["imgSrc"];
+}
