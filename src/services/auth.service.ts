@@ -1,4 +1,5 @@
 import { API_URL, TOKEN_KEY } from "@/config";
+import { client } from "@/lib/utils";
 import { isApiError } from "@/models/error.model";
 import { AuthResponse } from "@/models/user.model";
 
@@ -12,28 +13,12 @@ export function setToken(token: string): void {
 
 export async function getCurrentUser(): Promise<AuthResponse["user"] | null> {
   try {
-    const token = getToken();
-    if (!token) {
-      return null;
-    }
-
-    const response = await fetch(API_URL + "/users/me", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    const data = (await response.json()) as AuthResponse["user"];
-
-    if (!response.ok) {
-      if (isApiError(data)) throw new Error(data.error.message);
-      throw new Error("Unknown error");
-    }
-
+    const data = await client<AuthResponse["user"]>("/users/me");
     return data;
   } catch (error) {
     console.error(error);
-    throw error;
+    if (isApiError(error)) throw new Error(error.error.message);
+    throw new Error("Unknown error");
   }
 }
 
