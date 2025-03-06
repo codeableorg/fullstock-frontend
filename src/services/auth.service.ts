@@ -11,29 +11,34 @@ export async function login(
   email: string,
   password: string
 ): Promise<AuthResponse["user"]> {
-  try {
-    const response = await fetch(API_URL + "/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    });
+  return client("/auth/login", {
+    method: "POST",
+    body: JSON.stringify({ email, password }),
+  });
 
-    const data = (await response.json()) as AuthResponse;
+  // try {
+  //   const response = await fetch(API_URL + "/auth/login", {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify({ email, password }),
+  //   });
 
-    if (!response.ok) {
-      if (isApiError(data)) throw new Error(data.error.message);
-      throw new Error("Unknown error");
-    }
+  //   const data = (await response.json()) as AuthResponse;
 
-    setToken(data.token);
+  //   if (!response.ok) {
+  //     if (isApiError(data)) throw new Error(data.error.message);
+  //     throw new Error("Unknown error");
+  //   }
 
-    return data.user;
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
+  //   setToken(data.token);
+
+  //   return data.user;
+  // } catch (error) {
+  //   console.error(error);
+  //   throw error;
+  // }
 }
 
 export async function signup(
