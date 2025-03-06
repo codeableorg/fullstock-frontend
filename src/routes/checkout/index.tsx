@@ -45,12 +45,13 @@ export default function Checkout() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [isOrderCompleted, setIsOrderCompleted] = useState(false);
 
   useEffect(() => {
-    if (!cart || !cart.items.length) {
+    if ((!cart || !cart.items.length) && !isOrderCompleted) {
       navigate("/");
-  }
-  },[cart, navigate]);
+    }
+  }, [cart, navigate, isOrderCompleted]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -69,6 +70,7 @@ export default function Checkout() {
       }));
 
       const { orderId } = await createOrder(items, formData);
+      setIsOrderCompleted(true);
       navigate(`/order-confirmation/${orderId}`);
       clearCart();
     } catch (error) {

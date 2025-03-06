@@ -1,9 +1,8 @@
 import { API_URL } from "@/config";
+import { getToken } from "@/lib/utils";
 import { CartItemInput } from "@/models/cart.model";
 import { isApiError } from "@/models/error.model";
 import { Order, OrderDetails } from "@/models/order.model";
-
-import { getToken } from "./auth.service";
 
 export async function createOrder(
   items: CartItemInput[],

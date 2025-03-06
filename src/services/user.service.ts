@@ -1,11 +1,9 @@
 import { API_URL } from "@/config";
+import { getToken, setToken } from "@/lib/utils";
 import { isApiError } from "@/models/error.model";
 import { AuthResponse, User } from "@/models/user.model";
 
-import { getToken, setToken } from "./auth.service";
-
 export async function findOrCreateGuestUser(email: string): Promise<void> {
-
   try {
     const response = await fetch(API_URL + "/auth/newOrExist", {
       method: "POST",
@@ -17,27 +15,22 @@ export async function findOrCreateGuestUser(email: string): Promise<void> {
 
     const data = (await response.json()) as AuthResponse;
 
-    if (data.token.length > 0)
-      setToken(data.token);
+    if (data.token.length > 0) setToken(data.token);
 
     if (!response.ok) {
       if (isApiError(data)) throw new Error(data.error.message);
       throw new Error("Unknown error");
     }
-
   } catch (error) {
     console.error(error);
     throw error;
   }
-
 }
 
 export async function updateUser(
   updatedUser: Partial<User>
 ): Promise<AuthResponse["user"]> {
-
   try {
-
     const token = getToken();
 
     const response = await fetch(API_URL + "/users/me", {
@@ -63,5 +56,4 @@ export async function updateUser(
     console.error(error);
     throw error;
   }
-
 }

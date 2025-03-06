@@ -1,6 +1,10 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
+import { API_URL, TOKEN_KEY } from "@/config";
+import { isApiError } from "@/models/error.model";
+import { RequestConfig } from "@/models/request.model";
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -8,3 +12,52 @@ export function cn(...inputs: ClassValue[]) {
 export const capitalize = (string: string) => {
   return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
 };
+
+export function getToken(): string | null {
+  return localStorage.getItem(TOKEN_KEY);
+}
+
+export function setToken(token: string): void {
+  localStorage.setItem(TOKEN_KEY, token);
+}
+
+export function removeToken(): void {
+  localStorage.removeItem(TOKEN_KEY);
+}
+
+export async function client<T>(
+  endpoint: string,
+  { data, headers: customHeaders, ...customConfig }: RequestConfig = {}
+) {
+  const config: RequestConfig = {
+    method: data ? "POST" : "GET",
+    body: data ? JSON.stringify(data) : undefined,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: getToken() ? `Bearer ${getToken()}` : "",
+      ...customHeaders,
+    },
+    ...customConfig,
+  };
+
+  try {
+    const response = await fetch(API_URL + endpoint, config);
+    const data = await response.json();
+
+    if (response.ok) {
+      return data as T;
+    }
+
+    if (response.status === 401) {
+      removeToken();
+      // window.location.assign(window.location.pathname);
+      window.location.assign("/login");
+    }
+
+    if (isApiError(data)) throw new Error(data.error.message);
+    throw new Error("Unknown error");
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
