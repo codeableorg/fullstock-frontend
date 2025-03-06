@@ -93,6 +93,7 @@
 .button--sm-icon {
   height: var(--space-7);
   width: var(--space-7);
+  cursor: pointer;
 }
 
 .button--sm-icon svg {

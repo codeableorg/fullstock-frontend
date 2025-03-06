@@ -108,10 +108,20 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setLoading(true);
     try {
       if (user) {
-        const deletedCartItem = await deleteRemoteCartItem(itemId);
-        setCart(deletedCartItem);
+        const updatedCart = await deleteRemoteCartItem(itemId);
+        setCart(updatedCart);
       } else {
-        // deleteLocalCartItem
+        const updatedItems = cart ? cart.items.filter(item => item.id !== itemId) : [];
+        const updatedCart = {
+          id: cart?.id || Date.now(),
+          items: updatedItems,
+          total: updatedItems.reduce(
+            (total, item) => total + item.product.price * item.quantity,
+            0
+          ),
+        };
+        setLocalCart(updatedCart);
+        setCart(updatedCart);
       }
     } catch (error) {
       console.error(error);
