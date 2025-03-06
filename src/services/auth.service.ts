@@ -10,20 +10,36 @@ export function setToken(token: string): void {
   localStorage.setItem(TOKEN_KEY, token);
 }
 
-export async function getCurrentUser(): Promise<AuthResponse["user"] | null> {
+export function logout(): void {
+  localStorage.removeItem(TOKEN_KEY);
+}
+
+
+interface ClientOptions extends Omit<RequestInit, "body"> {
+  body?: Record<string, unknown>; 
+}
+
+//Simplificar solicitudes
+async function client<T>(endpoint: string, { body, ...customConfig }: ClientOptions = {}): Promise<T> {
+  const token = getToken();
+  const headers: HeadersInit = { "Content-Type": "application/json" };
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  const config: RequestInit = {
+    ...customConfig,
+    headers: {
+      ...headers,
+      ...customConfig.headers,
+    },
+    body: body ? JSON.stringify(body) : undefined, 
+  };
+
   try {
-    const token = getToken();
-    if (!token) {
-      return null;
-    }
-
-    const response = await fetch(API_URL + "/users/me", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    const data = (await response.json()) as AuthResponse["user"];
+    const response = await fetch(`${API_URL}/${endpoint}`, config);
+    const data = await response.json();
 
     if (!response.ok) {
       if (isApiError(data)) throw new Error(data.error.message);
@@ -32,69 +48,48 @@ export async function getCurrentUser(): Promise<AuthResponse["user"] | null> {
 
     return data;
   } catch (error) {
-    console.error(error);
+    console.error("API Error:", error);
     throw error;
   }
 }
 
-export async function login(
-  email: string,
-  password: string
-): Promise<AuthResponse["user"]> {
+export async function getCurrentUser(): Promise<AuthResponse["user"] | null> {
   try {
-    const response = await fetch(API_URL + "/auth/login", {
+    return await client<AuthResponse["user"]>("users/me");
+  } catch {
+    return null;
+  }
+}
+
+
+export async function login(email: string, password: string): Promise<AuthResponse["user"]> {
+  try {
+    const data = await client<AuthResponse>("auth/login", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
+      body: { email, password }, 
     });
 
-    const data = (await response.json()) as AuthResponse;
-
-    if (!response.ok) {
-      if (isApiError(data)) throw new Error(data.error.message);
-      throw new Error("Unknown error");
-    }
-
     setToken(data.token);
-
     return data.user;
   } catch (error) {
-    console.error(error);
+    console.error("Login error:", error);
     throw error;
   }
 }
 
-export async function signup(
-  email: string,
-  password: string
-): Promise<AuthResponse["user"]> {
+export async function signup(email: string, password: string): Promise<AuthResponse["user"]> {
   try {
-    const response = await fetch(API_URL + "/auth/signup", {
+    const data = await client<AuthResponse>("auth/signup", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
+      body: { email, password }, 
     });
 
-    const data = (await response.json()) as AuthResponse;
-
-    if (!response.ok) {
-      if (isApiError(data)) throw new Error(data.error.message);
-      throw new Error("Unknown error");
-    }
-
     setToken(data.token);
-
     return data.user;
   } catch (error) {
-    console.error(error);
+    console.error("Signup error:", error);
     throw error;
   }
 }
 
-export function logout(): void {
-  localStorage.removeItem(TOKEN_KEY);
-}
+
