@@ -27,13 +27,13 @@ export function removeToken(): void {
 
 export async function client<T>(
   endpoint: string,
-  { data, headers: customHeaders, ...customConfig }: RequestConfig = {}
+  { body, headers: customHeaders, ...customConfig }: RequestConfig = {}
 ) {
   const token = getToken();
 
-  const config: RequestConfig = {
-    method: data ? "POST" : "GET",
-    body: data ? JSON.stringify(data) : undefined,
+  const config: RequestInit = {
+    method: body ? "POST" : "GET",
+    body: body ? JSON.stringify(body) : undefined,
     headers: {
       "Content-Type": "application/json",
       Authorization: token ? `Bearer ${token}` : "",

@@ -1,3 +1,3 @@
-export interface RequestConfig extends RequestInit {
-  data?: unknown;
-}
+export type RequestConfig = Omit<RequestInit, "body"> & {
+  body?: unknown;
+};
