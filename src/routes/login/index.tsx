@@ -7,7 +7,7 @@ import { useAuth } from "@/contexts/auth.context";
 import styles from "./styles.module.css";
 
 export default function Login() {
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -30,6 +30,10 @@ export default function Login() {
     } finally {
       setLoading(false);
     }
+  }
+
+  if (user) {
+    navigate("/");
   }
 
   return (

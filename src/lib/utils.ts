@@ -29,12 +29,14 @@ export async function client<T>(
   endpoint: string,
   { data, headers: customHeaders, ...customConfig }: RequestConfig = {}
 ) {
+  const token = getToken();
+
   const config: RequestConfig = {
     method: data ? "POST" : "GET",
     body: data ? JSON.stringify(data) : undefined,
     headers: {
       "Content-Type": "application/json",
-      Authorization: getToken() ? `Bearer ${getToken()}` : "",
+      Authorization: token ? `Bearer ${token}` : "",
       ...customHeaders,
     },
     ...customConfig,
@@ -48,7 +50,7 @@ export async function client<T>(
       return data as T;
     }
 
-    if (response.status === 401) {
+    if (response.status === 401 && token) {
       removeToken();
       // window.location.assign(window.location.pathname);
       window.location.assign("/login");

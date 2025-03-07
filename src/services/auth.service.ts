@@ -4,7 +4,7 @@ import { isApiError } from "@/models/error.model";
 import { AuthResponse } from "@/models/user.model";
 
 export async function getCurrentUser(): Promise<AuthResponse["user"]> {
-  return client<AuthResponse["user"]>("/auth/me");
+  return client<AuthResponse["user"]>("/users/me");
 }
 
 export async function login(

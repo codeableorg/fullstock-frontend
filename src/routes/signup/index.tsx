@@ -8,7 +8,7 @@ import styles from "./styles.module.css";
 
 export default function Signup() {
   const navigate = useNavigate();
-  const { signup } = useAuth();
+  const { signup, user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,6 +30,10 @@ export default function Signup() {
     } finally {
       setLoading(false);
     }
+  }
+
+  if (user) {
+    navigate("/");
   }
 
   return (

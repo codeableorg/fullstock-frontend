@@ -9,6 +9,7 @@ import {
   Section,
   Separator,
   SelectField,
+  ContainerLoader,
 } from "@/components/ui";
 import { useAuth } from "@/contexts/auth.context";
 import { useCart } from "@/contexts/cart.context";
@@ -41,17 +42,19 @@ const countryOptions = [
 ];
 
 export default function Checkout() {
-  const { cart, clearCart } = useCart();
+  const { cart, clearCart, loading: cartLoading } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [isOrderCompleted, setIsOrderCompleted] = useState(false);
 
   useEffect(() => {
+    if (cartLoading) return;
+
     if ((!cart || !cart.items.length) && !isOrderCompleted) {
       navigate("/");
     }
-  }, [cart, navigate, isOrderCompleted]);
+  }, [cart, navigate, isOrderCompleted, cartLoading]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -81,7 +84,7 @@ export default function Checkout() {
   }
 
   if (!cart || !cart.items.length) {
-    return null;
+    return <ContainerLoader />;
   }
 
   return (

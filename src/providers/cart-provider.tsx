@@ -18,7 +18,7 @@ import {
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
   const [cart, setCart] = useState<Cart | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -111,7 +111,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         const updatedCart = await deleteRemoteCartItem(itemId);
         setCart(updatedCart);
       } else {
-        const updatedItems = cart ? cart.items.filter(item => item.id !== itemId) : [];
+        const updatedItems = cart
+          ? cart.items.filter((item) => item.id !== itemId)
+          : [];
         const updatedCart = {
           id: cart?.id || Date.now(),
           items: updatedItems,
