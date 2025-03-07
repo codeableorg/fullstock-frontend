@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 import { ContainerLoader } from "@/components/ui";
 import { AuthContext } from "@/contexts/auth.context";
+import { getToken } from "@/lib/utils";
 import { AuthResponse } from "@/models/user.model";
 import * as authService from "@/services/auth.service";
 
@@ -10,6 +11,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const token = getToken();
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+
     authService
       .getCurrentUser()
       .then((user) => {
