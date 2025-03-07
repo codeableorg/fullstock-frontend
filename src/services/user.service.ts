@@ -1,6 +1,6 @@
-import { API_URL } from "@/config";
+// import { API_URL } from "@/config";
 import { client, getToken, setToken } from "@/lib/utils";
-import { isApiError } from "@/models/error.model";
+// import { isApiError } from "@/models/error.model";
 import { AuthResponse, User } from "@/models/user.model";
 
 // export async function findOrCreateGuestUser(email: string): Promise<void> {
