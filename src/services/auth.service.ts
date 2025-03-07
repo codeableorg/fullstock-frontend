@@ -10,9 +10,9 @@ export async function login(
   password: string
 ): Promise<AuthResponse["user"]> {
   const data = await client<AuthResponse>("/auth/login", {
-    data: {email, password},
+    body: { email, password },
   });
-  
+
   setToken(data.token);
   return data.user;
 }
@@ -22,9 +22,9 @@ export async function signup(
   password: string
 ): Promise<AuthResponse["user"]> {
   const data = await client<AuthResponse>("/auth/signup", {
-    data: { email, password },
+    body: { email, password },
   });
-  
+
   setToken(data.token);
   return data.user;
 }

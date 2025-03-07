@@ -12,7 +12,7 @@ export function setLocalCart(cart: Cart): void {
 }
 
 export async function getRemoteCart(): Promise<Cart | null> {
-  return client<Cart>('/cart');
+  return client<Cart>("/cart");
 }
 
 export async function createRemoteItems(items: CartItem[]): Promise<Cart> {
@@ -23,8 +23,8 @@ export async function createRemoteItems(items: CartItem[]): Promise<Cart> {
     })),
   };
 
-  return client<Cart>('/cart/create-items', {
-    data: payload
+  return client<Cart>("/cart/create-items", {
+    body: payload,
   });
 }
 
@@ -32,8 +32,8 @@ export async function alterQuantityCartItem(
   productId: number,
   quantity: number = 1
 ): Promise<Cart> {
-  return client<Cart>('/cart/add-item', {
-    data: { productId, quantity }
+  return client<Cart>("/cart/add-item", {
+    body: { productId, quantity },
   });
 }
 
@@ -41,13 +41,13 @@ export async function deleteRemoteCartItem(
   itemId: CartItem["id"]
 ): Promise<Cart> {
   return client(`/cart/delete-item/${itemId}`, {
-    method: 'DELETE'
+    method: "DELETE",
   });
 }
 
 export async function deleteRemoteCart(): Promise<void> {
-  return client('/cart', {
-    method: 'DELETE'
+  return client("/cart", {
+    method: "DELETE",
   });
 }
 
