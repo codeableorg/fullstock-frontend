@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useCallback } from "react";
 import { useParams } from "react-router";
 
 import { Button, Container, ContainerLoader, Separator } from "@/components/ui";
 import { useCart } from "@/contexts/cart.context";
+import { useAsync } from "@/hooks/use-async";
 import { type Product } from "@/models/product.model";
 import { getProductById } from "@/services/product.service";
 
@@ -13,25 +14,13 @@ export default function Product() {
   const { loading: cartLoading, changeItemQuantity } = useCart();
 
   const { id } = useParams<{ id: string }>();
-  const [product, setProduct] = useState<Product | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
 
-  useEffect(() => {
-    if (!id) return;
+  const fetchProductById = useCallback(
+    () => getProductById(parseInt(id!)),
+    [id]
+  );
 
-    const fetchProduct = async () => {
-      try {
-        const data = await getProductById(parseInt(id));
-        setProduct(data);
-      } catch (error) {
-        console.error("Error fetching product:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProduct();
-  }, [id]);
+  const { data: product, loading } = useAsync(fetchProductById);
 
   if (loading) return <ContainerLoader />;
 

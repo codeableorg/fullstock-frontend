@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
 import { Navigate } from "react-router";
 
 import { ContainerLoader } from "@/components/ui";
 import { useAuth } from "@/contexts/auth.context";
+import { useAsync } from "@/hooks/use-async";
 import { Order } from "@/models/order.model";
 import { getOrdersByUser } from "@/services/order.service";
 
@@ -10,20 +10,12 @@ import styles from "./styles.module.css";
 
 export default function Orders() {
   const { user } = useAuth();
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data, loading } = useAsync<Order[]>(getOrdersByUser);
+  let orders: Order[] = [];
 
-  useEffect(() => {
-    if (!user) return;
-
-    getOrdersByUser()
-      .then((orders) =>
-        setOrders(
-          orders.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-        )
-      )
-      .finally(() => setLoading(false));
-  }, [user]);
+  if (data) {
+    orders = data.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+  }
 
   if (!user) {
     return <Navigate to="/login" />;
