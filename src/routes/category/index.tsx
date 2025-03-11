@@ -1,9 +1,12 @@
-import { useEffect, useState } from "react";
+import { useCallback } from "react";
 import { useParams, useSearchParams } from "react-router";
 
 import { Container, ContainerLoader } from "@/components/ui";
-import { isValidCategorySlug, type Category } from "@/models/category.model";
-import { Product } from "@/models/product.model";
+import {
+  CategoryProductData,
+  isValidCategorySlug,
+  type Category,
+} from "@/models/category.model";
 import { getCategoryBySlug } from "@/services/category.service";
 import { getProductsByCategorySlug } from "@/services/product.service";
 
@@ -11,32 +14,45 @@ import NotFound from "../not-found";
 import { PriceFilter } from "./components/price-filter";
 import { ProductCard } from "./components/product-card";
 import styles from "./styles.module.css";
+import { useAsync } from "@/hooks/use-async";
+import { Product } from "@/models/product.model";
 
 export default function Category() {
   const { category: categorySlug } = useParams<{
     category: Category["slug"];
   }>();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [category, setCategory] = useState<Category | null>(null);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-
   const minPrice = searchParams.get("minPrice") || "";
   const maxPrice = searchParams.get("maxPrice") || "";
 
-  useEffect(() => {
-    if (!isValidCategorySlug(categorySlug)) return;
+  const useCategoryProductData = (
+    categorySlug: Category["slug"]
+  ): CategoryProductData => {
+    const fetchCategoryBySlug = useCallback(
+      () => getCategoryBySlug(categorySlug),
+      [categorySlug]
+    );
 
-    Promise.all([
-      getCategoryBySlug(categorySlug),
-      getProductsByCategorySlug(categorySlug),
-    ])
-      .then(([categoryData, productsData]) => {
-        setCategory(categoryData);
-        setProducts(productsData);
-      })
-      .finally(() => setLoading(false));
-  }, [categorySlug]);
+    const fetchProductByCategorySlug = useCallback(
+      () => getProductsByCategorySlug(categorySlug),
+      [categorySlug]
+    );
+
+    const { data: category, loading: loadingCategory } =
+      useAsync<Category>(fetchCategoryBySlug);
+
+    const { data: products, loading: loadingProducts } = useAsync<Product[]>(
+      fetchProductByCategorySlug
+    );
+
+    return {
+      category: category || null,
+      products: products || [],
+      loading: loadingCategory || loadingProducts,
+    };
+  };
+
+  const { category, products, loading } = useCategoryProductData(categorySlug!);
 
   const handlePriceChange = (min: string, max: string) => {
     const params = new URLSearchParams(searchParams);
@@ -47,17 +63,27 @@ export default function Category() {
     setSearchParams(params);
   };
 
-  const filteredProducts = products.filter((product) => {
-    const min = minPrice ? parseFloat(minPrice) : 0;
-    const max = maxPrice ? parseFloat(maxPrice) : Infinity;
-    return product.price >= min && product.price <= max;
-  });
-
-  if (!isValidCategorySlug(categorySlug)) {
+  if (!isValidCategorySlug(categorySlug) || !category) {
     return <NotFound />;
   }
 
-  if (!category || loading) return <ContainerLoader />;
+  if (loading) return <ContainerLoader />;
+
+  const filterProductsByPrice = (
+    products: Product[],
+    minPrice: string,
+    maxPrice: string
+  ): Product[] => {
+    const min = minPrice ? parseFloat(minPrice) : 0;
+    const max = maxPrice ? parseFloat(maxPrice) : Infinity;
+    return products.filter(
+      (product) => product.price >= min && product.price <= max
+    );
+  };
+
+  const filteredProducts = loading
+    ? []
+    : filterProductsByPrice(products!, minPrice, maxPrice);
 
   return (
     <>
