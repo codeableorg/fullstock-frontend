@@ -12,6 +12,10 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  if (user) {
+    navigate("/");
+  }
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
@@ -22,7 +26,7 @@ export default function Login() {
       const password = formData.get("password") as string;
 
       await login(email, password);
-      navigate("/");
+      // navigate("/");
     } catch (error) {
       setError(
         error instanceof Error ? error.message : "Error al iniciar sesión"
@@ -30,10 +34,6 @@ export default function Login() {
     } finally {
       setLoading(false);
     }
-  }
-
-  if (user) {
-    navigate("/");
   }
 
   return (
