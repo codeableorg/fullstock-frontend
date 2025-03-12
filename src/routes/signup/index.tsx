@@ -22,7 +22,6 @@ export default function Signup() {
       const password = formData.get("password") as string;
 
       await signup(email, password);
-      navigate("/");
     } catch (error) {
       setError(
         error instanceof Error ? error.message : "Error al crear la cuenta"
