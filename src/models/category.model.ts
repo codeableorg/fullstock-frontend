@@ -1,5 +1,3 @@
-import { Product } from "./product.model";
-
 export const VALID_SLUGS = ["polos", "stickers", "tazas"] as const;
 
 export interface Category {
@@ -9,12 +7,6 @@ export interface Category {
   imgSrc: string;
   alt: string | null;
   description: string | null;
-}
-
-export interface CategoryProductData {
-  category: Category | null;
-  products: Product[];
-  loading: boolean;
 }
 
 export function isValidCategorySlug(

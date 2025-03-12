@@ -2,11 +2,9 @@ import { useCallback } from "react";
 import { useParams, useSearchParams } from "react-router";
 
 import { Container, ContainerLoader } from "@/components/ui";
-import {
-  CategoryProductData,
-  isValidCategorySlug,
-  type Category,
-} from "@/models/category.model";
+import { useAsync } from "@/hooks/use-async";
+import { isValidCategorySlug, type Category } from "@/models/category.model";
+import { Product } from "@/models/product.model";
 import { getCategoryBySlug } from "@/services/category.service";
 import { getProductsByCategorySlug } from "@/services/product.service";
 
@@ -14,8 +12,6 @@ import NotFound from "../not-found";
 import { PriceFilter } from "./components/price-filter";
 import { ProductCard } from "./components/product-card";
 import styles from "./styles.module.css";
-import { useAsync } from "@/hooks/use-async";
-import { Product } from "@/models/product.model";
 
 export default function Category() {
   const { category: categorySlug } = useParams<{
@@ -25,34 +21,18 @@ export default function Category() {
   const minPrice = searchParams.get("minPrice") || "";
   const maxPrice = searchParams.get("maxPrice") || "";
 
-  const useCategoryProductData = (
-    categorySlug: Category["slug"]
-  ): CategoryProductData => {
-    const fetchCategoryBySlug = useCallback(
-      () => getCategoryBySlug(categorySlug),
+  const { data, loading } = useAsync(
+    useCallback(
+      () =>
+        Promise.all([
+          getCategoryBySlug(categorySlug!),
+          getProductsByCategorySlug(categorySlug!),
+        ]),
       [categorySlug]
-    );
+    )
+  );
 
-    const fetchProductByCategorySlug = useCallback(
-      () => getProductsByCategorySlug(categorySlug),
-      [categorySlug]
-    );
-
-    const { data: category, loading: loadingCategory } =
-      useAsync<Category>(fetchCategoryBySlug);
-
-    const { data: products, loading: loadingProducts } = useAsync<Product[]>(
-      fetchProductByCategorySlug
-    );
-
-    return {
-      category: category || null,
-      products: products || [],
-      loading: loadingCategory || loadingProducts,
-    };
-  };
-
-  const { category, products, loading } = useCategoryProductData(categorySlug!);
+  const [category, products] = data || [null, []];
 
   const handlePriceChange = (min: string, max: string) => {
     const params = new URLSearchParams(searchParams);
