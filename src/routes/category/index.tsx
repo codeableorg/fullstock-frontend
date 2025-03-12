@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useCallback } from "react";
 import { useParams, useSearchParams } from "react-router";
 
 import { Container, ContainerLoader } from "@/components/ui";
+import { useAsync } from "@/hooks/use-async";
 import { isValidCategorySlug, type Category } from "@/models/category.model";
 import { Product } from "@/models/product.model";
 import { getCategoryBySlug } from "@/services/category.service";
@@ -17,26 +18,21 @@ export default function Category() {
     category: Category["slug"];
   }>();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [category, setCategory] = useState<Category | null>(null);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-
   const minPrice = searchParams.get("minPrice") || "";
   const maxPrice = searchParams.get("maxPrice") || "";
 
-  useEffect(() => {
-    if (!isValidCategorySlug(categorySlug)) return;
+  const { data, loading } = useAsync(
+    useCallback(
+      () =>
+        Promise.all([
+          getCategoryBySlug(categorySlug!),
+          getProductsByCategorySlug(categorySlug!),
+        ]),
+      [categorySlug]
+    )
+  );
 
-    Promise.all([
-      getCategoryBySlug(categorySlug),
-      getProductsByCategorySlug(categorySlug),
-    ])
-      .then(([categoryData, productsData]) => {
-        setCategory(categoryData);
-        setProducts(productsData);
-      })
-      .finally(() => setLoading(false));
-  }, [categorySlug]);
+  const [category, products] = data || [null, []];
 
   const handlePriceChange = (min: string, max: string) => {
     const params = new URLSearchParams(searchParams);
@@ -47,17 +43,27 @@ export default function Category() {
     setSearchParams(params);
   };
 
-  const filteredProducts = products.filter((product) => {
-    const min = minPrice ? parseFloat(minPrice) : 0;
-    const max = maxPrice ? parseFloat(maxPrice) : Infinity;
-    return product.price >= min && product.price <= max;
-  });
-
-  if (!isValidCategorySlug(categorySlug)) {
+  if (!isValidCategorySlug(categorySlug) || !category) {
     return <NotFound />;
   }
 
-  if (!category || loading) return <ContainerLoader />;
+  if (loading) return <ContainerLoader />;
+
+  const filterProductsByPrice = (
+    products: Product[],
+    minPrice: string,
+    maxPrice: string
+  ): Product[] => {
+    const min = minPrice ? parseFloat(minPrice) : 0;
+    const max = maxPrice ? parseFloat(maxPrice) : Infinity;
+    return products.filter(
+      (product) => product.price >= min && product.price <= max
+    );
+  };
+
+  const filteredProducts = loading
+    ? []
+    : filterProductsByPrice(products!, minPrice, maxPrice);
 
   return (
     <>
