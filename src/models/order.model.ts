@@ -1,5 +1,3 @@
-import { CartItem } from "@/models/cart.model";
-
 import { User } from "./user.model";
 
 export interface OrderDetails {
@@ -15,10 +13,21 @@ export interface OrderDetails {
   phone: string;
 }
 
+export interface OrderItem {
+  id: number;
+  orderId: number;
+  productId: number;
+  quantity: number;
+  title: string;
+  price: number;
+  imgSrc: string;
+}
+
 export interface Order {
-  id: string;
+  id: number;
   userId: User["id"];
-  items: CartItem[];
+  items: OrderItem[];
+  totalAmount: number;
   details: OrderDetails;
   createdAt: Date;
 }

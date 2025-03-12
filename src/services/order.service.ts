@@ -18,5 +18,9 @@ export async function createOrder(
 }
 
 export async function getOrdersByUser(): Promise<Order[]> {
-  return client<Order[]>(`/orders`);
+  const orders = await client<Order[]>(`/orders`);
+  return orders.map((order) => ({
+    ...order,
+    createdAt: new Date(order.createdAt),
+  }));
 }

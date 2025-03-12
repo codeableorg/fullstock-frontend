@@ -56,16 +56,10 @@ export default function Orders() {
                     <dd
                       className={`${styles["orders__summary-description"]} ${styles["orders__summary-description--total"]}`}
                     >
-                      {order.items
-                        .reduce(
-                          (total, { product, quantity }) =>
-                            total + product.price * quantity,
-                          0
-                        )
-                        .toLocaleString("en-US", {
-                          style: "currency",
-                          currency: "USD",
-                        })}
+                      {order.totalAmount.toLocaleString("en-US", {
+                        style: "currency",
+                        currency: "USD",
+                      })}
                     </dd>
                   </div>
                 </dl>
@@ -101,21 +95,21 @@ export default function Orders() {
                   </tr>
                 </thead>
                 <tbody className={styles["orders__table-body"]}>
-                  {order.items.map(({ product, quantity }) => (
-                    <tr key={product.id}>
+                  {order.items.map((item) => (
+                    <tr key={item.productId}>
                       <td className={styles["orders__table-cell"]}>
                         <div className={styles["orders__product"]}>
                           <div className={styles["orders__product-image"]}>
-                            <img src={product.imgSrc} alt={product.title} />
+                            <img src={item.imgSrc} alt={item.title} />
                           </div>
                           <div>
                             <div className={styles["orders__product-title"]}>
-                              {product.title}
+                              {item.title}
                             </div>
                             <div
                               className={styles["orders__product-mobile-price"]}
                             >
-                              {quantity} × ${product.price.toFixed(2)}
+                              {item.quantity} × ${item.price.toFixed(2)}
                             </div>
                           </div>
                         </div>
@@ -123,17 +117,17 @@ export default function Orders() {
                       <td
                         className={`${styles["orders__table-cell"]} ${styles["orders__table-cell--price"]}`}
                       >
-                        ${product.price.toFixed(2)}
+                        ${item.price.toFixed(2)}
                       </td>
                       <td
                         className={`${styles["orders__table-cell"]} ${styles["orders__table-cell--quantity"]}`}
                       >
-                        {quantity}
+                        {item.quantity}
                       </td>
                       <td
                         className={`${styles["orders__table-cell"]} ${styles["orders__table-cell--total"]}`}
                       >
-                        ${(product.price * quantity).toFixed(2)}
+                        ${(item.price * item.quantity).toFixed(2)}
                       </td>
                     </tr>
                   ))}
