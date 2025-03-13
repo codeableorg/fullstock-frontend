@@ -1,6 +1,7 @@
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import { z } from "zod";
 
 import {
   Button,
@@ -41,12 +42,30 @@ const countryOptions = [
   { value: "VE", label: "Venezuela" },
 ];
 
+export const CheckoutFormSchema = z.object({
+  email: z.string().email("Correo electrónico inválido"),
+  firstName: z.string().min(1, "El nombre es requerido"),
+  lastName: z.string().min(1, "El apellido es requerido"),
+  company: z.string().optional(),
+  address: z.string().min(1, "La dirección es requerida"),
+  city: z.string().min(1, "La ciudad es requerida"),
+  country: z.string().min(2, "El país es requerido"),
+  region: z.string().min(1, "La provincia/estado es requerido"),
+  zip: z.string().min(1, "El código postal es requerido"),
+  phone: z.string().min(1, "El teléfono es requerido"),
+});
+
+type CheckoutForm = z.infer<typeof CheckoutFormSchema>;
+
 export default function Checkout() {
   const { cart, clearCart, loading: cartLoading } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [isOrderCompleted, setIsOrderCompleted] = useState(false);
+  const [formErrors, setFormErrors] = useState<
+    Partial<Record<keyof CheckoutForm, string[]>>
+  >({});
 
   useEffect(() => {
     if (cartLoading) return;
@@ -63,6 +82,13 @@ export default function Checkout() {
     setLoading(true);
     try {
       const formData = new FormData(e.currentTarget);
+      const data = Object.fromEntries(formData.entries());
+      const parsedData = CheckoutFormSchema.safeParse(data);
+
+      if (!parsedData.success) {
+        setFormErrors(parsedData.error.flatten().fieldErrors);
+        return;
+      }
 
       const items = cart.items.map((item) => ({
         productId: item.product.id,
@@ -132,10 +158,10 @@ export default function Checkout() {
                 label="Correo electrónico"
                 name="email"
                 type="email"
-                required
                 autoComplete="email"
                 value={user?.email}
                 readOnly={Boolean(user)}
+                errors={formErrors.email}
               />
             </fieldset>
             <Separator className={styles.checkout__separator} />
@@ -147,56 +173,56 @@ export default function Checkout() {
                 <InputField
                   label="Nombre"
                   name="firstName"
-                  required
                   autoComplete="given-name"
+                  errors={formErrors.firstName}
                 />
                 <InputField
                   label="Apellido"
                   name="lastName"
-                  required
                   autoComplete="family-name"
+                  errors={formErrors.lastName}
                 />
                 <InputField
                   label="Compañia"
                   name="company"
                   autoComplete="organization"
+                  errors={formErrors.company}
                 />
                 <InputField
                   label="Dirección"
                   name="address"
-                  required
                   autoComplete="street-address"
+                  errors={formErrors.address}
                 />
                 <InputField
                   label="Ciudad"
                   name="city"
-                  required
                   autoComplete="address-level2"
+                  errors={formErrors.city}
                 />
                 <SelectField
                   label="País"
                   name="country"
                   options={countryOptions}
                   placeholder="Seleccionar país"
-                  required
                 />
                 <InputField
                   label="Provincia/Estado"
                   name="region"
-                  required
                   autoComplete="address-level1"
+                  errors={formErrors.region}
                 />
                 <InputField
                   label="Código Postal"
                   name="zip"
-                  required
                   autoComplete="postal-code"
+                  errors={formErrors.zip}
                 />
                 <InputField
                   label="Teléfono"
                   name="phone"
-                  required
                   autoComplete="tel"
+                  errors={formErrors.phone}
                 />
               </div>
             </fieldset>
