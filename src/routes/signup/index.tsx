@@ -1,7 +1,13 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 
-import { Button, Container, InputField, Section } from "@/components/ui";
+import {
+  Button,
+  Container,
+  ContainerLoader,
+  InputField,
+  Section,
+} from "@/components/ui";
 import { useAuth } from "@/contexts/auth.context";
 
 import styles from "./styles.module.css";
@@ -33,6 +39,7 @@ export default function Signup() {
 
   if (user) {
     navigate("/");
+    return <ContainerLoader />;
   }
 
   return (

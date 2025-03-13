@@ -1,7 +1,13 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 
-import { Button, Container, InputField, Section } from "@/components/ui";
+import {
+  Button,
+  Container,
+  ContainerLoader,
+  InputField,
+  Section,
+} from "@/components/ui";
 import { useAuth } from "@/contexts/auth.context";
 
 import styles from "./styles.module.css";
@@ -11,10 +17,6 @@ export default function Login() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  if (user) {
-    navigate("/");
-  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -34,6 +36,11 @@ export default function Login() {
     } finally {
       setLoading(false);
     }
+  }
+
+  if (user) {
+    navigate("/");
+    return <ContainerLoader />;
   }
 
   return (
