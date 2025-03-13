@@ -14,8 +14,11 @@ import {
 import { useAuth } from "@/contexts/auth.context";
 import { useCart } from "@/contexts/cart.context";
 import { createOrder } from "@/services/order.service";
-
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import styles from "./styles.module.css";
+import type { orderFormData } from "@/models/order.model";
+import { orderSchema } from "@/models/order.model";
 
 const countryOptions = [
   { value: "AR", label: "Argentina" },
@@ -48,6 +51,14 @@ export default function Checkout() {
   const [loading, setLoading] = useState(false);
   const [isOrderCompleted, setIsOrderCompleted] = useState(false);
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<orderFormData>({
+    resolver: zodResolver(orderSchema), // Integrar Zod con React Hook Form
+  });
+
   useEffect(() => {
     if (cartLoading) return;
 
@@ -56,13 +67,14 @@ export default function Checkout() {
     }
   }, [cart, navigate, isOrderCompleted, cartLoading]);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  async function onSubmit(formData: orderFormData) {
+    console.log("Datos enviados:", formData);
+    //e.preventDefault();
     if (!cart) return;
 
     setLoading(true);
     try {
-      const formData = new FormData(e.currentTarget);
+      //const formData = new FormData(e.currentTarget);
 
       const items = cart.items.map((item) => ({
         productId: item.product.id,
@@ -123,20 +135,30 @@ export default function Checkout() {
               </div>
             </div>
           </div>
-          <form className={styles.checkout__form} onSubmit={handleSubmit}>
+          <form className={styles.checkout__form} onSubmit={handleSubmit(onSubmit)} >
             <fieldset>
               <legend className={styles.checkout__legend}>
                 Información de contacto
               </legend>
+
+              {/* <input
+                {...register("email")}
+                value={user?.email}
+                type="email"
+              /> */}
+              
               <InputField
                 label="Correo electrónico"
-                name="email"
                 type="email"
-                required
-                autoComplete="email"
+                //required
+                //autoComplete="email"
                 value={user?.email}
-                readOnly={Boolean(user)}
+                //readOnly={Boolean(user)}
+                register={register}
+                name="email"
+                error={errors.email?.message}
               />
+              
             </fieldset>
             <Separator className={styles.checkout__separator} />
             <fieldset>

@@ -6,11 +6,17 @@ import { Label } from "../label";
 
 interface InputFieldProps extends ComponentPropsWithoutRef<"input"> {
   label: string;
+  name: string;
+  register: any;
+  error?: string;
 }
 
 export function InputField({
   label,
   id: providedId,
+  name,
+  register,
+  error,
   className,
   ...props
 }: InputFieldProps) {
@@ -20,7 +26,7 @@ export function InputField({
   return (
     <div className={styles["input-field"]}>
       <Label htmlFor={id}>{label}</Label>
-      <Input id={id} className={className} {...props} />
+      <Input id={id} name={name} register={register} error={error} className={className} {...props} />
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { User } from "./user.model";
+import { z } from "zod";
 
 export interface OrderDetails {
   email: string;
@@ -31,3 +32,9 @@ export interface Order {
   details: OrderDetails;
   createdAt: Date;
 }
+
+export const orderSchema = z.object({
+  email: z.string().email("❌ Email inválido").min(1, "❌ El email es obligatorio")
+});
+
+export type orderFormData = z.infer<typeof orderSchema>;
