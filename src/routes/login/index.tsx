@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 
+import { z } from "zod";
+
 import {
   Button,
   Container,
@@ -12,20 +14,37 @@ import { useAuth } from "@/contexts/auth.context";
 
 import styles from "./styles.module.css";
 
+const LoginSchema = z.object({
+  email: z.string().email("Correo electrónico inválido"),
+  password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
+});
+
+type LoginForm = z.infer<typeof LoginSchema>;
+
 export default function Login() {
   const { login, user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
+  const [formErrors, setFormErrors] = useState<
+    Partial<Record<keyof LoginForm, string[]>>
+  >({});
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
     setError(null);
     try {
       const formData = new FormData(e.currentTarget);
-      const email = formData.get("email") as string;
-      const password = formData.get("password") as string;
+      const data = Object.fromEntries(formData.entries());
+      const parsedData = LoginSchema.safeParse(data);
+
+      if (!parsedData.success) {
+        setFormErrors(parsedData.error.flatten().fieldErrors);
+        return;
+      }
+
+      const email = data.email as string;
+      const password = data.password as string;
 
       await login(email, password);
       // navigate("/");
@@ -54,6 +73,7 @@ export default function Login() {
             type="email"
             required
             autoComplete="email"
+            errors={formErrors.email}
           />
           <InputField
             label="Contraseña"
@@ -61,6 +81,7 @@ export default function Login() {
             type="password"
             required
             autoComplete="current-password"
+            errors={formErrors.password}
           />
           <Button size="lg" className={styles.login__submit} disabled={loading}>
             {loading ? "Iniciando..." : "Iniciar sesión"}
