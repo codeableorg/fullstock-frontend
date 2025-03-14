@@ -16,6 +16,8 @@ import { useAuth } from "@/contexts/auth.context";
 import { useCart } from "@/contexts/cart.context";
 import { createOrder } from "@/services/order.service";
 
+import { useForm, SubmitHandler } from "react-hook-form";
+
 import styles from "./styles.module.css";
 
 const countryOptions = [
@@ -63,9 +65,12 @@ export default function Checkout() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [isOrderCompleted, setIsOrderCompleted] = useState(false);
-  const [formErrors, setFormErrors] = useState<
-    Partial<Record<keyof CheckoutForm, string[]>>
-  >({});
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors },
+  } = useForm<CheckoutForm>();
 
   useEffect(() => {
     if (cartLoading) return;
@@ -75,18 +80,21 @@ export default function Checkout() {
     }
   }, [cart, navigate, isOrderCompleted, cartLoading]);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  const onSubmit: SubmitHandler<CheckoutForm> = async (data) => {
     if (!cart) return;
 
     setLoading(true);
     try {
-      const formData = new FormData(e.currentTarget);
-      const data = Object.fromEntries(formData.entries());
       const parsedData = CheckoutFormSchema.safeParse(data);
 
       if (!parsedData.success) {
-        setFormErrors(parsedData.error.flatten().fieldErrors);
+        Object.entries(parsedData.error.flatten().fieldErrors).forEach(
+          ([field, error]) => {
+            setError(field as keyof CheckoutForm, {
+              message: error.join(", "),
+            });
+          }
+        );
         return;
       }
 
@@ -98,6 +106,13 @@ export default function Checkout() {
         imgSrc: item.product.imgSrc,
       }));
 
+      const formData = new FormData();
+      Object.entries(data).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          formData.append(key, value.toString());
+        }
+      });
+
       const { orderId } = await createOrder(items, formData);
       setIsOrderCompleted(true);
       navigate(`/order-confirmation/${orderId}`);
@@ -107,7 +122,7 @@ export default function Checkout() {
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   if (!cart || !cart.items.length) {
     return <ContainerLoader />;
@@ -149,19 +164,22 @@ export default function Checkout() {
               </div>
             </div>
           </div>
-          <form className={styles.checkout__form} onSubmit={handleSubmit}>
+          <form
+            className={styles.checkout__form}
+            onSubmit={handleSubmit(onSubmit)}
+          >
             <fieldset>
               <legend className={styles.checkout__legend}>
                 Información de contacto
               </legend>
               <InputField
                 label="Correo electrónico"
-                name="email"
+                {...register("email")}
                 type="email"
                 autoComplete="email"
                 value={user?.email}
                 readOnly={Boolean(user)}
-                errors={formErrors.email}
+                errors={errors.email?.message}
               />
             </fieldset>
             <Separator className={styles.checkout__separator} />
@@ -172,57 +190,57 @@ export default function Checkout() {
               <div className={styles["checkout__form-fields"]}>
                 <InputField
                   label="Nombre"
-                  name="firstName"
+                  {...register("firstName")}
                   autoComplete="given-name"
-                  errors={formErrors.firstName}
+                  errors={errors.firstName?.message}
                 />
                 <InputField
                   label="Apellido"
-                  name="lastName"
+                  {...register("lastName")}
                   autoComplete="family-name"
-                  errors={formErrors.lastName}
+                  errors={errors.lastName?.message}
                 />
                 <InputField
                   label="Compañia"
-                  name="company"
+                  {...register("company")}
                   autoComplete="organization"
-                  errors={formErrors.company}
+                  errors={errors.company?.message}
                 />
                 <InputField
                   label="Dirección"
-                  name="address"
+                  {...register("address")}
                   autoComplete="street-address"
-                  errors={formErrors.address}
+                  errors={errors.address?.message}
                 />
                 <InputField
                   label="Ciudad"
-                  name="city"
+                  {...register("city")}
                   autoComplete="address-level2"
-                  errors={formErrors.city}
+                  errors={errors.city?.message}
                 />
                 <SelectField
                   label="País"
-                  name="country"
+                  {...register("country")}
                   options={countryOptions}
                   placeholder="Seleccionar país"
                 />
                 <InputField
                   label="Provincia/Estado"
-                  name="region"
+                  {...register("region")}
                   autoComplete="address-level1"
-                  errors={formErrors.region}
+                  errors={errors.region?.message}
                 />
                 <InputField
                   label="Código Postal"
-                  name="zip"
+                  {...register("zip")}
                   autoComplete="postal-code"
-                  errors={formErrors.zip}
+                  errors={errors.zip?.message}
                 />
                 <InputField
                   label="Teléfono"
-                  name="phone"
+                  {...register("phone")}
                   autoComplete="tel"
-                  errors={formErrors.phone}
+                  errors={errors.phone?.message}
                 />
               </div>
             </fieldset>

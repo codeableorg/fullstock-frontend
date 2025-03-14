@@ -1,4 +1,4 @@
-import { useId } from "react";
+import { useId, forwardRef } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -18,32 +18,31 @@ interface SelectFieldProps
   placeholder?: string;
 }
 
-export function SelectField({
-  label,
-  id: providedId,
-  options,
-  placeholder,
-  className,
-  ...props
-}: SelectFieldProps) {
-  const generatedId = useId();
-  const id = providedId || generatedId;
+export const SelectField = forwardRef<HTMLSelectElement, SelectFieldProps>(
+  (
+    { label, id: providedId, options, placeholder, className, ...props },
+    ref
+  ) => {
+    const generatedId = useId();
+    const id = providedId || generatedId;
 
-  return (
-    <div className={cn(styles["basic-select-field"], className)}>
-      <Label htmlFor={id}>{label}</Label>
-      <Select
-        id={id}
-        className={styles["basic-select-field__select"]}
-        {...props}
-      >
-        {placeholder && <Option value="">{placeholder}</Option>}
-        {options.map((option) => (
-          <Option key={option.value} value={option.value}>
-            {option.label}
-          </Option>
-        ))}
-      </Select>
-    </div>
-  );
-}
+    return (
+      <div className={cn(styles["basic-select-field"], className)}>
+        <Label htmlFor={id}>{label}</Label>
+        <Select
+          id={id}
+          className={styles["basic-select-field__select"]}
+          ref={ref}
+          {...props}
+        >
+          {placeholder && <Option value="">{placeholder}</Option>}
+          {options.map((option) => (
+            <Option key={option.value} value={option.value}>
+              {option.label}
+            </Option>
+          ))}
+        </Select>
+      </div>
+    );
+  }
+);
