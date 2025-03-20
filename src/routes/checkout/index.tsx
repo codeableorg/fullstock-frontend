@@ -52,7 +52,7 @@ export const CheckoutFormSchema = z.object({
   company: z.string().optional(),
   address: z.string().min(1, "La dirección es requerida"),
   city: z.string().min(1, "La ciudad es requerida"),
-  country: z.string().min(2, "El país es requerido"),
+  country: z.string().min(1, "El país es requerido"),
   region: z.string().min(1, "La provincia/estado es requerido"),
   zip: z.string().min(1, "El código postal es requerido"),
   phone: z.string().min(1, "El teléfono es requerido"),
