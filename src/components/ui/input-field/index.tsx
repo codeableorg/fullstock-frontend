@@ -1,43 +1,39 @@
-import { ComponentPropsWithoutRef, useId } from "react";
+import { ComponentPropsWithoutRef, forwardRef, useId } from "react";
 
 import { cn } from "@/lib/utils";
 
 import { Input } from "../input";
-import styles from "./styles.module.css";
 import { Label } from "../label";
+import styles from "./styles.module.css";
 
 interface InputFieldProps extends ComponentPropsWithoutRef<"input"> {
   label: string;
-  errors?: string[];
+  error?: string;
 }
 
-export function InputField({
-  label,
-  id: providedId,
-  errors,
-  className,
-  ...props
-}: InputFieldProps) {
-  const generatedId = useId();
-  const id = providedId || generatedId;
+export const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
+  ({ label, id: providedId, error, className, ...props }, ref) => {
+    const generatedId = useId();
+    const id = providedId || generatedId;
 
-  const hasErrors = errors && errors.length > 0;
+    const hasError = Boolean(error);
 
-  const inputClasses = cn(className, {
-    [styles["input-field--error"]]: hasErrors,
-  });
+    const inputClasses = cn(className, {
+      [styles["input-field--error"]]: hasError,
+    });
 
-  return (
-    <div className={styles["input-field"]}>
-      <Label htmlFor={id}>{label}</Label>
-      <Input id={id} className={inputClasses} {...props} />
-      {hasErrors && (
-        <div className={styles["input-field__error"]}>
-          {errors.map((error, index) => (
-            <p key={index}>{error}</p>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
+    return (
+      <div className={styles["input-field"]}>
+        <Label htmlFor={id}>{label}</Label>
+        <Input ref={ref} id={id} className={inputClasses} {...props} />
+        {hasError && (
+          <div className={styles["input-field__error"]}>
+            <p>{error}</p>
+          </div>
+        )}
+      </div>
+    );
+  }
+);
+
+InputField.displayName = "InputField";
