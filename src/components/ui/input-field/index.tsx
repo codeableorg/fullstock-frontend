@@ -6,6 +6,7 @@ import { Label } from "../label";
 
 interface InputFieldProps extends ComponentPropsWithoutRef<"input"> {
   label: string;
+  error?: string;
 }
 
 export function InputField({

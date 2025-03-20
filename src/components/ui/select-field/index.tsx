@@ -16,6 +16,7 @@ interface SelectFieldProps
   label: string;
   options: SelectOption[];
   placeholder?: string;
+  error?: string;
 }
 
 export function SelectField({

@@ -1,6 +1,9 @@
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import { useForm, Controller } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 import {
   Button,
@@ -41,12 +44,48 @@ const countryOptions = [
   { value: "VE", label: "Venezuela" },
 ];
 
+export const CheckoutFormSchema = z.object({
+  email: z.string().email("Correo electrónico inválido"),
+  firstName: z.string().min(1, "El nombre es requerido"),
+  lastName: z.string().min(1, "El apellido es requerido"),
+  company: z.string().optional(),
+  address: z.string().min(1, "La dirección es requerida"),
+  city: z.string().min(1, "La ciudad es requerida"),
+  country: z.string().min(2, "El país es requerido"),
+  region: z.string().min(1, "La provincia/estado es requerido"),
+  zip: z.string().min(1, "El código postal es requerido"),
+  phone: z.string().min(1, "El teléfono es requerido"),
+});
+
+type CheckoutForm = z.infer<typeof CheckoutFormSchema>;
+
 export default function Checkout() {
   const { cart, clearCart, loading: cartLoading } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [isOrderCompleted, setIsOrderCompleted] = useState(false);
+
+  const {
+    handleSubmit,
+    control,
+    register,
+    formState: { errors },
+  } = useForm<CheckoutForm>({
+    resolver: zodResolver(CheckoutFormSchema),
+    defaultValues: {
+      email: user?.email || "",
+      firstName: "",
+      lastName: "",
+      company: "",
+      address: "",
+      city: "",
+      country: "",
+      region: "",
+      zip: "",
+      phone: "",
+    },
+  });
 
   useEffect(() => {
     if (cartLoading) return;
@@ -56,14 +95,11 @@ export default function Checkout() {
     }
   }, [cart, navigate, isOrderCompleted, cartLoading]);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  async function onSubmit(data: CheckoutForm) {
     if (!cart) return;
 
     setLoading(true);
     try {
-      const formData = new FormData(e.currentTarget);
-
       const items = cart.items.map((item) => ({
         productId: item.product.id,
         quantity: item.quantity,
@@ -71,6 +107,13 @@ export default function Checkout() {
         price: item.product.price,
         imgSrc: item.product.imgSrc,
       }));
+
+      const formData = new FormData();
+      Object.entries(data).forEach(([key, value]) => {
+        if (value !== undefined) {
+          formData.append(key, value);
+        }
+      });
 
       const { orderId } = await createOrder(items, formData);
       setIsOrderCompleted(true);
@@ -123,19 +166,21 @@ export default function Checkout() {
               </div>
             </div>
           </div>
-          <form className={styles.checkout__form} onSubmit={handleSubmit}>
+          <form
+            className={styles.checkout__form}
+            onSubmit={handleSubmit(onSubmit)}
+          >
             <fieldset>
               <legend className={styles.checkout__legend}>
                 Información de contacto
               </legend>
               <InputField
                 label="Correo electrónico"
-                name="email"
+                {...register("email")}
                 type="email"
-                required
                 autoComplete="email"
-                value={user?.email}
                 readOnly={Boolean(user)}
+                error={errors.email?.message}
               />
             </fieldset>
             <Separator className={styles.checkout__separator} />
@@ -146,57 +191,63 @@ export default function Checkout() {
               <div className={styles["checkout__form-fields"]}>
                 <InputField
                   label="Nombre"
-                  name="firstName"
-                  required
+                  {...register("firstName")}
                   autoComplete="given-name"
+                  error={errors.firstName?.message}
                 />
                 <InputField
                   label="Apellido"
-                  name="lastName"
-                  required
+                  {...register("lastName")}
                   autoComplete="family-name"
+                  error={errors.lastName?.message}
                 />
                 <InputField
                   label="Compañia"
-                  name="company"
+                  {...register("company")}
                   autoComplete="organization"
                 />
                 <InputField
                   label="Dirección"
-                  name="address"
-                  required
+                  {...register("address")}
                   autoComplete="street-address"
+                  error={errors.address?.message}
                 />
                 <InputField
                   label="Ciudad"
-                  name="city"
-                  required
+                  {...register("city")}
                   autoComplete="address-level2"
+                  error={errors.city?.message}
                 />
-                <SelectField
-                  label="País"
+                <Controller
                   name="country"
-                  options={countryOptions}
-                  placeholder="Seleccionar país"
-                  required
+                  control={control}
+                  render={({ field }) => (
+                    <SelectField
+                      label="País"
+                      options={countryOptions}
+                      placeholder="Seleccionar país"
+                      {...field}
+                      error={errors.country?.message}
+                    />
+                  )}
                 />
                 <InputField
                   label="Provincia/Estado"
-                  name="region"
-                  required
+                  {...register("region")}
                   autoComplete="address-level1"
+                  error={errors.region?.message}
                 />
                 <InputField
                   label="Código Postal"
-                  name="zip"
-                  required
+                  {...register("zip")}
                   autoComplete="postal-code"
+                  error={errors.zip?.message}
                 />
                 <InputField
                   label="Teléfono"
-                  name="phone"
-                  required
+                  {...register("phone")}
                   autoComplete="tel"
+                  error={errors.phone?.message}
                 />
               </div>
             </fieldset>
