@@ -17,6 +17,7 @@ import { useCart } from "@/contexts/cart.context";
 import { createOrder } from "@/services/order.service";
 
 import { useForm, SubmitHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 import styles from "./styles.module.css";
 
@@ -65,12 +66,26 @@ export default function Checkout() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [isOrderCompleted, setIsOrderCompleted] = useState(false);
+
   const {
     register,
     handleSubmit,
-    setError,
     formState: { errors },
-  } = useForm<CheckoutForm>();
+  } = useForm<CheckoutForm>({
+    resolver: zodResolver(CheckoutFormSchema),
+    defaultValues: {
+      email: user?.email,
+      firstName: "",
+      lastName: "",
+      company: "",
+      address: "",
+      city: "",
+      country: "",
+      region: "",
+      zip: "",
+      phone: "",
+    },
+  });
 
   useEffect(() => {
     if (cartLoading) return;
@@ -80,24 +95,11 @@ export default function Checkout() {
     }
   }, [cart, navigate, isOrderCompleted, cartLoading]);
 
-  const onSubmit: SubmitHandler<CheckoutForm> = async (data) => {
+  const onSubmit: SubmitHandler<CheckoutForm> = async (formData) => {
     if (!cart) return;
 
     setLoading(true);
     try {
-      const parsedData = CheckoutFormSchema.safeParse(data);
-
-      if (!parsedData.success) {
-        Object.entries(parsedData.error.flatten().fieldErrors).forEach(
-          ([field, error]) => {
-            setError(field as keyof CheckoutForm, {
-              message: error.join(", "),
-            });
-          }
-        );
-        return;
-      }
-
       const items = cart.items.map((item) => ({
         productId: item.product.id,
         quantity: item.quantity,
@@ -105,13 +107,6 @@ export default function Checkout() {
         price: item.product.price,
         imgSrc: item.product.imgSrc,
       }));
-
-      const formData = new FormData();
-      Object.entries(data).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          formData.append(key, value.toString());
-        }
-      });
 
       const { orderId } = await createOrder(items, formData);
       setIsOrderCompleted(true);

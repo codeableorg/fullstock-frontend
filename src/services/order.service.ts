@@ -4,12 +4,9 @@ import { Order, OrderDetails } from "@/models/order.model";
 
 export async function createOrder(
   items: CartItemInput[],
-  formData: FormData
+  formData: Record<string, unknown>
 ): Promise<{ orderId: string }> {
-  const shippingDetails = Object.fromEntries(
-    formData
-  ) as unknown as OrderDetails;
-
+  const shippingDetails = formData as unknown as OrderDetails;
   const data = await client<{ id: string }>(`/orders`, {
     body: { items, shippingDetails },
   });
