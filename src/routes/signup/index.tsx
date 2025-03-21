@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { useAuth } from "@/contexts/auth.context";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { client } from "@/lib/utils";
 
 import {
   Button,
@@ -15,18 +16,14 @@ import {
 
 import styles from "./styles.module.css";
 
+
 const SignupSchema = z.object({
   email: z.string().email("Correo electrónico inválido").refine(
     async (email) => {
-      const res = await fetch("http://localhost:3000/api/auth/checkEmail", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
+      const { exists } = await client<{ exists: boolean }>("/auth/checkEmail", {
+        body: { email },
       });
-      const data = await res.json();
-      return !data.exists; // Return true if the email doesn't exist
+      return !exists; // Return true if the email doesn't exist
     }, "El correo electrónico ya está en uso"),
   password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
 });
