@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
-
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
 import {
@@ -26,27 +27,26 @@ export default function Signup() {
   const { signup, user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [formErrors, setFormErrors] = useState<
-    Partial<Record<keyof SignupForm, string[]>>
-  >({});
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+  } = useForm<SignupForm>({
+    resolver: zodResolver(SignupSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+    mode: "onTouched",
+  });
+
+  async function onSubmit(data: SignupForm) {
     setLoading(true);
     setError(null);
     try {
-      const formData = new FormData(e.currentTarget);
-      const data = Object.fromEntries(formData.entries());
-      const parsedData = SignupSchema.safeParse(data);
-
-      if (!parsedData.success) {
-        setFormErrors(parsedData.error.flatten().fieldErrors);
-        return;
-      }
-      const email = data.email as string;
-      const password = data.password as string;
-
-      await signup(email, password);
+      await signup(data.email, data.password);
+      navigate("/");
     } catch (error) {
       setError(
         error instanceof Error ? error.message : "Error al crear la cuenta"
@@ -65,27 +65,25 @@ export default function Signup() {
     <Section>
       <Container className={styles.signup}>
         <h1 className={styles.signup__title}>Crea una cuenta</h1>
-        <form onSubmit={handleSubmit} className={styles.signup__form}>
+        <form onSubmit={handleSubmit(onSubmit)} className={styles.signup__form}>
           <InputField
             label="Correo electrónico"
-            name="email"
             type="email"
-            required
             autoComplete="email"
-            errors={formErrors.email}
+            error={errors.email?.message}
+            {...register("email")}
           />
           <InputField
             label="Contraseña"
-            name="password"
             type="password"
-            required
             autoComplete="current-password"
-            errors={formErrors.password}
+            error={errors.password?.message}
+            {...register("password")}
           />
           <Button
             size="lg"
             className={styles.signup__submit}
-            disabled={loading}
+            disabled={!isValid || loading}
           >
             {loading ? "Creando..." : "Crear cuenta"}
           </Button>
