@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
-
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
 import {
@@ -26,28 +27,26 @@ export default function Login() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [formErrors, setFormErrors] = useState<
-    Partial<Record<keyof LoginForm, string[]>>
-  >({});
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+  } = useForm<LoginForm>({
+    resolver: zodResolver(LoginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+    mode: "onTouched",
+  });
+
+  async function onSubmit(data: LoginForm) {
     setLoading(true);
     setError(null);
     try {
-      const formData = new FormData(e.currentTarget);
-      const data = Object.fromEntries(formData.entries());
-      const parsedData = LoginSchema.safeParse(data);
-
-      if (!parsedData.success) {
-        setFormErrors(parsedData.error.flatten().fieldErrors);
-        return;
-      }
-
-      const email = data.email as string;
-      const password = data.password as string;
-
-      await login(email, password);
-      // navigate("/");
+      await login(data.email, data.password);
+      navigate("/");
     } catch (error) {
       setError(
         error instanceof Error ? error.message : "Error al iniciar sesión"
@@ -66,24 +65,22 @@ export default function Login() {
     <Section>
       <Container className={styles.login}>
         <h1 className={styles.login__title}>Inicia sesión en tu cuenta</h1>
-        <form onSubmit={handleSubmit} className={styles.login__form}>
+        <form onSubmit={handleSubmit(onSubmit)} className={styles.login__form}>
           <InputField
             label="Correo electrónico"
-            name="email"
             type="email"
-            required
             autoComplete="email"
-            errors={formErrors.email}
+            error={errors.email?.message}
+            {...register("email")}
           />
           <InputField
             label="Contraseña"
-            name="password"
             type="password"
-            required
             autoComplete="current-password"
-            errors={formErrors.password}
+            error={errors.password?.message}
+            {...register("password")}
           />
-          <Button size="lg" className={styles.login__submit} disabled={loading}>
+          <Button size="lg" className={styles.login__submit} disabled={!isValid || loading}>
             {loading ? "Iniciando..." : "Iniciar sesión"}
           </Button>
           {error && <p className={styles.login__error}>{error}</p>}
