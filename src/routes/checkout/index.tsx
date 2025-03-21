@@ -68,7 +68,7 @@ export default function Checkout() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm<CheckoutForm>({
     resolver: zodResolver(CheckoutFormSchema),
     defaultValues: {
@@ -83,7 +83,10 @@ export default function Checkout() {
       zip: "",
       phone: "",
     },
+    mode: "onTouched",
   });
+
+  console.log(isValid);
 
   useEffect(() => {
     if (cartLoading) return;
@@ -242,7 +245,7 @@ export default function Checkout() {
             <Button
               size="xl"
               className={styles.checkout__submit}
-              disabled={loading}
+              disabled={!isValid || loading}
             >
               {loading ? "Procesando..." : "Confirmar Orden"}
             </Button>

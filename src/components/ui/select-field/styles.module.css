@@ -1,4 +1,4 @@
-.basic-select-field {
+.select-field {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
