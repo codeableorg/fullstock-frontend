@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 
+import { z } from "zod";
+
 import {
   Button,
   Container,
@@ -12,11 +14,21 @@ import { useAuth } from "@/contexts/auth.context";
 
 import styles from "./styles.module.css";
 
+const SignupSchema = z.object({
+  email: z.string().email("Correo electrónico inválido"),
+  password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
+});
+
+type SignupForm = z.infer<typeof SignupSchema>;
+
 export default function Signup() {
   const navigate = useNavigate();
   const { signup, user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [formErrors, setFormErrors] = useState<
+    Partial<Record<keyof SignupForm, string[]>>
+  >({});
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -24,8 +36,15 @@ export default function Signup() {
     setError(null);
     try {
       const formData = new FormData(e.currentTarget);
-      const email = formData.get("email") as string;
-      const password = formData.get("password") as string;
+      const data = Object.fromEntries(formData.entries());
+      const parsedData = SignupSchema.safeParse(data);
+
+      if (!parsedData.success) {
+        setFormErrors(parsedData.error.flatten().fieldErrors);
+        return;
+      }
+      const email = data.email as string;
+      const password = data.password as string;
 
       await signup(email, password);
     } catch (error) {
@@ -53,6 +72,7 @@ export default function Signup() {
             type="email"
             required
             autoComplete="email"
+            errors={formErrors.email}
           />
           <InputField
             label="Contraseña"
@@ -60,6 +80,7 @@ export default function Signup() {
             type="password"
             required
             autoComplete="current-password"
+            errors={formErrors.password}
           />
           <Button
             size="lg"

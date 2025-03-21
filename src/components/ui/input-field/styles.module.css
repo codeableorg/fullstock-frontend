@@ -3,3 +3,14 @@
   flex-direction: column;
   gap: var(--space-2);
 }
+
+.input-field--error {
+  border-color: tomato;
+}
+
+.input-field__error {
+  color: tomato;
+  font-size: var(--font-size-3-5);
+  margin-top: var(--space-1);
+  line-height: var(--leading-none);
+}

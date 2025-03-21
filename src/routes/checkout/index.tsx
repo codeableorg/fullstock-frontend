@@ -1,6 +1,9 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
+import { z } from "zod";
 
 import {
   Button,
@@ -41,12 +44,49 @@ const countryOptions = [
   { value: "VE", label: "Venezuela" },
 ];
 
+export const CheckoutFormSchema = z.object({
+  email: z.string().email("Correo electrónico inválido"),
+  firstName: z.string().min(1, "El nombre es requerido"),
+  lastName: z.string().min(1, "El apellido es requerido"),
+  company: z.string().optional(),
+  address: z.string().min(1, "La dirección es requerida"),
+  city: z.string().min(1, "La ciudad es requerida"),
+  country: z.string().min(1, "El país es requerido"),
+  region: z.string().min(1, "La provincia/estado es requerido"),
+  zip: z.string().min(1, "El código postal es requerido"),
+  phone: z.string().min(1, "El teléfono es requerido"),
+});
+
+type CheckoutForm = z.infer<typeof CheckoutFormSchema>;
+
 export default function Checkout() {
   const { cart, clearCart, loading: cartLoading } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [isOrderCompleted, setIsOrderCompleted] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+  } = useForm<CheckoutForm>({
+    resolver: zodResolver(CheckoutFormSchema),
+    defaultValues: {
+      email: user?.email,
+      firstName: "",
+      lastName: "",
+      company: "",
+      address: "",
+      city: "",
+      country: "",
+      region: "",
+      zip: "",
+      phone: "",
+    },
+    mode: "onTouched",
+  });
+
+  console.log(isValid);
 
   useEffect(() => {
     if (cartLoading) return;
@@ -56,14 +96,11 @@ export default function Checkout() {
     }
   }, [cart, navigate, isOrderCompleted, cartLoading]);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  async function onSubmit(formData: CheckoutForm) {
     if (!cart) return;
 
     setLoading(true);
     try {
-      const formData = new FormData(e.currentTarget);
-
       const items = cart.items.map((item) => ({
         productId: item.product.id,
         quantity: item.quantity,
@@ -123,19 +160,22 @@ export default function Checkout() {
               </div>
             </div>
           </div>
-          <form className={styles.checkout__form} onSubmit={handleSubmit}>
+          <form
+            className={styles.checkout__form}
+            onSubmit={handleSubmit(onSubmit)}
+          >
             <fieldset>
               <legend className={styles.checkout__legend}>
                 Información de contacto
               </legend>
               <InputField
                 label="Correo electrónico"
-                name="email"
                 type="email"
-                required
                 autoComplete="email"
-                value={user?.email}
+                defaultValue={user?.email}
                 readOnly={Boolean(user)}
+                error={errors.email?.message}
+                {...register("email")}
               />
             </fieldset>
             <Separator className={styles.checkout__separator} />
@@ -146,64 +186,66 @@ export default function Checkout() {
               <div className={styles["checkout__form-fields"]}>
                 <InputField
                   label="Nombre"
-                  name="firstName"
-                  required
                   autoComplete="given-name"
+                  error={errors.firstName?.message}
+                  {...register("firstName")}
                 />
                 <InputField
                   label="Apellido"
-                  name="lastName"
-                  required
                   autoComplete="family-name"
+                  error={errors.lastName?.message}
+                  {...register("lastName")}
                 />
                 <InputField
                   label="Compañia"
-                  name="company"
                   autoComplete="organization"
+                  error={errors.company?.message}
+                  {...register("company")}
                 />
+                {errors.company?.message && <p>{errors.company?.message}</p>}
                 <InputField
                   label="Dirección"
-                  name="address"
-                  required
                   autoComplete="street-address"
+                  error={errors.address?.message}
+                  {...register("address")}
                 />
                 <InputField
                   label="Ciudad"
-                  name="city"
-                  required
                   autoComplete="address-level2"
+                  error={errors.city?.message}
+                  {...register("city")}
                 />
                 <SelectField
                   label="País"
-                  name="country"
                   options={countryOptions}
                   placeholder="Seleccionar país"
-                  required
+                  error={errors.country?.message}
+                  {...register("country")}
                 />
                 <InputField
                   label="Provincia/Estado"
-                  name="region"
-                  required
                   autoComplete="address-level1"
+                  error={errors.region?.message}
+                  {...register("region")}
                 />
                 <InputField
                   label="Código Postal"
-                  name="zip"
-                  required
                   autoComplete="postal-code"
+                  error={errors.zip?.message}
+                  {...register("zip")}
                 />
                 <InputField
                   label="Teléfono"
-                  name="phone"
-                  required
                   autoComplete="tel"
+                  error={errors.phone?.message}
+                  {...register("phone")}
                 />
               </div>
             </fieldset>
             <Button
               size="xl"
               className={styles.checkout__submit}
-              disabled={loading}
+              disabled={!isValid || loading}
             >
               {loading ? "Procesando..." : "Confirmar Orden"}
             </Button>
