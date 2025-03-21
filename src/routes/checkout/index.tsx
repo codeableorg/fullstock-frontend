@@ -1,5 +1,7 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import { z } from "zod";
 
@@ -15,9 +17,6 @@ import {
 import { useAuth } from "@/contexts/auth.context";
 import { useCart } from "@/contexts/cart.context";
 import { createOrder } from "@/services/order.service";
-
-import { useForm, SubmitHandler } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 
 import styles from "./styles.module.css";
 
@@ -66,7 +65,6 @@ export default function Checkout() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [isOrderCompleted, setIsOrderCompleted] = useState(false);
-
   const {
     register,
     handleSubmit,
@@ -95,7 +93,7 @@ export default function Checkout() {
     }
   }, [cart, navigate, isOrderCompleted, cartLoading]);
 
-  const onSubmit: SubmitHandler<CheckoutForm> = async (formData) => {
+  async function onSubmit(formData: CheckoutForm) {
     if (!cart) return;
 
     setLoading(true);
@@ -117,7 +115,7 @@ export default function Checkout() {
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   if (!cart || !cart.items.length) {
     return <ContainerLoader />;
@@ -169,12 +167,12 @@ export default function Checkout() {
               </legend>
               <InputField
                 label="Correo electrónico"
-                {...register("email")}
                 type="email"
                 autoComplete="email"
-                value={user?.email}
+                defaultValue={user?.email}
                 readOnly={Boolean(user)}
-                errors={errors.email?.message}
+                error={errors.email?.message}
+                {...register("email")}
               />
             </fieldset>
             <Separator className={styles.checkout__separator} />
@@ -185,57 +183,59 @@ export default function Checkout() {
               <div className={styles["checkout__form-fields"]}>
                 <InputField
                   label="Nombre"
-                  {...register("firstName")}
                   autoComplete="given-name"
-                  errors={errors.firstName?.message}
+                  error={errors.firstName?.message}
+                  {...register("firstName")}
                 />
                 <InputField
                   label="Apellido"
-                  {...register("lastName")}
                   autoComplete="family-name"
-                  errors={errors.lastName?.message}
+                  error={errors.lastName?.message}
+                  {...register("lastName")}
                 />
                 <InputField
                   label="Compañia"
-                  {...register("company")}
                   autoComplete="organization"
-                  errors={errors.company?.message}
+                  error={errors.company?.message}
+                  {...register("company")}
                 />
+                {errors.company?.message && <p>{errors.company?.message}</p>}
                 <InputField
                   label="Dirección"
-                  {...register("address")}
                   autoComplete="street-address"
-                  errors={errors.address?.message}
+                  error={errors.address?.message}
+                  {...register("address")}
                 />
                 <InputField
                   label="Ciudad"
-                  {...register("city")}
                   autoComplete="address-level2"
-                  errors={errors.city?.message}
+                  error={errors.city?.message}
+                  {...register("city")}
                 />
                 <SelectField
                   label="País"
-                  {...register("country")}
                   options={countryOptions}
                   placeholder="Seleccionar país"
+                  error={errors.country?.message}
+                  {...register("country")}
                 />
                 <InputField
                   label="Provincia/Estado"
-                  {...register("region")}
                   autoComplete="address-level1"
-                  errors={errors.region?.message}
+                  error={errors.region?.message}
+                  {...register("region")}
                 />
                 <InputField
                   label="Código Postal"
-                  {...register("zip")}
                   autoComplete="postal-code"
-                  errors={errors.zip?.message}
+                  error={errors.zip?.message}
+                  {...register("zip")}
                 />
                 <InputField
                   label="Teléfono"
-                  {...register("phone")}
                   autoComplete="tel"
-                  errors={errors.phone?.message}
+                  error={errors.phone?.message}
+                  {...register("phone")}
                 />
               </div>
             </fieldset>
