@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
+import { useAuth } from "@/contexts/auth.context";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
@@ -11,12 +12,22 @@ import {
   InputField,
   Section,
 } from "@/components/ui";
-import { useAuth } from "@/contexts/auth.context";
 
 import styles from "./styles.module.css";
 
 const SignupSchema = z.object({
-  email: z.string().email("Correo electrónico inválido"),
+  email: z.string().email("Correo electrónico inválido").refine(
+    async (email) => {
+      const res = await fetch("http://localhost:3000/api/auth/checkEmail", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      return !data.exists; // Return true if the email doesn't exist
+    }, "El correo electrónico ya está en uso"),
   password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
 });
 
