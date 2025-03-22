@@ -1,6 +1,7 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router";
-
 import { z } from "zod";
 
 import {
@@ -11,18 +12,25 @@ import {
   Section,
 } from "@/components/ui";
 import { useAuth } from "@/contexts/auth.context";
+import { debounce } from "@/lib/utils";
+import { findEmail } from "@/services/user.service";
 
 import styles from "./styles.module.css";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { findEmail } from "@/services/user.service";
+
+const debouncedFindEmail = debounce((email: string) => {
+  return findEmail(email);
+}, 300);
 
 const SignupSchema = z.object({
   email: z
     .string()
     .email("Correo electrónico inválido")
     .refine(async (email) => {
-      return await findEmail(email);
+      if (email.match(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)) {
+        return await debouncedFindEmail(email);
+      } else {
+        return false;
+      }
     }, "El correo no esta disponible"),
   password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
 });

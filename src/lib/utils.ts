@@ -63,3 +63,17 @@ export async function client<T>(
     throw error;
   }
 }
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function debounce<T extends (...args: any[]) => any>(
+  func: T,
+  timeout = 300
+): (...args: Parameters<T>) => void {
+  let timer: NodeJS.Timeout;
+  return (...args: Parameters<T>) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      func(...args);
+    }, timeout);
+  };
+}
