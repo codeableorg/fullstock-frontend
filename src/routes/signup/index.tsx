@@ -17,8 +17,8 @@ import { findEmail } from "@/services/user.service";
 
 import styles from "./styles.module.css";
 
-const debouncedFindEmail = debounce((email: string) => {
-  return findEmail(email);
+const debouncedFindEmail = debounce(async (email: string) => {
+  return await findEmail(email);
 }, 300);
 
 const SignupSchema = z.object({
