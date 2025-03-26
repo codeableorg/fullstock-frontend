@@ -12,14 +12,12 @@ import {
   Section,
 } from "@/components/ui";
 import { useAuth } from "@/contexts/auth.context";
-import { debounce } from "@/lib/utils";
+import { debounceAsync } from "@/lib/utils";
 import { findEmail } from "@/services/user.service";
 
 import styles from "./styles.module.css";
 
-const debouncedFindEmail = debounce(async (email: string) => {
-  return await findEmail(email);
-}, 300);
+const debouncedFindEmail = debounceAsync(findEmail, 300);
 
 const SignupSchema = z.object({
   email: z
