@@ -86,8 +86,6 @@ export default function Checkout() {
     mode: "onTouched",
   });
 
-  console.log(isValid);
-
   useEffect(() => {
     if (cartLoading) return;
 

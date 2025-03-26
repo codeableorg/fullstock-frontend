@@ -11,6 +11,14 @@ export async function findOrCreateGuestUser(email: string): Promise<void> {
   }
 }
 
+export async function findEmail(email: string): Promise<boolean> {
+  const body = await client<boolean>("/users/findEmail", {
+    body: { email },
+  });
+
+  return body;
+}
+
 export async function updateUser(
   updatedUser: Partial<User>
 ): Promise<AuthResponse["user"]> {
