@@ -15,8 +15,6 @@ import { useAuth } from "@/contexts/auth.context";
 import { debounceAsync } from "@/lib/utils";
 import { findEmail } from "@/services/user.service";
 
-import styles from "./styles.module.css";
-
 const debouncedFindEmail = debounceAsync(findEmail, 300);
 
 const SignupSchema = z.object({
@@ -78,9 +76,12 @@ export default function Signup() {
 
   return (
     <Section>
-      <Container className={styles.signup}>
-        <h1 className={styles.signup__title}>Crea una cuenta</h1>
-        <form onSubmit={handleSubmit(onSubmit)} className={styles.signup__form}>
+      <Container className="max-w-sm mx-auto">
+        <h1 className="text-2xl font-bold text-center mb-10">Crea una cuenta</h1>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex flex-col gap-6"
+        >
           <InputField
             label="Correo electrónico"
             type="email"
@@ -99,18 +100,18 @@ export default function Signup() {
           />
           <Button
             size="lg"
-            className={styles.signup__submit}
+            className="w-full"
             disabled={!isValid || loading}
           >
             {loading ? "Creando..." : "Crear cuenta"}
           </Button>
-          {error && <p className={styles.signup__error}>{error}</p>}
+          {error && (
+            <p className="text-red-500 text-sm text-center mt-2">{error}</p>
+          )}
         </form>
-        <div className={styles.signup__footer}>
-          <span className={styles.signup__footer_text}>
-            ¿Ya tienes una cuenta?
-          </span>
-          <Link to="/login" className={styles.signup__footer_link}>
+        <div className="flex justify-center gap-2 mt-10 text-sm">
+          <span className="text-muted-foreground">¿Ya tienes una cuenta?</span>
+          <Link to="/login" className="text-accent-foreground hover:underline">
             Inicia sesión
           </Link>
         </div>
