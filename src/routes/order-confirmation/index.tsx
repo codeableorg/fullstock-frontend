@@ -16,10 +16,10 @@ export default function OrderConfirmation() {
         <p className="text-muted-foreground mb-12">
           Llegaremos a la puerta de tu domicilio lo antes posible
         </p>
-        <p className="text-lg leading-5 font-medium mb-2">
+        <p className="text-sm font-medium mb-2">
           Código de seguimiento
         </p>
-        <p className="text-lg leading-5 font-medium text-accent-foreground">{orderId}</p>
+        <p className="text-sm font-medium text-accent-foreground">{orderId}</p>
       </Container>
     </section>
   );
