@@ -11,7 +11,7 @@ import { getProductsByCategorySlug } from "@/services/product.service";
 import NotFound from "../not-found";
 import { PriceFilter } from "./components/price-filter";
 import { ProductCard } from "./components/product-card";
-import styles from "./styles.module.css";
+//import styles from "./styles.module.css";
 
 export default function Category() {
   const { category: categorySlug } = useParams<{
@@ -67,24 +67,26 @@ export default function Category() {
 
   return (
     <>
-      <section className={styles.header}>
+      <section className="py-10 border-b border-border">
         <Container>
-          <div className={styles.header__content}>
-            <h1 className={styles.header__title}>{category.title}</h1>
-            <p className={styles.header__description}>{category.description}</p>
+          <div className="max-w-3xl">
+            <h1 className="text-4xl font-bold mb-4">{category.title}</h1>
+            <p className="text-sm text-muted-foreground">
+              {category.description}
+            </p>
           </div>
         </Container>
       </section>
-      <section className={styles.products}>
+      <section className="py-10">
         <Container>
-          <div className={styles.products__layout}>
+          <div className="flex flex-col lg:flex-row gap-8">
             <PriceFilter
               minPrice={minPrice}
               maxPrice={maxPrice}
               onPriceChange={handlePriceChange}
-              className={styles["products__price-filter"]}
+              className="w-full max-w-sm lg:max-w-xs"
             />
-            <div className={styles.products__grid}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 flex-grow">
               {filteredProducts.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
