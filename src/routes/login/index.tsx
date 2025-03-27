@@ -84,7 +84,7 @@ export default function Login() {
           {error && <p className="text-red-500 text-sm text-center mt-2">{error}</p>}
         </form>
         <div className="flex justify-center gap-2 mt-10 text-sm leading-6">
-          <span className="text-accent-foreground">¿Aún no tienes cuenta?</span>
+          <span className="text-muted-foreground">¿Aún no tienes cuenta?</span>
           <Link to="/signup" className="text-accent-foreground hover:underline">
             Crea una cuenta
           </Link>
