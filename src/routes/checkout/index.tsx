@@ -125,7 +125,7 @@ export default function Checkout() {
       <Container>
         <div className="flex flex-col gap-12 max-w-2xl mx-auto lg:flex-row lg:max-w-none">
           <div className="flex-grow">
-            <h2 className="text-[1.125rem] leading-7 font-medium mb-4">
+            <h2 className="text-lg font-medium mb-4">
               Resumen de la orden
             </h2>
             <div className="border border-border rounded-xl bg-background flex flex-col">
@@ -143,7 +143,7 @@ export default function Checkout() {
                   </div>
                   <div className="flex flex-col justify-between flex-grow">
                     <h3 className="text-sm leading-5">{product.title}</h3>
-                    <div className="flex text-sm leading-5 font-medium gap-4 items-center self-end">
+                    <div className="flex text-sm font-medium gap-4 items-center self-end">
                       <p>{quantity}</p>
                       <X className="w-4 h-4" />
                       <p>${product.price.toFixed(2)}</p>
@@ -151,7 +151,7 @@ export default function Checkout() {
                   </div>
                 </div>
               ))}
-              <div className="flex justify-between p-6 text-base leading-6 font-medium">
+              <div className="flex justify-between p-6 text-base font-medium">
                 <p>Total</p>
                 <p>${(cart?.total || 0).toFixed(2)}</p>
               </div>
@@ -162,7 +162,7 @@ export default function Checkout() {
             onSubmit={handleSubmit(onSubmit)}
           >
             <fieldset>
-              <legend className="text-xl leading-7 font-medium mb-6">
+              <legend className="text-xl font-medium mb-6">
                 Información de contacto
               </legend>
               <InputField
@@ -177,7 +177,7 @@ export default function Checkout() {
             </fieldset>
             <Separator className="my-6" />
             <fieldset>
-              <legend className="text-xl leading-7 font-medium mb-6">
+              <legend className="text-xl font-medium mb-6">
                 Información de envío
               </legend>
               <div className="flex flex-col gap-6">
