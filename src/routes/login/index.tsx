@@ -13,8 +13,6 @@ import {
 } from "@/components/ui";
 import { useAuth } from "@/contexts/auth.context";
 
-import styles from "./styles.module.css";
-
 const LoginSchema = z.object({
   email: z.string().email("Correo electrónico inválido"),
   password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
@@ -63,9 +61,9 @@ export default function Login() {
 
   return (
     <Section>
-      <Container className={styles.login}>
-        <h1 className={styles.login__title}>Inicia sesión en tu cuenta</h1>
-        <form onSubmit={handleSubmit(onSubmit)} className={styles.login__form}>
+      <Container className="max-w-sm">
+        <h1 className="text-2xl leading-7 font-bold text-center mb-10">Inicia sesión en tu cuenta</h1>
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
           <InputField
             label="Correo electrónico"
             type="email"
@@ -80,16 +78,14 @@ export default function Login() {
             error={errors.password?.message}
             {...register("password")}
           />
-          <Button size="lg" className={styles.login__submit} disabled={!isValid || loading}>
+          <Button size="lg" className="w-full" disabled={!isValid || loading}>
             {loading ? "Iniciando..." : "Iniciar sesión"}
           </Button>
-          {error && <p className={styles.login__error}>{error}</p>}
+          {error && <p className="text-red-500 text-sm text-center mt-2">{error}</p>}
         </form>
-        <div className={styles.login__footer}>
-          <span className={styles.login__footer_text}>
-            ¿Aún no tienes cuenta?
-          </span>
-          <Link to="/signup" className={styles.login__footer_link}>
+        <div className="flex justify-center gap-2 mt-10 text-sm leading-6">
+          <span className="text-accent-foreground">¿Aún no tienes cuenta?</span>
+          <Link to="/signup" className="text-accent-foreground hover:underline">
             Crea una cuenta
           </Link>
         </div>
