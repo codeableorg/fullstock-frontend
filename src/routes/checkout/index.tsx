@@ -18,8 +18,6 @@ import { useAuth } from "@/contexts/auth.context";
 import { useCart } from "@/contexts/cart.context";
 import { createOrder } from "@/services/order.service";
 
-import styles from "./styles.module.css";
-
 const countryOptions = [
   { value: "AR", label: "Argentina" },
   { value: "BO", label: "Bolivia" },
@@ -123,47 +121,48 @@ export default function Checkout() {
   }
 
   return (
-    <Section className={styles.checkout}>
+    <Section className="bg-muted">
       <Container>
-        <div className={styles.checkout__layout}>
-          <div className={styles.checkout__summary}>
-            <h2 className={styles.checkout__summary_title}>
+        <div className="flex flex-col gap-12 max-w-2xl mx-auto lg:flex-row lg:max-w-none">
+          <div className="flex-grow">
+            <h2 className="text-[1.125rem] leading-7 font-medium mb-4">
               Resumen de la orden
             </h2>
-            <div className={styles.checkout__summary_container}>
+            <div className="border border-border rounded-xl bg-background flex flex-col">
               {cart?.items?.map(({ product, quantity }) => (
-                <div key={product.id} className={styles.checkout__item}>
-                  <div className={styles["checkout__item-image"]}>
+                <div
+                  key={product.id}
+                  className="flex gap-6 p-6 border-b border-border"
+                >
+                  <div className="w-20 rounded-xl bg-muted">
                     <img
                       src={product.imgSrc}
                       alt={product.title}
-                      className={styles["checkout__item-image-content"]}
+                      className="w-full aspect-square object-contain"
                     />
                   </div>
-                  <div className={styles["checkout__item-details"]}>
-                    <h3 className={styles["checkout__item-title"]}>
-                      {product.title}
-                    </h3>
-                    <div className={styles["checkout__item-price"]}>
+                  <div className="flex flex-col justify-between flex-grow">
+                    <h3 className="text-sm leading-5">{product.title}</h3>
+                    <div className="flex text-sm leading-5 font-medium gap-4 items-center self-end">
                       <p>{quantity}</p>
-                      <X className={styles["checkout__item-price-icon"]} />
+                      <X className="w-4 h-4" />
                       <p>${product.price.toFixed(2)}</p>
                     </div>
                   </div>
                 </div>
               ))}
-              <div className={styles.checkout__total}>
+              <div className="flex justify-between p-6 text-base leading-6 font-medium">
                 <p>Total</p>
                 <p>${(cart?.total || 0).toFixed(2)}</p>
               </div>
             </div>
           </div>
           <form
-            className={styles.checkout__form}
+            className="flex-grow lg:max-w-4xl lg:order-first"
             onSubmit={handleSubmit(onSubmit)}
           >
             <fieldset>
-              <legend className={styles.checkout__legend}>
+              <legend className="text-xl leading-7 font-medium mb-6">
                 Información de contacto
               </legend>
               <InputField
@@ -176,12 +175,12 @@ export default function Checkout() {
                 {...register("email")}
               />
             </fieldset>
-            <Separator className={styles.checkout__separator} />
+            <Separator className="my-6" />
             <fieldset>
-              <legend className={styles.checkout__legend}>
+              <legend className="text-xl leading-7 font-medium mb-6">
                 Información de envío
               </legend>
-              <div className={styles["checkout__form-fields"]}>
+              <div className="flex flex-col gap-6">
                 <InputField
                   label="Nombre"
                   autoComplete="given-name"
@@ -242,7 +241,7 @@ export default function Checkout() {
             </fieldset>
             <Button
               size="xl"
-              className={styles.checkout__submit}
+              className="w-full mt-6"
               disabled={!isValid || loading}
             >
               {loading ? "Procesando..." : "Confirmar Orden"}
