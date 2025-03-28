@@ -6,8 +6,6 @@ import { useAsync } from "@/hooks/use-async";
 import { Order } from "@/models/order.model";
 import { getOrdersByUser } from "@/services/order.service";
 
-import styles from "./styles.module.css";
-
 export default function Orders() {
   const { user } = useAuth();
   const { data, loading } = useAsync<Order[]>(getOrdersByUser);
@@ -26,36 +24,32 @@ export default function Orders() {
   return (
     <div>
       {orders.length > 0 ? (
-        <div className={styles.orders}>
+        <div className="flex flex-col gap-4">
           {orders.map((order) => (
             <div key={order.id}>
-              <div className={styles.orders__summary}>
-                <dl className={styles["orders__summary-list"]}>
-                  <div className={styles["orders__summary-item"]}>
-                    <dt className={styles["orders__summary-term"]}>
+              <div className="rounded-lg bg-muted py-4 px-6">
+                <dl className="flex justify-between text-center gap-4 w-full">
+                  <div className="flex-shrink-0">
+                    <dt className="font-medium text-accent-foreground">
                       Fecha del pedido
                     </dt>
-                    <dd className={styles["orders__summary-description"]}>
+                    <dd className="mt-1">
                       <time dateTime={order.createdAt.toISOString()}>
                         {order.createdAt.toLocaleDateString()}
                       </time>
                     </dd>
                   </div>
-                  <div
-                    className={`${styles["orders__summary-item"]} ${styles["orders__summary-item--grow"]}`}
-                  >
-                    <dt className={styles["orders__summary-term"]}>
+                  <div className="flex-shrink-0 flex-grow">
+                    <dt className="font-medium text-accent-foreground">
                       Número de orden
                     </dt>
-                    <dd className={styles["orders__summary-description"]}>
-                      {order.id}
-                    </dd>
+                    <dd className="mt-1">{order.id}</dd>
                   </div>
-                  <div className={styles["orders__summary-item"]}>
-                    <dt className={styles["orders__summary-term"]}>Total</dt>
-                    <dd
-                      className={`${styles["orders__summary-description"]} ${styles["orders__summary-description--total"]}`}
-                    >
+                  <div className="flex-shrink-0">
+                    <dt className="font-medium text-accent-foreground">
+                      Total
+                    </dt>
+                    <dd className="mt-1 font-medium text-foreground">
                       {order.totalAmount.toLocaleString("en-US", {
                         style: "currency",
                         currency: "USD",
@@ -65,68 +59,41 @@ export default function Orders() {
                 </dl>
               </div>
 
-              <table className={styles.orders__table}>
-                <caption className={styles["orders__table-caption"]}>
-                  Productos
-                </caption>
-                <thead className={styles["orders__table-head"]}>
+              <table className="w-full mt-4 text-sm text-muted-foreground">
+                <caption className="sr-only">Productos</caption>
+                <thead className="not-sr-only text-left">
                   <tr>
-                    <th scope="col" className={styles["orders__table-header"]}>
-                      Producto
-                    </th>
-                    <th
-                      scope="col"
-                      className={`${styles["orders__table-header"]} ${styles["orders__table-header--price"]}`}
-                    >
-                      Precio
-                    </th>
-                    <th
-                      scope="col"
-                      className={`${styles["orders__table-header"]} ${styles["orders__table-header--quantity"]}`}
-                    >
-                      Cantidad
-                    </th>
-                    <th
-                      scope="col"
-                      className={`${styles["orders__table-header"]} ${styles["orders__table-header--total"]}`}
-                    >
-                      Total
-                    </th>
+                    <th scope="col" className="py-3 pl-16">Producto</th>
+                    <th scope="col" className="py-3 pr-8 w-1/5 text-center">Precio</th>
+                    <th scope="col" className="py-3 pr-8 w-1/5 text-center">Cantidad</th>
+                    <th scope="col" className="py-3 pr-8 text-center">Total</th>
                   </tr>
                 </thead>
-                <tbody className={styles["orders__table-body"]}>
+                <tbody className="border-t border-b border-border">
                   {order.items.map((item) => (
-                    <tr key={item.productId}>
-                      <td className={styles["orders__table-cell"]}>
-                        <div className={styles["orders__product"]}>
-                          <div className={styles["orders__product-image"]}>
-                            <img src={item.imgSrc} alt={item.title} />
+                    <tr key={item.productId}> 
+                      <td className="py-6 pl-6">
+                        <div className="flex items-center gap-2">
+                          <div className="w-16 rounded-xl bg-muted">
+                            <img src={item.imgSrc} alt={item.title}/>
                           </div>
                           <div>
-                            <div className={styles["orders__product-title"]}>
+                            <div className="font-medium text-foreground">
                               {item.title}
                             </div>
-                            <div
-                              className={styles["orders__product-mobile-price"]}
-                            >
+                            <div className="mt-1">
                               {item.quantity} × ${item.price.toFixed(2)}
                             </div>
                           </div>
                         </div>
                       </td>
-                      <td
-                        className={`${styles["orders__table-cell"]} ${styles["orders__table-cell--price"]}`}
-                      >
+                      <td className="hidden py-6 pr-8 sm:table-cell text-center">
                         ${item.price.toFixed(2)}
                       </td>
-                      <td
-                        className={`${styles["orders__table-cell"]} ${styles["orders__table-cell--quantity"]}`}
-                      >
+                      <td className="hidden py-6 pr-8 sm:table-cell text-center">
                         {item.quantity}
                       </td>
-                      <td
-                        className={`${styles["orders__table-cell"]} ${styles["orders__table-cell--total"]}`}
-                      >
+                      <td className="py-6 pr-8 whitespace-nowrap text-center font-medium text-foreground">
                         ${(item.price * item.quantity).toFixed(2)}
                       </td>
                     </tr>
@@ -137,7 +104,7 @@ export default function Orders() {
           ))}
         </div>
       ) : (
-        <p className={styles.orders__empty}>No hay pedidos realizados</p>
+        <p className="text-muted-foreground">No hay pedidos realizados</p>
       )}
     </div>
   );
