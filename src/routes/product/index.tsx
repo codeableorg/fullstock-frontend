@@ -53,7 +53,7 @@ export default function Product() {
             </Button>
             <Separator className="my-6" /> 
             <div>
-              <h2 className="text-[0.875rem] leading-5 font-semibold text-accent-foreground mb-6"> 
+              <h2 className="text-sm font-semibold text-accent-foreground mb-6"> 
                 Características
               </h2>
               <ul className="list-disc pl-4 text-sm leading-5 text-muted-foreground"> 
