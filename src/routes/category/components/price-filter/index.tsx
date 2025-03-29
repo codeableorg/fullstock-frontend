@@ -1,8 +1,6 @@
 import { Button, Input } from "@/components/ui";
 import { cn } from "@/lib/utils";
 
-import styles from "./styles.module.css";
-
 interface PriceFilterProps {
   minPrice: string;
   maxPrice: string;
@@ -28,13 +26,13 @@ export function PriceFilter({
   return (
     <form
       onSubmit={handleSubmit}
-      className={cn(styles["price-filter"], className)}
+      className={cn("flex flex-col gap-6", className)}
     >
       <fieldset>
-        <legend className={styles["price-filter__legend"]}>Precio</legend>
-        <div className={styles["price-filter__inputs"]}>
-          <div className={styles["price-filter__field"]}>
-            <label className={styles["price-filter__label"]}>Min</label>
+        <legend className="text-lg font-medium mb-4">Precio</legend>
+        <div className="flex gap-6">
+          <div className="flex flex-col gap-2">
+            <label className="text-base font-medium">Min</label>
             <Input
               type="number"
               name="minPrice"
@@ -42,8 +40,8 @@ export function PriceFilter({
               min="0"
             />
           </div>
-          <div className={styles["price-filter__field"]}>
-            <label className={styles["price-filter__label"]}>Max</label>
+          <div className="flex flex-col gap-2">
+            <label className="text-base font-medium">Max</label>
             <Input
               type="number"
               name="maxPrice"
@@ -54,12 +52,7 @@ export function PriceFilter({
         </div>
       </fieldset>
 
-      <Button
-        type="submit"
-        size="xl"
-        variant="secondary"
-        className={styles["price-filter__button"]}
-      >
+      <Button type="submit" size="xl" variant="secondary" className="w-full">
         Filtar Productos
       </Button>
     </form>
