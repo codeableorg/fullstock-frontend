@@ -32,7 +32,7 @@ export const SelectField = forwardRef<HTMLSelectElement, SelectFieldProps>(
 
     return (
       <div className="space-y-1">
-        <Label htmlFor={id} className="block text-sm font-medium text-gray-700 dark:text-gray-300">{label}</Label>
+        <Label htmlFor={id}>{label}</Label>
         <Select ref={ref} id={id} className={selectClasses} {...props}>
           <option value="">{placeholder || "Seleccione una opción"}</option>
           {options.map((option) => (
