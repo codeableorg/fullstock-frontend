@@ -5,8 +5,6 @@ import { Button, InputField } from "@/components/ui";
 import { useAuth } from "@/contexts/auth.context";
 import { updateUser } from "@/services/user.service";
 
-import styles from "./styles.module.css";
-
 export default function Profile() {
   const { user, setUser } = useAuth();
   const [name, setName] = useState(user?.name || "");
@@ -35,7 +33,7 @@ export default function Profile() {
   }
 
   return (
-    <form className={styles.profile} onSubmit={handleSubmit}>
+    <form className="max-w-md flex flex-col gap-6" onSubmit={handleSubmit}>
       <InputField
         label="Correo electrónico"
         name="email"
@@ -63,7 +61,7 @@ export default function Profile() {
       <Button
         type="submit"
         size="xl"
-        className={styles.profile__submit}
+        className="self-stretch"
         disabled={isLoading}
       >
         {isLoading ? "Guardando..." : "Guardar cambios"}
