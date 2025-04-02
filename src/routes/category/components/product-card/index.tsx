@@ -2,32 +2,30 @@ import { Link } from "react-router";
 
 import { Product } from "@/models/product.model";
 
-import styles from "./styles.module.css";
-
 interface ProductCardProps {
   product: Product;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
   return (
-    <Link to={`/products/${product.id}`} className={styles["product-card"]}>
-      <div className={styles["product-card__container"]}>
-        <div className={styles["product-card__image-container"]}>
+    <Link to={`/products/${product.id}`} className="block">
+      <div className="relative flex h-full flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-md hover:shadow-lg dark:border-gray-700 dark:bg-gray-800">
+        <div className="relative aspect-[3/4] bg-gray-100 dark:bg-gray-700">
           <img
             src={product.imgSrc}
             alt={product.title}
-            className={styles["product-card__image"]}
+            className="absolute inset-0 h-full w-full object-contain transition-transform duration-200 hover:scale-105"
           />
         </div>
-        <div className={styles["product-card__content"]}>
-          <h2 className={styles["product-card__title"]}>{product.title}</h2>
-          <p className={styles["product-card__description"]}>
+        <div className="flex grow flex-col gap-2 p-4">
+          <h2 className="text-base font-medium text-gray-800 dark:text-gray-100">{product.title}</h2>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
             {product.description}
           </p>
-          <p className={styles["product-card__price"]}>${product.price}</p>
+          <p className="mt-auto text-lg font-medium text-gray-900 dark:text-gray-200">${product.price}</p>
         </div>
         {product.isOnSale && (
-          <span className={styles["product-card__sale-badge"]}>🚀 Oferta</span>
+          <span className="absolute top-0 right-0 rounded-bl-xl bg-[hsl(240,62%,57%)] px-2 py-1 text-xs font-medium text-white">🚀 Oferta</span>
         )}
       </div>
     </Link>
