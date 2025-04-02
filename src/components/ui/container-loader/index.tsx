@@ -2,17 +2,15 @@ import { Loader } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
-import styles from "./styles.module.css";
-
 interface ContainerLoaderProps {
   className?: string;
 }
 
 export function ContainerLoader({ className }: ContainerLoaderProps) {
   return (
-    <div className={styles["container-loader"]}>
+    <div className='flex h-full grow items-center justify-center'>
       <Loader
-        className={cn(styles["container-loader__spinner"], className)}
+        className={cn('h-8 w-8 animate-spin', className)}
         aria-label="Loading"
       />
     </div>
