@@ -3,8 +3,6 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-import styles from "./styles.module.css";
-
 const Separator = React.forwardRef<
   React.ElementRef<typeof SeparatorPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof SeparatorPrimitive.Root>
@@ -18,8 +16,10 @@ const Separator = React.forwardRef<
       decorative={decorative}
       orientation={orientation}
       className={cn(
-        styles.separator,
-        styles[`separator--${orientation}`],
+        "bg-gray-200 dark:bg-gray-700", 
+        orientation === "horizontal"
+          ? "h-[1px] w-full" 
+          : "w-[1px] h-full",
         className
       )}
       {...props}
