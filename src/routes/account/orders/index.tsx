@@ -28,7 +28,7 @@ export default function Orders() {
           {orders.map((order) => (
             <div key={order.id}>
               <div className="rounded-lg bg-muted py-4 px-6">
-                <dl className="flex justify-between text-center gap-4 w-full">
+                <dl className="flex flex-col gap-4 w-full sm:flex-row">
                   <div className="flex-shrink-0">
                     <dt className="font-medium text-accent-foreground">
                       Fecha del pedido
@@ -64,8 +64,8 @@ export default function Orders() {
                 <thead className="not-sr-only text-left">
                   <tr>
                     <th scope="col" className="py-3 pl-16">Producto</th>
-                    <th scope="col" className="py-3 pr-8 w-1/5 text-center">Precio</th>
-                    <th scope="col" className="py-3 pr-8 w-1/5 text-center">Cantidad</th>
+                    <th scope="col" className="py-3 pr-8 text-center hidden sm:table-cell sm:w-1/5">Precio</th>
+                    <th scope="col" className="py-3 pr-8 text-center hidden sm:table-cell sm:w-1/5">Cantidad</th>
                     <th scope="col" className="py-3 pr-8 text-center">Total</th>
                   </tr>
                 </thead>
@@ -81,16 +81,16 @@ export default function Orders() {
                             <div className="font-medium text-foreground">
                               {item.title}
                             </div>
-                            <div className="mt-1">
+                            <div className="mt-1 sm:hidden">
                               {item.quantity} × ${item.price.toFixed(2)}
                             </div>
                           </div>
                         </div>
                       </td>
-                      <td className="hidden py-6 pr-8 sm:table-cell text-center">
+                      <td className="py-6 pr-8 text-center hidden sm:table-cell">
                         ${item.price.toFixed(2)}
                       </td>
-                      <td className="hidden py-6 pr-8 sm:table-cell text-center">
+                      <td className="py-6 pr-8 text-center hidden sm:table-cell">
                         {item.quantity}
                       </td>
                       <td className="py-6 pr-8 whitespace-nowrap text-center font-medium text-foreground">
