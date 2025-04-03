@@ -9,8 +9,8 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   return (
     <Link to={`/products/${product.id}`} className="block">
-      <div className="relative flex h-full flex-col overflow-hidden rounded-xl border border-separator shadow-md hover:shadow-lg">
-        <div className="relative aspect-[3/4] bg-muted">
+      <div className="relative flex h-full flex-col overflow-hidden rounded-xl border border-separator">
+        <div className="aspect-[3/4] bg-muted">
           <img
             src={product.imgSrc}
             alt={product.title}
@@ -19,13 +19,13 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
         <div className="flex grow flex-col gap-2 p-4">
           <h2 className="text-base font-medium">{product.title}</h2>
-          <p className="text-sm text-muted">
+          <p className="text-sm text-muted-foreground">
             {product.description}
           </p>
           <p className="mt-auto text-lg font-medium">${product.price}</p>
         </div>
         {product.isOnSale && (
-          <span className="absolute top-0 right-0 rounded-bl-xl bg-primary-foreground px-2 py-1 text-xs font-medium text-primary">🚀 Oferta</span>
+          <span className="absolute top-0 right-0 rounded-bl-xl bg-primary px-2 py-1 text-xs font-medium text-primary-foreground">🚀 Oferta</span>
         )}
       </div>
     </Link>
