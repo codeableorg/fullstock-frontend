@@ -33,6 +33,7 @@ export function PriceFilter({
         <div className="flex gap-6">
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium">Min</label>
+
             <Input
               type="number"
               name="minPrice"
