@@ -18,7 +18,7 @@ export function ProductCard({ product }: ProductCardProps) {
           />
         </div>
         <div className="flex grow flex-col gap-2 p-4">
-          <h2 className="text-base font-medium text-gray-800 dark:text-gray-100">{product.title}</h2>
+          <h2 className="text-base font-medium">{product.title}</h2>
           <p className="text-sm text-muted">
             {product.description}
           </p>
