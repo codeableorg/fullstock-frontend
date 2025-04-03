@@ -16,7 +16,7 @@ export const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
     const hasError = Boolean(error);
 
     const inputClasses = cn(className, {
-      "border-[tomato]": hasError,
+      "border-red-500": hasError,
     });
 
     return (
@@ -24,7 +24,7 @@ export const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
         <Label htmlFor={id}>{label}</Label>
         <Input ref={ref} id={id} className={inputClasses} {...props} />
         {hasError && (
-          <div className="text-[tomato] text-sm mt-1 leading-none">
+          <div className="text-red-500 text-sm mt-1 leading-none">
             <p>{error}</p>
           </div>
         )}
