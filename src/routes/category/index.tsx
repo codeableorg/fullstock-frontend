@@ -11,7 +11,6 @@ import { getProductsByCategorySlug } from "@/services/product.service";
 import NotFound from "../not-found";
 import { PriceFilter } from "./components/price-filter";
 import { ProductCard } from "./components/product-card";
-//import styles from "./styles.module.css";
 
 export default function Category() {
   const { category: categorySlug } = useParams<{
