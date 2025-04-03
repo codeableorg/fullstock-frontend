@@ -3,8 +3,6 @@ import { Link, useNavigate } from "react-router";
 import { Button, Container } from "@/components/ui";
 import { useAuth } from "@/contexts/auth.context";
 
-import styles from "./styles.module.css";
-
 export default function AuthNav() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
@@ -15,19 +13,17 @@ export default function AuthNav() {
   }
 
   return (
-    <div className={styles["auth-nav"]}>
-      <Container className={styles["auth-nav__container"]}>
+    <div className="bg-black text-white text-sm font-medium">
+      <Container className="h-10 flex justify-end items-center">
         <nav aria-label="Autenticación de usuario">
-          <ul className={styles["auth-nav__list"]}>
+          <ul className="flex items-center gap-4">
             {user ? (
               <>
-                <li className={styles["auth-nav__item"]}>
-                  Bienvenido {user.name || user.email}
-                </li>
-                <li className={styles["auth-nav__item"]}>
+                <li>Bienvenido {user.name || user.email}</li>
+                <li>
                   <Button
                     variant="ghost"
-                    className={styles["auth-nav__button"]}
+                    className="text-white"
                     onClick={onLogout}
                   >
                     Cerrar sesión
@@ -36,13 +32,19 @@ export default function AuthNav() {
               </>
             ) : (
               <>
-                <li className={styles["auth-nav__item"]}>
-                  <Link to="/login" className={styles["auth-nav__link"]}>
+                <li>
+                  <Link
+                    to="/login"
+                    className="hover:underline hover:decoration-white hover:underline-offset-2"
+                  >
                     Iniciar sesión
                   </Link>
                 </li>
-                <li className={styles["auth-nav__item"]}>
-                  <Link to="/signup" className={styles["auth-nav__link"]}>
+                <li>
+                  <Link
+                    to="/signup"
+                    className="hover:underline hover:decoration-white hover:underline-offset-2"
+                  >
                     Crear una cuenta
                   </Link>
                 </li>

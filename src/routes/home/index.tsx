@@ -7,8 +7,6 @@ import { useAsync } from "@/hooks/use-async";
 import { Category } from "@/models/category.model";
 import { getAllCategories } from "@/services/category.service";
 
-import styles from "./styles.module.css";
-
 const features = [
   {
     Icon: Truck,
@@ -47,10 +45,12 @@ export default function Home() {
 
   return (
     <>
-      <section className={styles.hero}>
-        <Container className={styles.hero__container}>
-          <h2 className={styles.hero__title}>Nuevos productos disponibles</h2>
-          <p className={styles.hero__text}>
+      <section className="text-center bg-cover bg-no-repeat bg-center text-white bg-[linear-gradient(0deg,rgba(0,0,0,0.5)_0%,rgba(0,0,0,0.5)_100%),url('/images/hero.jpg')]">
+        <Container className="pt-32 pb-32 max-w-3xl">
+          <h2 className="text-4xl leading-10 font-bold mb-4">
+            Nuevos productos disponibles
+          </h2>
+          <p className="text-lg mb-8">
             Un pequeño lote de increíbles productos acaba de llegar.
             <br />
             Agrega tus favoritos al carrito antes que se agoten.
@@ -61,25 +61,26 @@ export default function Home() {
         </Container>
       </section>
 
-      <section className={styles.categories}>
+      <section className="py-12 md:py-24">
         <Container>
-          <div className={styles.categories__header}>
-            <h2 className={styles.categories__title}>Compra por categoría</h2>
-            <p className={styles.categories__description}>
+          <div className="max-w-3xl">
+            <h2 className="text-2xl md:text-4xl font-bold mb-4">
+              Compra por categoría
+            </h2>
+            <p className="text-muted-foreground mb-10">
               Explora nuestra selección de productos especialmente diseñados
-              para desarrolladores web.{" "}
-              <br className={styles["categories__description-break"]} />
+              para desarrolladores web. <br className="hidden md:block" />
               Encuentra lo que buscas navegando por nuestras categorías de
               polos, tazas, stickers y más.
             </p>
           </div>
-          <div className={styles.categories__grid}>
+          <div className="flex flex-col md:flex-row gap-8">
             {error && (
-              <div className={styles.error}>
-                <p className={styles.errorMessage}>
+              <div className="flex flex-col justify-center items-center mx-auto">
+                <p className="text-accent-foreground text-2xl font-bold mb-4">
                   Hubo un error al cargar las categorías
                 </p>
-                <p className={styles.errorMessage}>
+                <p className="text-accent-foreground text-2xl font-bold mb-4">
                   <ServerCrash />
                 </p>
               </div>
@@ -87,18 +88,21 @@ export default function Home() {
             {categories?.map((category) => (
               <Link
                 to={category.title.toLowerCase()}
-                className={styles.category}
+                className="flex-1 flex-basis-0"
                 key={category.title}
               >
-                <div className={styles.category__image}>
+                <div className="rounded-xl overflow-hidden mb-4">
                   <img
                     src={category.imgSrc}
                     alt={category.alt || `${category.title}`}
+                    className="w-full aspect-[3/2] md:aspect-[4/5] object-cover"
                   />
                 </div>
                 <div>
-                  <h3 className={styles.category__title}>{category.title}</h3>
-                  <p className={styles.category__description}>
+                  <h3 className="font-semibold mb-2 group-hover:underline">
+                    {category.title}
+                  </h3>
+                  <p className="text-sm leading-5 text-muted-foreground">
                     {category.description}
                   </p>
                 </div>
@@ -108,15 +112,19 @@ export default function Home() {
         </Container>
       </section>
 
-      <section className={styles.features}>
+      <section className="py-12 md:py-24 bg-muted text-center">
         <Container>
-          <h2 className={styles.features__title}>Nuestra Promesa de Calidad</h2>
-          <div className={styles.features__grid}>
+          <h2 className="text-2xl font-bold mb-12">
+            Nuestra Promesa de Calidad
+          </h2>
+          <div className="flex flex-col gap-8 sm:grid sm:grid-cols-2 md:grid-cols-4">
             {features.map(({ Icon, title, description }) => (
-              <div key={title} className={styles.feature}>
-                <Icon className={styles.feature__icon} />
-                <h3 className={styles.feature__title}>{title}</h3>
-                <p className={styles.feature__description}>{description}</p>
+              <div key={title} className="">
+                <Icon className="inline-block mb-6" />
+                <h3 className="text-sm leading-5 font-medium mb-2">{title}</h3>
+                <p className="text-sm leading-5 text-muted-foreground">
+                  {description}
+                </p>
               </div>
             ))}
           </div>
