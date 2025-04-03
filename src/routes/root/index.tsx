@@ -5,7 +5,6 @@ import { Button, Container, Input, Section, Separator } from "@/components/ui";
 
 import AuthNav from "./components/auth-nav";
 import HeaderMain from "./components/header-main";
-import styles from "./styles.module.css";
 
 export default function Root() {
   const [email, setEmail] = useState("");
@@ -27,20 +26,20 @@ export default function Root() {
   };
 
   return (
-    <div className={styles.root}>
-      <header className={styles.root__header}>
+    <div className="grid grid-rows-[auto_1fr_auto] min-h-screen bg-background">
+      <header className="sticky top-0 bg-background border-b border-border z-50">
         <AuthNav />
         <HeaderMain />
       </header>
-      <main className={styles.root__main}>
+      <main>
         <Outlet />
       </main>
-      <footer className={styles.root__footer}>
+      <footer className="border-t border-border">
         <Container>
-          <Section className={styles["root__footer-section"]}>
-            <div className={styles["root__footer-links"]}>
-              <ul className={styles["root__footer-list"]}>
-                <li className={styles["root__footer-title"]}>Tienda</li>
+          <Section className="flex flex-col gap-8 lg:flex-row">
+            <div className="flex flex-wrap gap-y-4 gap-x-8 flex-grow">
+              <ul className="flex-1 basis-40 flex flex-col gap-6 text-sm text-muted-foreground">
+                <li className="font-medium text-foreground">Tienda</li>
                 <li>
                   <Link to="/polos">Polos</Link>
                 </li>
@@ -51,8 +50,8 @@ export default function Root() {
                   <Link to="/stickers">Stickers</Link>
                 </li>
               </ul>
-              <ul className={styles["root__footer-list"]}>
-                <li className={styles["root__footer-title"]}>Compañía</li>
+              <ul className="flex-1 basis-40 flex flex-col gap-6 text-sm text-muted-foreground">
+                <li className="font-medium text-foreground">Compañía</li>
                 <li>
                   <Link to="/quienes-somos">Quienes somos</Link>
                 </li>
@@ -63,8 +62,8 @@ export default function Root() {
                   <Link to="/privacidad">Privacidad</Link>
                 </li>
               </ul>
-              <ul className={styles["root__footer-list"]}>
-                <li className={styles["root__footer-title"]}>Conecta</li>
+              <ul className="flex-1 basis-40 flex flex-col gap-6 text-sm text-muted-foreground">
+                <li className="font-medium text-foreground">Conecta</li>
                 <li>
                   <Link to="/contacto">Contáctanos</Link>
                 </li>
@@ -80,18 +79,13 @@ export default function Root() {
                 </li>
               </ul>
             </div>
-            <div className={styles["root__footer-newsletter"]}>
-              <p className={styles["root__footer-newsletter-title"]}>
-                Suscríbete a nuestro boletín
-              </p>
-              <p className={styles["root__footer-newsletter-text"]}>
+            <div className="text-sm max-w-md">
+              <p className="font-medium mb-6">Suscríbete a nuestro boletín</p>
+              <p className="text-muted-foreground mb-2">
                 Recibe las últimas ofertas y descuentos en tu correo
                 semanalmente.
               </p>
-              <form
-                className={styles["root__footer-form"]}
-                onSubmit={handleSubmit}
-              >
+              <form className="flex gap-2" onSubmit={handleSubmit}>
                 <Input
                   type="email"
                   aria-label="email"
@@ -113,7 +107,7 @@ export default function Root() {
             </div>
           </Section>
           <Separator orientation="horizontal" decorative={true} />
-          <small className={styles["root__footer-copyright"]}>
+          <small className="block text-center text-sm text-muted-foreground py-6">
             Todos los derechos reservados © Full Stock
           </small>
         </Container>

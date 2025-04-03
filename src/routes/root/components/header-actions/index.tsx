@@ -5,8 +5,6 @@ import { Button, Separator } from "@/components/ui";
 import { useAuth } from "@/contexts/auth.context";
 import { useCart } from "@/contexts/cart.context";
 
-import styles from "./styles.module.css";
-
 export default function HeaderActions() {
   const { user } = useAuth();
   const { cart } = useCart();
@@ -14,7 +12,7 @@ export default function HeaderActions() {
     cart?.items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
 
   return (
-    <div className={styles["header-actions"]}>
+    <div className="flex gap-2 items-center">
       {user && (
         <>
           <Link to="/account">
@@ -26,10 +24,7 @@ export default function HeaderActions() {
               <User2 />
             </Button>
           </Link>
-          <Separator
-            orientation="vertical"
-            className={styles["header-actions__separator"]}
-          />
+          <Separator orientation="vertical" className="h-6" />
         </>
       )}
       <Button
@@ -37,12 +32,12 @@ export default function HeaderActions() {
         variant="ghost"
         aria-label="Carrito de compras"
         asChild
-        className={styles["header-actions__cart"]}
+        className="relative"
       >
         <Link to="/cart">
           <ShoppingCart />
           {totalItems > 0 && (
-            <span className={styles["header-actions__cart-badge"]}>
+            <span className="absolute -bottom-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
               {totalItems}
             </span>
           )}
