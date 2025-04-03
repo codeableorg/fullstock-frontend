@@ -1,8 +1,5 @@
-import * as React from "react";
-
 import { cn } from "@/lib/utils";
-
-import styles from "./styles.module.css";
+import React from "react";
 
 const Select = React.forwardRef<
   HTMLSelectElement,
@@ -10,7 +7,10 @@ const Select = React.forwardRef<
 >(({ className, children, ...props }, ref) => (
   <select
     ref={ref}
-    className={cn(styles["basic-select"], className)}
+    className={cn(
+      "w-full rounded-xl border border-input bg-background px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50",
+      className
+    )}
     {...props}
   >
     {children}

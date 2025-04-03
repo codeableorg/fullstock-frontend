@@ -29,10 +29,11 @@ export function PriceFilter({
       className={cn("flex flex-col gap-6", className)}
     >
       <fieldset>
-        <legend className="text-lg font-medium mb-4">Precio</legend>
+        <legend className="text-base font-medium mb-4">Precio</legend>
         <div className="flex gap-6">
           <div className="flex flex-col gap-2">
-            <label className="text-base font-medium">Min</label>
+            <label className="text-sm font-medium">Min</label>
+
             <Input
               type="number"
               name="minPrice"
@@ -41,7 +42,7 @@ export function PriceFilter({
             />
           </div>
           <div className="flex flex-col gap-2">
-            <label className="text-base font-medium">Max</label>
+            <label className="text-sm font-medium">Max</label>
             <Input
               type="number"
               name="maxPrice"

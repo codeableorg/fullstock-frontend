@@ -2,8 +2,6 @@ import { NavLink } from "react-router";
 
 import { cn } from "@/lib/utils";
 
-import styles from "./styles.module.css";
-
 interface MainNavProps {
   items: {
     to: string;
@@ -13,17 +11,20 @@ interface MainNavProps {
 
 export default function MainNav({ items }: MainNavProps) {
   return (
-    <nav aria-label="Navegación principal" className={styles["main-nav"]}>
-      <ul className={styles["main-nav__list"]} role="menubar">
+    <nav
+      aria-label="Navegación principal"
+      className="static sm:absolute sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2"
+    >
+      <ul className="flex justify-center h-12" role="menubar">
         {items.map((item) => (
-          <li key={item.to} className={styles["main-nav__item"]} role="none">
+          <li key={item.to} className="flex justify-center" role="none">
             <NavLink
               to={item.to}
               role="menuitem"
               className={({ isActive }) =>
                 cn(
-                  styles["main-nav__link"],
-                  isActive && styles["main-nav__link--active"]
+                  "inline-flex justify-center items-center p-3 text-sm font-medium text-muted-foreground transition-colors duration-200 hover:bg-accent",
+                  isActive && "text-accent-foreground"
                 )
               }
             >
