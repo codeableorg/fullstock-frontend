@@ -1,67 +1,60 @@
-import { createBrowserRouter, Navigate } from "react-router";
-
-import Account from "./routes/account";
-import Orders from "./routes/account/orders";
-import Profile from "./routes/account/profile";
-import Cart from "./routes/cart";
-import Category from "./routes/category";
-import Checkout from "./routes/checkout";
-import Home from "./routes/home";
-import Login from "./routes/login";
-import NotFound from "./routes/not-found";
-import OrderConfirmation from "./routes/order-confirmation";
-import Product from "./routes/product";
-import Root from "./routes/root";
-import Signup from "./routes/signup";
+import { lazy } from "react";
+import { createBrowserRouter } from "react-router";
 
 const router = createBrowserRouter([
   {
-    element: <Root />,
+    Component: lazy(() => import("./routes/root")),
     children: [
       {
         index: true,
-        element: <Home />,
+        Component: lazy(() => import("./routes/home")),
       },
       {
         path: "/:category",
-        element: <Category />,
+        Component: lazy(async () => import("./routes/category")),
       },
       {
         path: "/products/:id",
-        element: <Product />,
+        Component: lazy(() => import("./routes/product")),
       },
       {
         path: "/cart",
-        element: <Cart />,
+        Component: lazy(() => import("./routes/cart")),
       },
       {
         path: "/checkout",
-        element: <Checkout />,
+        Component: lazy(() => import("./routes/checkout")),
       },
       {
         path: "/order-confirmation/:orderId",
-        element: <OrderConfirmation />,
+        Component: lazy(() => import("./routes/order-confirmation")),
       },
       {
         path: "/login",
-        element: <Login />,
+        Component: lazy(() => import("./routes/login")),
       },
       {
         path: "/signup",
-        element: <Signup />,
+        Component: lazy(() => import("./routes/signup")),
       },
       {
         path: "/account",
-        element: <Account />,
+        Component: lazy(() => import("./routes/account")),
         children: [
-          { index: true, element: <Navigate to="profile" replace /> },
-          { path: "profile", element: <Profile /> },
-          { path: "orders", element: <Orders /> },
+          // { index: true, Component: <Navigate to="profile"replace },
+          {
+            path: "profile",
+            Component: lazy(() => import("./routes/account/profile")),
+          },
+          {
+            path: "orders",
+            Component: lazy(() => import("./routes/account/orders")),
+          },
         ],
       },
       {
         path: "*",
-        element: <NotFound />,
+        Component: lazy(() => import("./routes/not-found")),
       },
     ],
   },
