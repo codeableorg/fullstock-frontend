@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 import { useParams, useSearchParams } from "react-router";
+import { ErrorBoundary } from "react-error-boundary";
 
 import { Container, ContainerLoader } from "@/components/ui";
 import { useAsync } from "@/hooks/use-async";
@@ -11,6 +12,7 @@ import { getProductsByCategorySlug } from "@/services/product.service";
 import NotFound from "../not-found";
 import { PriceFilter } from "./components/price-filter";
 import { ProductCard } from "./components/product-card";
+import { ProductCardFallback } from "./components/product-card-fallback";
 
 export default function Category() {
   const { category: categorySlug } = useParams<{
@@ -87,7 +89,9 @@ export default function Category() {
             />
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 flex-grow">
               {filteredProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
+                <ErrorBoundary FallbackComponent={ProductCardFallback}>
+                  <ProductCard key={product.id} product={product} />
+                </ErrorBoundary>
               ))}
             </div>
           </div>

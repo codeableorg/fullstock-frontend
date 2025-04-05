@@ -8,9 +8,9 @@ interface ContainerLoaderProps {
 
 export function ContainerLoader({ className }: ContainerLoaderProps) {
   return (
-    <div className='flex h-full grow items-center justify-center'>
+    <div className="flex h-full grow items-center justify-center">
       <Loader
-        className={cn('h-8 w-8 animate-spin', className)}
+        className={cn("h-8 w-8 animate-spin", className)}
         aria-label="Loading"
       />
     </div>

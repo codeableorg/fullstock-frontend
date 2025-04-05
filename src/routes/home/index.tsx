@@ -1,11 +1,11 @@
 import { ServerCrash } from "lucide-react";
+import { ErrorBoundary } from "react-error-boundary";
 import { Link } from "react-router";
 
 import { Truck, Return, Ribbon, Idea } from "@/components/icons";
-import { Button, Container, ContainerLoader } from "@/components/ui";
-import { useAsync } from "@/hooks/use-async";
-import { Category } from "@/models/category.model";
-import { getAllCategories } from "@/services/category.service";
+import { Button, Container } from "@/components/ui";
+
+import { Categories } from "./components/categories";
 
 const features = [
   {
@@ -35,14 +35,6 @@ const features = [
 ];
 
 export default function Home() {
-  const {
-    data: categories,
-    loading,
-    error,
-  } = useAsync<Category[]>(getAllCategories);
-
-  if (loading) return <ContainerLoader />;
-
   return (
     <>
       <section className="text-center bg-cover bg-no-repeat bg-center text-white bg-[linear-gradient(0deg,rgba(0,0,0,0.5)_0%,rgba(0,0,0,0.5)_100%),url('/images/hero.jpg')]">
@@ -75,39 +67,20 @@ export default function Home() {
             </p>
           </div>
           <div className="flex flex-col md:flex-row gap-8">
-            {error && (
-              <div className="flex flex-col justify-center items-center mx-auto">
-                <p className="text-accent-foreground text-2xl font-bold mb-4">
-                  Hubo un error al cargar las categorías
-                </p>
-                <p className="text-accent-foreground text-2xl font-bold mb-4">
-                  <ServerCrash />
-                </p>
-              </div>
-            )}
-            {categories?.map((category) => (
-              <Link
-                to={category.title.toLowerCase()}
-                className="flex-1 flex-basis-0"
-                key={category.title}
-              >
-                <div className="rounded-xl overflow-hidden mb-4">
-                  <img
-                    src={category.imgSrc}
-                    alt={category.alt || `${category.title}`}
-                    className="w-full aspect-[3/2] md:aspect-[4/5] object-cover"
-                  />
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-2 group-hover:underline">
-                    {category.title}
-                  </h3>
-                  <p className="text-sm leading-5 text-muted-foreground">
-                    {category.description}
+            <ErrorBoundary
+              fallback={
+                <div className="flex flex-col justify-center items-center mx-auto">
+                  <p className="text-accent-foreground text-2xl font-bold mb-4">
+                    Hubo un error al cargar las categorías
+                  </p>
+                  <p className="text-accent-foreground text-2xl font-bold mb-4">
+                    <ServerCrash />
                   </p>
                 </div>
-              </Link>
-            ))}
+              }
+            >
+              <Categories />
+            </ErrorBoundary>
           </div>
         </Container>
       </section>
