@@ -1,5 +1,5 @@
 import { lazy } from "react";
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter, Navigate } from "react-router";
 
 const router = createBrowserRouter([
   {
@@ -11,7 +11,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/:category",
-        Component: lazy(async () => import("./routes/category")),
+        Component: lazy(() => import("./routes/category")),
       },
       {
         path: "/products/:id",
@@ -41,7 +41,7 @@ const router = createBrowserRouter([
         path: "/account",
         Component: lazy(() => import("./routes/account")),
         children: [
-          // { index: true, Component: <Navigate to="profile"replace },
+          { index: true, element: <Navigate to="profile" replace /> },
           {
             path: "profile",
             Component: lazy(() => import("./routes/account/profile")),
