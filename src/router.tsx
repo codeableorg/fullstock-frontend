@@ -1,6 +1,8 @@
 import { lazy } from "react";
 import { createBrowserRouter, Navigate } from "react-router";
 
+import { action as loginAction } from "./routes/login";
+
 const router = createBrowserRouter([
   {
     Component: lazy(() => import("./routes/root")),
@@ -32,6 +34,7 @@ const router = createBrowserRouter([
       {
         path: "/login",
         Component: lazy(() => import("./routes/login")),
+        action: loginAction,
       },
       {
         path: "/signup",
