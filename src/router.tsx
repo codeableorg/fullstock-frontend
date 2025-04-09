@@ -1,5 +1,7 @@
 import { lazy } from "react";
 import { createBrowserRouter, Navigate } from "react-router";
+import { loaderHome } from "./routes/home";
+import { action as actionSubscripcion } from "./routes/root";
 
 import { action as loginAction } from "./routes/login";
 import { loader as productLoader } from "./routes/product";
@@ -7,9 +9,11 @@ import { loader as productLoader } from "./routes/product";
 const router = createBrowserRouter([
   {
     Component: lazy(() => import("./routes/root")),
+    action: actionSubscripcion,
     children: [
       {
         index: true,
+        loader: loaderHome,
         Component: lazy(() => import("./routes/home")),
       },
       {

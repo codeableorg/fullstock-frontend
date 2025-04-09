@@ -1,40 +1,56 @@
-import { ServerCrash } from "lucide-react";
-import { ErrorBoundary } from "react-error-boundary";
-import { Link } from "react-router";
+import { Link, useLoaderData } from "react-router";
 
 import { Truck, Return, Ribbon, Idea } from "@/components/icons";
 import { Button, Container } from "@/components/ui";
+import { getAllCategories } from "@/services/category.service";
+import { ServerCrash } from "lucide-react";
+import { Category } from "@/models/category.model";
 
+import { ErrorBoundary } from "react-error-boundary";
 import { Categories } from "./components/categories";
 
-const features = [
-  {
-    Icon: Truck,
-    title: "Entrega rápida",
-    description:
-      "Recibe tus productos en tiempo récord, directo a tu puerta, para que puedas disfrutar de ellos cuanto antes.",
-  },
-  {
-    Icon: Return,
-    title: "Satisfacción Garantizada",
-    description:
-      "Tu felicidad es nuestra prioridad. Si no estás 100% satisfecho, estamos aquí para ayudarte con cambios o devoluciones.",
-  },
-  {
-    Icon: Ribbon,
-    title: "Materiales de Alta Calidad",
-    description:
-      "Nos aseguramos de que todos nuestros productos estén hechos con materiales de la más alta calidad.",
-  },
-  {
-    Icon: Idea,
-    title: "Diseños Exclusivos",
-    description:
-      "Cada producto está diseñado pensando en los desarrolladores, con estilos únicos que no encontrarás en ningún otro lugar.",
-  },
-];
+export async function loaderHome() {
+  const features = [
+    {
+      Icon: Truck,
+      title: "Entrega rápida",
+      description:
+        "Recibe tus productos en tiempo récord, directo a tu puerta, para que puedas disfrutar de ellos cuanto antes.",
+    },
+    {
+      Icon: Return,
+      title: "Satisfacción Garantizada",
+      description:
+        "Tu felicidad es nuestra prioridad. Si no estás 100% satisfecho, estamos aquí para ayudarte con cambios o devoluciones.",
+    },
+    {
+      Icon: Ribbon,
+      title: "Materiales de Alta Calidad",
+      description:
+        "Nos aseguramos de que todos nuestros productos estén hechos con materiales de la más alta calidad.",
+    },
+    {
+      Icon: Idea,
+      title: "Diseños Exclusivos",
+      description:
+        "Cada producto está diseñado pensando en los desarrolladores, con estilos únicos que no encontrarás en ningún otro lugar.",
+    },
+  ];
+
+  try {
+    const categories: Category[] = await getAllCategories();
+    return { features, categories };
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    return { features, categories: [], error: "Failed to load categories" };
+  }
+}
 
 export default function Home() {
+  const { features, categories, error } = useLoaderData();
+
+  // if (loading) return <ContainerLoader />;
+
   return (
     <>
       <section className="text-center bg-cover bg-no-repeat bg-center text-white bg-[linear-gradient(0deg,rgba(0,0,0,0.5)_0%,rgba(0,0,0,0.5)_100%),url('/images/hero.jpg')]">
