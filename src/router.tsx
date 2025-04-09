@@ -8,6 +8,8 @@ import { loader as productLoader } from "./routes/product";
 
 import { loader as categoryLoader } from "./routes/category";
 
+import { action as loginAction } from "./routes/login";
+
 const router = createBrowserRouter([
   {
     Component: lazy(() => import("./routes/root")),
