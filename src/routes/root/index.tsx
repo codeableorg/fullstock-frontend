@@ -1,7 +1,14 @@
-import { useState } from "react";
-import { Link, Outlet, ScrollRestoration } from "react-router";
+import { Suspense, useState } from "react";
+import { Link, Outlet, ScrollRestoration, useLocation } from "react-router";
 
-import { Button, Container, Input, Section, Separator } from "@/components/ui";
+import {
+  Button,
+  Container,
+  ContainerLoader,
+  Input,
+  Section,
+  Separator,
+} from "@/components/ui";
 
 import AuthNav from "./components/auth-nav";
 import HeaderMain from "./components/header-main";
@@ -9,6 +16,7 @@ import HeaderMain from "./components/header-main";
 export default function Root() {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const location = useLocation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,7 +40,9 @@ export default function Root() {
         <HeaderMain />
       </header>
       <main>
-        <Outlet />
+        <Suspense fallback={<ContainerLoader />} key={location.key}>
+          <Outlet />
+        </Suspense>
       </main>
       <footer className="border-t border-border">
         <Container>

@@ -7,6 +7,11 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+  const random = Math.random();
+  const hasError = random < 0.1;
+
+  if (hasError) throw new Error("No se pudo cargar el producto");
+
   return (
     <Link to={`/products/${product.id}`} className="block">
       <div className="relative flex h-full flex-col overflow-hidden rounded-xl border border-separator group">
@@ -14,6 +19,7 @@ export function ProductCard({ product }: ProductCardProps) {
           <img
             src={product.imgSrc}
             alt={product.title}
+            loading="lazy"
             className="h-full w-full object-contain transition-transform duration-200 group-hover:scale-105"
           />
         </div>
