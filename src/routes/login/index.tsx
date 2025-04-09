@@ -1,7 +1,15 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import {
+  ActionFunctionArgs,
+  Link,
+  redirect,
+  useActionData,
+  useNavigate,
+  useNavigation,
+  useSubmit,
+} from "react-router";
 import { z } from "zod";
 
 import {
@@ -12,19 +20,39 @@ import {
   Section,
 } from "@/components/ui";
 import { useAuth } from "@/contexts/auth.context";
+import { login } from "@/services/auth.service";
 
 const LoginSchema = z.object({
   email: z.string().email("Correo electrónico inválido"),
   password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
 });
 
+export async function action({ request }: ActionFunctionArgs) {
+  const formData = await request.formData();
+  const email = formData.get("email") as string;
+  const password = formData.get("password") as string;
+
+  try {
+    await login(email, password);
+    return redirect("/");
+  } catch (error) {
+    if (error instanceof Error) {
+      return { error: error.message };
+    }
+    return { error: "Error desconocido" };
+  }
+}
+
 type LoginForm = z.infer<typeof LoginSchema>;
 
 export default function Login() {
-  const { login, user } = useAuth();
+  const submit = useSubmit();
+  const navigation = useNavigation();
+  const data = useActionData();
+
+  const { user } = useAuth();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const loading = navigation.state === "submitting";
 
   const {
     register,
@@ -40,29 +68,25 @@ export default function Login() {
   });
 
   async function onSubmit(data: LoginForm) {
-    setLoading(true);
-    setError(null);
-    try {
-      await login(data.email, data.password);
-      navigate("/");
-    } catch (error) {
-      setError(
-        error instanceof Error ? error.message : "Error al iniciar sesión"
-      );
-    } finally {
-      setLoading(false);
-    }
+    submit(data, { method: "post" });
   }
 
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, [user, navigate]);
+
   if (user) {
-    navigate("/");
     return <ContainerLoader />;
   }
 
   return (
     <Section>
       <Container className="max-w-sm">
-        <h1 className="text-2xl leading-7 font-bold text-center mb-10">Inicia sesión en tu cuenta</h1>
+        <h1 className="text-2xl leading-7 font-bold text-center mb-10">
+          Inicia sesión en tu cuenta
+        </h1>
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
           <InputField
             label="Correo electrónico"
@@ -81,7 +105,11 @@ export default function Login() {
           <Button size="lg" className="w-full" disabled={!isValid || loading}>
             {loading ? "Iniciando..." : "Iniciar sesión"}
           </Button>
-          {error && <p className="text-red-500 text-sm text-center mt-2">{error}</p>}
+          {data?.error && (
+            <p className="text-red-500 text-sm text-center mt-2">
+              {data.error}
+            </p>
+          )}
         </form>
         <div className="flex justify-center gap-2 mt-10 text-sm leading-6">
           <span className="text-muted-foreground">¿Aún no tienes cuenta?</span>

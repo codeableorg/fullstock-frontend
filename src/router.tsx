@@ -5,6 +5,8 @@ import { action as rootAction } from "./routes/root";
 
 import { loader as categoryLoader } from "./routes/category";
 
+import { action as loginAction } from "./routes/login";
+
 const router = createBrowserRouter([
   {
     Component: lazy(() => import("./routes/root")),
@@ -40,6 +42,7 @@ const router = createBrowserRouter([
       {
         path: "/login",
         Component: lazy(() => import("./routes/login")),
+        action: loginAction,
       },
       {
         path: "/signup",
