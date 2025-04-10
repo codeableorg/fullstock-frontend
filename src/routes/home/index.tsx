@@ -42,13 +42,13 @@ export async function loaderHome() {
     return { features, categories };
   } catch (error) {
     console.error("Error fetching categories:", error);
-    return { features, categories: [], error: "Failed to load categories" };
+    return { features, categories: null as Category[] | null };
   }
 }
 
 export default function Home() {
-  const { features, categories, error } = useLoaderData();
-
+  const { features, categories } = useLoaderData();
+  const error = !categories;
   // if (loading) return <ContainerLoader />;
 
   return (
