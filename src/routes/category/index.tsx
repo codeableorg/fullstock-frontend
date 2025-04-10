@@ -1,54 +1,66 @@
-import { useCallback } from "react";
-import { useParams, useSearchParams } from "react-router";
 import { ErrorBoundary } from "react-error-boundary";
+import { ActionFunctionArgs, LoaderFunctionArgs, redirect, useLoaderData } from "react-router";
 
-import { Container, ContainerLoader } from "@/components/ui";
-import { useAsync } from "@/hooks/use-async";
+import { Container } from "@/components/ui";
 import { isValidCategorySlug, type Category } from "@/models/category.model";
 import { Product } from "@/models/product.model";
 import { getCategoryBySlug } from "@/services/category.service";
 import { getProductsByCategorySlug } from "@/services/product.service";
 
-import NotFound from "../not-found";
 import { PriceFilter } from "./components/price-filter";
 import { ProductCard } from "./components/product-card";
 import { ProductCardFallback } from "./components/product-card-fallback";
 
-export default function Category() {
-  const { category: categorySlug } = useParams<{
-    category: Category["slug"];
-  }>();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const minPrice = searchParams.get("minPrice") || "";
-  const maxPrice = searchParams.get("maxPrice") || "";
+export async function loader({ params, request }: LoaderFunctionArgs) {
+  const { category: categorySlug } = params;
 
-  const { data, loading } = useAsync(
-    useCallback(
-      () =>
-        Promise.all([
-          getCategoryBySlug(categorySlug!),
-          getProductsByCategorySlug(categorySlug!),
-        ]),
-      [categorySlug]
-    )
-  );
-
-  const [category, products] = data || [null, []];
-
-  const handlePriceChange = (min: string, max: string) => {
-    const params = new URLSearchParams(searchParams);
-    if (min) params.set("minPrice", min);
-    else params.delete("minPrice");
-    if (max) params.set("maxPrice", max);
-    else params.delete("maxPrice");
-    setSearchParams(params);
-  };
-
-  if (!isValidCategorySlug(categorySlug) || !category) {
-    return <NotFound />;
+  if (!isValidCategorySlug(categorySlug)) {
+    throw new Response("Not Found", { status: 404 });
   }
 
-  if (loading) return <ContainerLoader />;
+  const url = new URL(request.url);
+  const minPrice = url.searchParams.get("minPrice") || "";
+  const maxPrice = url.searchParams.get("maxPrice") || "";
+
+  try {
+    const [category, products] = await Promise.all([
+      getCategoryBySlug(categorySlug),
+      getProductsByCategorySlug(categorySlug),
+    ]);
+
+    return {
+      category,
+      products,
+      minPrice,
+      maxPrice,
+    };
+  } catch (e) {
+    throw new Response("Error loading category: " + e, { status: 500 });
+  }
+}
+
+export async function action({ request }: ActionFunctionArgs) {
+  const formData = await request.formData();
+  const minPrice = formData.get("minPrice") as string || "";
+  const maxPrice = formData.get("maxPrice") as string || "";
+  
+  const url = new URL(request.url);
+  if (minPrice) url.searchParams.set("minPrice", minPrice);
+  else url.searchParams.delete("minPrice");
+  
+  if (maxPrice) url.searchParams.set("maxPrice", maxPrice);
+  else url.searchParams.delete("maxPrice");
+  
+  return redirect(url.pathname + url.search);
+}
+
+export default function Category() {
+  const { category, products, minPrice, maxPrice } = useLoaderData() as {
+    category: Category;
+    products: Product[];
+    minPrice: string;
+    maxPrice: string;
+  };
 
   const filterProductsByPrice = (
     products: Product[],
@@ -62,9 +74,7 @@ export default function Category() {
     );
   };
 
-  const filteredProducts = loading
-    ? []
-    : filterProductsByPrice(products!, minPrice, maxPrice);
+  const filteredProducts = filterProductsByPrice(products, minPrice, maxPrice);
 
   return (
     <>
@@ -84,13 +94,15 @@ export default function Category() {
             <PriceFilter
               minPrice={minPrice}
               maxPrice={maxPrice}
-              onPriceChange={handlePriceChange}
               className="w-full max-w-sm lg:max-w-xs"
             />
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 flex-grow">
               {filteredProducts.map((product) => (
-                <ErrorBoundary FallbackComponent={ProductCardFallback}>
-                  <ProductCard key={product.id} product={product} />
+                <ErrorBoundary 
+                  FallbackComponent={ProductCardFallback} 
+                  key={product.id}
+                >
+                  <ProductCard product={product} />
                 </ErrorBoundary>
               ))}
             </div>
