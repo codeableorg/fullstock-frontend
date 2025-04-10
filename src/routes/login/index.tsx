@@ -1,31 +1,25 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import {
   ActionFunctionArgs,
   Link,
   redirect,
   useActionData,
-  useNavigate,
   useNavigation,
   useSubmit,
 } from "react-router";
 import { z } from "zod";
 
-import {
-  Button,
-  Container,
-  ContainerLoader,
-  InputField,
-  Section,
-} from "@/components/ui";
-import { useAuth } from "@/contexts/auth.context";
-import { login } from "@/services/auth.service";
+import { Button, Container, InputField, Section } from "@/components/ui";
+import { getToken } from "@/lib/utils";
+import { getCurrentUser, login } from "@/services/auth.service";
 
 const LoginSchema = z.object({
   email: z.string().email("Correo electrónico inválido"),
   password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
 });
+
+type ActionData = { error: string } | undefined;
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
@@ -43,16 +37,26 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 }
 
+export async function loader() {
+  const token = getToken();
+  if (!token) return;
+
+  try {
+    const user = await getCurrentUser();
+    if (user) return redirect("/");
+  } catch {
+    return;
+  }
+}
+
 type LoginForm = z.infer<typeof LoginSchema>;
 
 export default function Login() {
   const submit = useSubmit();
   const navigation = useNavigation();
-  const data = useActionData();
+  const data = useActionData() as ActionData;
 
-  const { user } = useAuth();
-  const navigate = useNavigate();
-  const loading = navigation.state === "submitting";
+  const isSubmitting = navigation.state === "submitting";
 
   const {
     register,
@@ -69,16 +73,6 @@ export default function Login() {
 
   async function onSubmit(data: LoginForm) {
     submit(data, { method: "post" });
-  }
-
-  useEffect(() => {
-    if (user) {
-      navigate("/");
-    }
-  }, [user, navigate]);
-
-  if (user) {
-    return <ContainerLoader />;
   }
 
   return (
@@ -102,8 +96,12 @@ export default function Login() {
             error={errors.password?.message}
             {...register("password")}
           />
-          <Button size="lg" className="w-full" disabled={!isValid || loading}>
-            {loading ? "Iniciando..." : "Iniciar sesión"}
+          <Button
+            size="lg"
+            className="w-full"
+            disabled={!isValid || isSubmitting}
+          >
+            {isSubmitting ? "Iniciando..." : "Iniciar sesión"}
           </Button>
           {data?.error && (
             <p className="text-red-500 text-sm text-center mt-2">

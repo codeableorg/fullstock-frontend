@@ -1,17 +1,9 @@
-import { Link, useNavigate } from "react-router";
+import { Form, Link } from "react-router";
 
 import { Button, Container } from "@/components/ui";
-import { useAuth } from "@/contexts/auth.context";
+import { User } from "@/models/user.model";
 
-export default function AuthNav() {
-  const navigate = useNavigate();
-  const { user, logout } = useAuth();
-
-  function onLogout() {
-    logout();
-    navigate("/");
-  }
-
+export default function AuthNav({ user }: { user?: Omit<User, "password"> }) {
   return (
     <div className="bg-black text-white text-sm font-medium">
       <Container className="h-10 flex justify-end items-center">
@@ -21,13 +13,11 @@ export default function AuthNav() {
               <>
                 <li>Bienvenido {user.name || user.email}</li>
                 <li>
-                  <Button
-                    variant="ghost"
-                    className="text-white"
-                    onClick={onLogout}
-                  >
-                    Cerrar sesión
-                  </Button>
+                  <Form method="post" action="/logout">
+                    <Button variant="ghost" className="text-white">
+                      Cerrar sesión
+                    </Button>
+                  </Form>
                 </li>
               </>
             ) : (
