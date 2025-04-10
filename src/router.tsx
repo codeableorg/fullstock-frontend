@@ -6,6 +6,8 @@ import { action as rootAction } from "./routes/root";
 import { action as loginAction } from "./routes/login";
 import { loader as productLoader } from "./routes/product";
 
+import { loader as categoryLoader, action as categoryAction } from "./routes/category";
+
 const router = createBrowserRouter([
   {
     Component: lazy(() => import("./routes/root")),
@@ -19,6 +21,8 @@ const router = createBrowserRouter([
       {
         path: "/:category",
         Component: lazy(() => import("./routes/category")),
+        loader: categoryLoader,
+        action: categoryAction,
       },
       {
         path: "/products/:id",

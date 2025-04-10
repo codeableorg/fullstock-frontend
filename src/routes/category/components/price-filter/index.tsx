@@ -1,31 +1,22 @@
+import { Form } from "react-router";
+
 import { Button, Input } from "@/components/ui";
 import { cn } from "@/lib/utils";
 
 interface PriceFilterProps {
   minPrice: string;
   maxPrice: string;
-  onPriceChange: (min: string, max: string) => void;
   className?: string;
 }
 
 export function PriceFilter({
   minPrice,
   maxPrice,
-  onPriceChange,
   className,
 }: PriceFilterProps) {
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    onPriceChange(
-      formData.get("minPrice") as string,
-      formData.get("maxPrice") as string
-    );
-  }
-
   return (
-    <form
-      onSubmit={handleSubmit}
+    <Form
+      method="post"
       className={cn("flex flex-col gap-6", className)}
     >
       <fieldset>
@@ -33,7 +24,6 @@ export function PriceFilter({
         <div className="flex gap-6">
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium">Min</label>
-
             <Input
               type="number"
               name="minPrice"
@@ -52,10 +42,9 @@ export function PriceFilter({
           </div>
         </div>
       </fieldset>
-
       <Button type="submit" size="xl" variant="secondary" className="w-full">
-        Filtar Productos
+        Filtrar Productos
       </Button>
-    </form>
+    </Form>
   );
 }
