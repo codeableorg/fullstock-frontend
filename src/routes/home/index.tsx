@@ -5,11 +5,9 @@ import { Button, Container } from "@/components/ui";
 import { getAllCategories } from "@/services/category.service";
 import { ServerCrash } from "lucide-react";
 import { Category } from "@/models/category.model";
-
-import { ErrorBoundary } from "react-error-boundary";
 import { Categories } from "./components/categories";
 
-export async function loaderHome() {
+export async function loader() {
   const features = [
     {
       Icon: Truck,
@@ -83,20 +81,18 @@ export default function Home() {
             </p>
           </div>
           <div className="flex flex-col md:flex-row gap-8">
-            <ErrorBoundary
-              fallback={
-                <div className="flex flex-col justify-center items-center mx-auto">
-                  <p className="text-accent-foreground text-2xl font-bold mb-4">
-                    Hubo un error al cargar las categorías
-                  </p>
-                  <p className="text-accent-foreground text-2xl font-bold mb-4">
-                    <ServerCrash />
-                  </p>
-                </div>
-              }
-            >
-              <Categories />
-            </ErrorBoundary>
+            {error ? (
+              <div className="flex flex-col justify-center items-center mx-auto">
+                <p className="text-accent-foreground text-2xl font-bold mb-4">
+                  Hubo un error al cargar las categorías
+                </p>
+                <p className="text-accent-foreground text-2xl font-bold mb-4">
+                  <ServerCrash />
+                </p>
+              </div>
+            ) : (
+              <Categories categories={categories} />
+            )}
           </div>
         </Container>
       </section>
