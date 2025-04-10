@@ -15,10 +15,7 @@ export function PriceFilter({
   className,
 }: PriceFilterProps) {
   return (
-    <Form
-      method="post"
-      className={cn("flex flex-col gap-6", className)}
-    >
+    <Form className={cn("flex flex-col gap-6", className)}>
       <fieldset>
         <legend className="text-base font-medium mb-4">Precio</legend>
         <div className="flex gap-6">

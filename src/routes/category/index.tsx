@@ -1,5 +1,5 @@
 import { ErrorBoundary } from "react-error-boundary";
-import { ActionFunctionArgs, LoaderFunctionArgs, redirect, useLoaderData } from "react-router";
+import { LoaderFunctionArgs, useLoaderData } from "react-router";
 
 import { Container } from "@/components/ui";
 import { isValidCategorySlug, type Category } from "@/models/category.model";
@@ -28,30 +28,29 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
       getProductsByCategorySlug(categorySlug),
     ]);
 
+    const filterProductsByPrice = (
+      products: Product[],
+      minPrice: string,
+      maxPrice: string
+    ): Product[] => {
+      const min = minPrice ? parseFloat(minPrice) : 0;
+      const max = maxPrice ? parseFloat(maxPrice) : Infinity;
+      return products.filter(
+        (product) => product.price >= min && product.price <= max
+      );
+    };
+
+    const filteredProducts = filterProductsByPrice(products, minPrice, maxPrice);
+
     return {
       category,
-      products,
+      products: filteredProducts,
       minPrice,
       maxPrice,
     };
   } catch (e) {
     throw new Response("Error loading category: " + e, { status: 500 });
   }
-}
-
-export async function action({ request }: ActionFunctionArgs) {
-  const formData = await request.formData();
-  const minPrice = formData.get("minPrice") as string || "";
-  const maxPrice = formData.get("maxPrice") as string || "";
-  
-  const url = new URL(request.url);
-  if (minPrice) url.searchParams.set("minPrice", minPrice);
-  else url.searchParams.delete("minPrice");
-  
-  if (maxPrice) url.searchParams.set("maxPrice", maxPrice);
-  else url.searchParams.delete("maxPrice");
-  
-  return redirect(url.pathname + url.search);
 }
 
 export default function Category() {
@@ -61,20 +60,6 @@ export default function Category() {
     minPrice: string;
     maxPrice: string;
   };
-
-  const filterProductsByPrice = (
-    products: Product[],
-    minPrice: string,
-    maxPrice: string
-  ): Product[] => {
-    const min = minPrice ? parseFloat(minPrice) : 0;
-    const max = maxPrice ? parseFloat(maxPrice) : Infinity;
-    return products.filter(
-      (product) => product.price >= min && product.price <= max
-    );
-  };
-
-  const filteredProducts = filterProductsByPrice(products, minPrice, maxPrice);
 
   return (
     <>
@@ -97,7 +82,7 @@ export default function Category() {
               className="w-full max-w-sm lg:max-w-xs"
             />
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 flex-grow">
-              {filteredProducts.map((product) => (
+              {products.map((product) => (
                 <ErrorBoundary 
                   FallbackComponent={ProductCardFallback} 
                   key={product.id}
