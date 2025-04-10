@@ -1,6 +1,11 @@
+import { Category } from "@/models/category.model";
 import { Link } from "react-router";
 
-export function Categories({ categories }) {
+interface CategoriesProps {
+  categories: Category[] | null;
+}
+
+export function Categories({ categories }: CategoriesProps) {
   return categories?.map((category) => (
     <Link
       to={category.title.toLowerCase()}
