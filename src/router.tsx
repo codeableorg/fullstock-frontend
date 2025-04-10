@@ -22,6 +22,7 @@ const router = createBrowserRouter([
         path: "/:category",
         Component: lazy(() => import("./routes/category")),
         loader: categoryLoader,
+        errorElement: <h1>Category not found</h1>,
       },
       {
         path: "/products/:id",
@@ -63,6 +64,10 @@ const router = createBrowserRouter([
             Component: lazy(() => import("./routes/account/orders")),
           },
         ],
+      },
+      {
+        path: "/not-found",
+        Component: lazy(() => import("./routes/not-found")),
       },
       {
         path: "*",

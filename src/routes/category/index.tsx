@@ -1,5 +1,5 @@
 import { ErrorBoundary } from "react-error-boundary";
-import { LoaderFunctionArgs, useLoaderData } from "react-router";
+import { LoaderFunctionArgs, redirect, useLoaderData } from "react-router";
 
 import { Container } from "@/components/ui";
 import { isValidCategorySlug, type Category } from "@/models/category.model";
@@ -15,7 +15,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
   const { category: categorySlug } = params;
 
   if (!isValidCategorySlug(categorySlug)) {
-    throw new Response("Not Found", { status: 404 });
+    return redirect("/not-found");
   }
 
   const url = new URL(request.url);
