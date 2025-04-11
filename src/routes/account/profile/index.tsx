@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { Navigate } from "react-router";
+import { Navigate, useLoaderData } from "react-router";
 
 import { Button, InputField } from "@/components/ui";
-import { useAuth } from "@/contexts/auth.context";
 import { updateUser } from "@/services/user.service";
+import { LoaderData } from "..";
 
 export default function Profile() {
-  const { user, setUser } = useAuth();
+  const { user } = useLoaderData() as LoaderData;
   const [name, setName] = useState(user?.name || "");
   const [newPassword, setNewPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -19,7 +19,7 @@ export default function Profile() {
         name,
         ...(newPassword ? { password: newPassword } : {}),
       });
-      setUser(updatedUser);
+      //setUser(updatedUser);
       setNewPassword("");
     } catch (error) {
       console.error(error);

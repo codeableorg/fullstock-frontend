@@ -72,7 +72,7 @@ export default function Root() {
     <div className="grid grid-rows-[auto_1fr_auto] min-h-screen bg-background">
       <header className="sticky top-0 bg-background border-b border-border z-50">
         <AuthNav user={user} />
-        <HeaderMain />
+        <HeaderMain user={user} />
       </header>
       <main>
         <Suspense fallback={<ContainerLoader />} key={location.key}>
