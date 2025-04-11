@@ -1,14 +1,17 @@
 import { lazy } from "react";
 import { createBrowserRouter, Navigate } from "react-router";
-import { loader as homeLoader } from "./routes/home";
-import { action as rootAction } from "./routes/root";
 
 import { loader as categoryLoader } from "./routes/category";
+import { loader as homeLoader } from "./routes/home";
+import { loader as loginLoader, action as loginAction } from "./routes/login";
+import { action as logoutAction } from "./routes/logout";
+import { action as rootAction, loader as rootLoader } from "./routes/root";
 
 const router = createBrowserRouter([
   {
     Component: lazy(() => import("./routes/root")),
     action: rootAction,
+    loader: rootLoader,
     children: [
       {
         index: true,
@@ -40,10 +43,16 @@ const router = createBrowserRouter([
       {
         path: "/login",
         Component: lazy(() => import("./routes/login")),
+        action: loginAction,
+        loader: loginLoader,
       },
       {
         path: "/signup",
         Component: lazy(() => import("./routes/signup")),
+      },
+      {
+        path: "/logout",
+        action: logoutAction,
       },
       {
         path: "/account",

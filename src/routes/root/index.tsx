@@ -3,9 +3,10 @@ import {
   Link,
   Outlet,
   ScrollRestoration,
-  useLocation,
   ActionFunctionArgs,
   useFetcher,
+  useLoaderData,
+  useLocation,
 } from "react-router";
 
 import {
@@ -16,6 +17,9 @@ import {
   Section,
   Separator,
 } from "@/components/ui";
+import { getToken, removeToken } from "@/lib/utils";
+import { User } from "@/models/user.model";
+import { getCurrentUser } from "@/services/auth.service";
 
 import AuthNav from "./components/auth-nav";
 import HeaderMain from "./components/header-main";
@@ -35,7 +39,24 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 }
 
+type LoaderData = { user?: Omit<User, "password"> };
+
+export async function loader(): Promise<LoaderData> {
+  const token = getToken();
+  if (!token) return {};
+
+  try {
+    const user = await getCurrentUser();
+    return { user };
+  } catch {
+    removeToken();
+    return {};
+  }
+}
+
 export default function Root() {
+  const { user } = useLoaderData() as LoaderData;
+
   const location = useLocation();
   const fetcher = useFetcher();
   const emailRef = useRef<HTMLInputElement>(null);
@@ -50,7 +71,7 @@ export default function Root() {
   return (
     <div className="grid grid-rows-[auto_1fr_auto] min-h-screen bg-background">
       <header className="sticky top-0 bg-background border-b border-border z-50">
-        <AuthNav />
+        <AuthNav user={user} />
         <HeaderMain />
       </header>
       <main>

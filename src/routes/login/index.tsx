@@ -1,30 +1,62 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import {
+  ActionFunctionArgs,
+  Link,
+  redirect,
+  useActionData,
+  useNavigation,
+  useSubmit,
+} from "react-router";
 import { z } from "zod";
 
-import {
-  Button,
-  Container,
-  ContainerLoader,
-  InputField,
-  Section,
-} from "@/components/ui";
-import { useAuth } from "@/contexts/auth.context";
+import { Button, Container, InputField, Section } from "@/components/ui";
+import { getToken } from "@/lib/utils";
+import { getCurrentUser, login } from "@/services/auth.service";
 
 const LoginSchema = z.object({
   email: z.string().email("Correo electrónico inválido"),
   password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
 });
 
+type ActionData = { error: string } | undefined;
+
+export async function action({ request }: ActionFunctionArgs) {
+  const formData = await request.formData();
+  const email = formData.get("email") as string;
+  const password = formData.get("password") as string;
+
+  try {
+    await login(email, password);
+    return redirect("/");
+  } catch (error) {
+    if (error instanceof Error) {
+      return { error: error.message };
+    }
+    return { error: "Error desconocido" };
+  }
+}
+
+export async function loader() {
+  const token = getToken();
+  if (!token) return;
+
+  try {
+    const user = await getCurrentUser();
+    if (user) return redirect("/");
+  } catch {
+    return;
+  }
+}
+
 type LoginForm = z.infer<typeof LoginSchema>;
 
 export default function Login() {
-  const { login, user } = useAuth();
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const submit = useSubmit();
+  const navigation = useNavigation();
+  const data = useActionData() as ActionData;
+
+  const isSubmitting = navigation.state === "submitting";
 
   const {
     register,
@@ -40,29 +72,15 @@ export default function Login() {
   });
 
   async function onSubmit(data: LoginForm) {
-    setLoading(true);
-    setError(null);
-    try {
-      await login(data.email, data.password);
-      navigate("/");
-    } catch (error) {
-      setError(
-        error instanceof Error ? error.message : "Error al iniciar sesión"
-      );
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  if (user) {
-    navigate("/");
-    return <ContainerLoader />;
+    submit(data, { method: "post" });
   }
 
   return (
     <Section>
       <Container className="max-w-sm">
-        <h1 className="text-2xl leading-7 font-bold text-center mb-10">Inicia sesión en tu cuenta</h1>
+        <h1 className="text-2xl leading-7 font-bold text-center mb-10">
+          Inicia sesión en tu cuenta
+        </h1>
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
           <InputField
             label="Correo electrónico"
@@ -78,10 +96,18 @@ export default function Login() {
             error={errors.password?.message}
             {...register("password")}
           />
-          <Button size="lg" className="w-full" disabled={!isValid || loading}>
-            {loading ? "Iniciando..." : "Iniciar sesión"}
+          <Button
+            size="lg"
+            className="w-full"
+            disabled={!isValid || isSubmitting}
+          >
+            {isSubmitting ? "Iniciando..." : "Iniciar sesión"}
           </Button>
-          {error && <p className="text-red-500 text-sm text-center mt-2">{error}</p>}
+          {data?.error && (
+            <p className="text-red-500 text-sm text-center mt-2">
+              {data.error}
+            </p>
+          )}
         </form>
         <div className="flex justify-center gap-2 mt-10 text-sm leading-6">
           <span className="text-muted-foreground">¿Aún no tienes cuenta?</span>
