@@ -1,19 +1,19 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router";
+import {
+  ActionFunctionArgs,
+  Link,
+  redirect,
+  useActionData,
+  useNavigation,
+  useSubmit,
+} from "react-router";
 import { z } from "zod";
 
-import {
-  Button,
-  Container,
-  ContainerLoader,
-  InputField,
-  Section,
-} from "@/components/ui";
-import { useAuth } from "@/contexts/auth.context";
-import { debounceAsync } from "@/lib/utils";
+import { Button, Container, InputField, Section } from "@/components/ui";
+import { debounceAsync} from "@/lib/utils";
 import { findEmail } from "@/services/user.service";
+import { signup } from "@/services/auth.service";
 
 const debouncedFindEmail = debounceAsync(findEmail, 300);
 
@@ -33,11 +33,30 @@ const SignupSchema = z.object({
 
 type SignupForm = z.infer<typeof SignupSchema>;
 
+type ActionData = { error: string } | undefined;
+
+export async function action ({ request }: ActionFunctionArgs) {
+  const formData = await request.formData();
+  const email = formData.get("email") as string;
+  const password = formData.get("password") as string;
+
+  try {
+    await signup(email, password);
+    return redirect("/");
+  } catch (error) {
+    if (error instanceof Error) {
+      return { error: error.message };
+    }
+    return { error: "Error desconocido" };
+  }
+}
+
 export default function Signup() {
-  const navigate = useNavigate();
-  const { signup, user } = useAuth();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const submit = useSubmit();
+  const navigation = useNavigation();
+  const data = useActionData() as ActionData;
+
+  const isSubmitting = navigation.state === "submitting";
 
   const {
     register,
@@ -53,25 +72,7 @@ export default function Signup() {
   });
 
   async function onSubmit(data: SignupForm) {
-    setLoading(true);
-    setError(null);
-    try {
-      const email = data.email as string;
-      const password = data.password as string;
-
-      await signup(email, password);
-    } catch (error) {
-      setError(
-        error instanceof Error ? error.message : "Error al crear la cuenta"
-      );
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  if (user) {
-    navigate("/");
-    return <ContainerLoader />;
+    submit(data, { method: "post" });
   }
 
   return (
@@ -101,12 +102,12 @@ export default function Signup() {
           <Button
             size="lg"
             className="w-full"
-            disabled={!isValid || loading}
+            disabled={!isValid || isSubmitting}
           >
-            {loading ? "Creando..." : "Crear cuenta"}
+            {isSubmitting ? "Creando..." : "Crear cuenta"}
           </Button>
-          {error && (
-            <p className="text-red-500 text-sm text-center mt-2">{error}</p>
+          {data?.error && (
+            <p className="text-red-500 text-sm text-center mt-2">{data.error}</p>
           )}
         </form>
         <div className="flex justify-center gap-2 mt-10 text-sm">
