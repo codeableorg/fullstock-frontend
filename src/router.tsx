@@ -4,6 +4,7 @@ import { createBrowserRouter, Navigate } from "react-router";
 import { loader as categoryLoader } from "./routes/category";
 import { loader as homeLoader } from "./routes/home";
 import { loader as loginLoader, action as loginAction } from "./routes/login";
+import { action as signupAction } from "./routes/signup";
 import { action as logoutAction } from "./routes/logout";
 import { action as rootAction, loader as rootLoader } from "./routes/root";
 
@@ -49,6 +50,7 @@ const router = createBrowserRouter([
       {
         path: "/signup",
         Component: lazy(() => import("./routes/signup")),
+        action: signupAction,
       },
       {
         path: "/logout",
