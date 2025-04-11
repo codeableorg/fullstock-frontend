@@ -5,24 +5,33 @@ import { useCart } from "@/contexts/cart.context";
 import type { Product } from "@/models/product.model";
 import { getProductById } from "@/services/product.service";
 
+import NotFound from "../not-found";
+
 import type { LoaderFunctionArgs } from "react-router";
 
-export async function loader({ params }: LoaderFunctionArgs) {
-  const id = params.id;
-  if (!id) {
-    throw new Response("ID del producto no proporcionado", { status: 400 });
-  }
+type LoaderData = {
+  product?: Product;
+};
 
-  const product = await getProductById(parseInt(id));
-  if (!product) {
-    throw new Response("Producto no encontrado", { status: 404 });
+export async function loader({ params }: LoaderFunctionArgs) {
+  const id = params.id!;
+
+  try {
+    const product = await getProductById(parseInt(id));
+
+    return { product };
+  } catch {
+    return {};
   }
-  return product;
 }
 
 export default function Product() {
-  const product = useLoaderData<typeof loader>();
+  const { product } = useLoaderData<typeof loader>() as LoaderData;
   const { loading: cartLoading, changeItemQuantity } = useCart();
+
+  if (!product) {
+    return <NotFound />;
+  }
 
   return (
     <>
