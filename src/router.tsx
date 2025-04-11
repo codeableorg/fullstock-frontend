@@ -1,6 +1,9 @@
 import { lazy } from "react";
 import { createBrowserRouter, Navigate } from "react-router";
 
+import { loader as productLoader } from "./routes/product";
+
+
 const router = createBrowserRouter([
   {
     Component: lazy(() => import("./routes/root")),
@@ -16,6 +19,7 @@ const router = createBrowserRouter([
       {
         path: "/products/:id",
         Component: lazy(() => import("./routes/product")),
+        loader: productLoader,
       },
       {
         path: "/cart",

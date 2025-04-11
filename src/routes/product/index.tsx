@@ -1,31 +1,28 @@
-import { useCallback } from "react";
-import { useParams } from "react-router";
+import { useLoaderData } from "react-router";
 
-import { Button, Container, ContainerLoader, Separator } from "@/components/ui";
+import { Button, Container, Separator } from "@/components/ui";
 import { useCart } from "@/contexts/cart.context";
-import { useAsync } from "@/hooks/use-async";
-import { type Product } from "@/models/product.model";
+import type { Product } from "@/models/product.model";
 import { getProductById } from "@/services/product.service";
 
-import NotFound from "../not-found";
+import type { LoaderFunctionArgs } from "react-router";
+
+export async function loader({ params }: LoaderFunctionArgs) {
+  const id = params.id;
+  if (!id) {
+    throw new Response("ID del producto no proporcionado", { status: 400 });
+  }
+
+  const product = await getProductById(parseInt(id));
+  if (!product) {
+    throw new Response("Producto no encontrado", { status: 404 });
+  }
+  return product;
+}
 
 export default function Product() {
+  const product = useLoaderData<typeof loader>();
   const { loading: cartLoading, changeItemQuantity } = useCart();
-
-  const { id } = useParams<{ id: string }>();
-
-  const fetchProductById = useCallback(
-    () => getProductById(parseInt(id!)),
-    [id]
-  );
-
-  const { data: product, loading } = useAsync(fetchProductById);
-
-  if (loading) return <ContainerLoader />;
-
-  if (!product) {
-    return <NotFound />;
-  }
 
   return (
     <>
