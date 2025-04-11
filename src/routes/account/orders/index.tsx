@@ -1,13 +1,12 @@
-import { Navigate } from "react-router";
-
+import { Navigate, useLoaderData } from "react-router";
 import { ContainerLoader } from "@/components/ui";
-import { useAuth } from "@/contexts/auth.context";
 import { useAsync } from "@/hooks/use-async";
 import { Order } from "@/models/order.model";
 import { getOrdersByUser } from "@/services/order.service";
+import { LoaderData } from "..";
 
 export default function Orders() {
-  const { user } = useAuth();
+  const { user } = useLoaderData() as LoaderData;
   const { data, loading } = useAsync<Order[]>(getOrdersByUser);
   let orders: Order[] = [];
 
@@ -63,19 +62,33 @@ export default function Orders() {
                 <caption className="sr-only">Productos</caption>
                 <thead className="not-sr-only text-left">
                   <tr>
-                    <th scope="col" className="py-3 pl-16">Producto</th>
-                    <th scope="col" className="py-3 pr-8 text-center hidden sm:table-cell sm:w-1/5">Precio</th>
-                    <th scope="col" className="py-3 pr-8 text-center hidden sm:table-cell sm:w-1/5">Cantidad</th>
-                    <th scope="col" className="py-3 pr-8 text-center">Total</th>
+                    <th scope="col" className="py-3 pl-16">
+                      Producto
+                    </th>
+                    <th
+                      scope="col"
+                      className="py-3 pr-8 text-center hidden sm:table-cell sm:w-1/5"
+                    >
+                      Precio
+                    </th>
+                    <th
+                      scope="col"
+                      className="py-3 pr-8 text-center hidden sm:table-cell sm:w-1/5"
+                    >
+                      Cantidad
+                    </th>
+                    <th scope="col" className="py-3 pr-8 text-center">
+                      Total
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="border-t border-b border-border">
                   {order.items.map((item) => (
-                    <tr key={item.productId}> 
+                    <tr key={item.productId}>
                       <td className="py-6 pl-6">
                         <div className="flex items-center gap-2">
                           <div className="w-16 rounded-xl bg-muted">
-                            <img src={item.imgSrc} alt={item.title}/>
+                            <img src={item.imgSrc} alt={item.title} />
                           </div>
                           <div>
                             <div className="font-medium text-foreground">

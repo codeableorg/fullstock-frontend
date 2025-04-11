@@ -1,8 +1,17 @@
-import { useParams } from "react-router";
+import { LoaderFunctionArgs, useLoaderData } from "react-router";
 import { Container } from "@/components/ui";
 
+type LoaderData = {
+  orderId: string;
+};
+
+export async function loader({ params }: LoaderFunctionArgs) {
+  const orderId = params.orderId!;
+  return { orderId };
+}
+
 export default function OrderConfirmation() {
-  const { orderId } = useParams<{ orderId: string }>();
+  const { orderId } = useLoaderData<typeof loader>() as LoaderData;
 
   return (
     <section className="pt-12 pb-12 sm:pt-14 sm:pb-14 lg:pt-16 lg:pb-16">
@@ -16,9 +25,7 @@ export default function OrderConfirmation() {
         <p className="text-muted-foreground mb-12">
           Llegaremos a la puerta de tu domicilio lo antes posible
         </p>
-        <p className="text-sm font-medium mb-2">
-          Código de seguimiento
-        </p>
+        <p className="text-sm font-medium mb-2">Código de seguimiento</p>
         <p className="text-sm font-medium text-accent-foreground">{orderId}</p>
       </Container>
     </section>

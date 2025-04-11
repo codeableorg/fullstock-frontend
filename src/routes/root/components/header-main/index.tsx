@@ -5,6 +5,7 @@ import { Container, Separator } from "@/components/ui";
 
 import HeaderActions from "../header-actions";
 import MainNav from "../main-nav";
+import { User } from "@/models/user.model";
 
 const navigation = [
   { to: "polos", label: "Polos" },
@@ -12,14 +13,18 @@ const navigation = [
   { to: "stickers", label: "Stickers" },
 ];
 
-export default function HeaderMain() {
+export default function HeaderMain({
+  user,
+}: {
+  user?: Omit<User, "password">;
+}) {
   return (
     <Container className="relative">
       <div className="flex justify-between items-center h-12">
         <Link to="/">
           <img src={logo} alt="FullStock inicio" width="128" height="32" />
         </Link>
-        <HeaderActions />
+        <HeaderActions user={user} />
       </div>
       <Separator className="block sm:hidden" />
       <MainNav items={navigation} />
