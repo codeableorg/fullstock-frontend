@@ -3,6 +3,8 @@ import { createBrowserRouter, Navigate } from "react-router";
 import { loader as homeLoader } from "./routes/home";
 import { action as rootAction } from "./routes/root";
 
+import { loader as categoryLoader } from "./routes/category";
+
 const router = createBrowserRouter([
   {
     Component: lazy(() => import("./routes/root")),
@@ -16,6 +18,8 @@ const router = createBrowserRouter([
       {
         path: "/:category",
         Component: lazy(() => import("./routes/category")),
+        loader: categoryLoader,
+        errorElement: <h1>Category not found</h1>,
       },
       {
         path: "/products/:id",
@@ -55,6 +59,10 @@ const router = createBrowserRouter([
             Component: lazy(() => import("./routes/account/orders")),
           },
         ],
+      },
+      {
+        path: "/not-found",
+        Component: lazy(() => import("./routes/not-found")),
       },
       {
         path: "*",
