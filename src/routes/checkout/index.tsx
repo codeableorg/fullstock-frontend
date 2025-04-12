@@ -2,7 +2,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router";
+import {
+  ActionFunctionArgs,
+  redirect,
+  useLoaderData,
+  useNavigate,
+  useSubmit,
+} from "react-router";
 import { z } from "zod";
 
 import {
@@ -16,6 +22,10 @@ import {
 } from "@/components/ui";
 import { useAuth } from "@/contexts/auth.context";
 import { useCart } from "@/contexts/cart.context";
+import { CartItem } from "@/models/cart.model";
+import { User } from "@/models/user.model";
+import { getCurrentUser } from "@/services/auth.service";
+import { deleteLocalCart, deleteRemoteCart } from "@/services/cart.service";
 import { createOrder } from "@/services/order.service";
 
 const countryOptions = [
@@ -57,12 +67,60 @@ export const CheckoutFormSchema = z.object({
 
 type CheckoutForm = z.infer<typeof CheckoutFormSchema>;
 
+type LoaderData = {
+  user?: Omit<User, "password">;
+};
+
+export async function action({ request }: ActionFunctionArgs) {
+  let user;
+
+  try {
+    user = await getCurrentUser();
+  } catch {
+    user = null;
+  }
+
+  const formData = await request.formData();
+  const shippingDetails = JSON.parse(
+    formData.get("shippingDetailsJson") as string
+  ) as CheckoutForm;
+  const cartItems = JSON.parse(
+    formData.get("cartItemsJson") as string
+  ) as CartItem[];
+
+  const items = cartItems.map((item) => ({
+    productId: item.product.id,
+    quantity: item.quantity,
+    title: item.product.title,
+    price: item.product.price,
+    imgSrc: item.product.imgSrc,
+  }));
+
+  const { orderId } = await createOrder(items, shippingDetails);
+
+  if (user) deleteRemoteCart();
+  else deleteLocalCart();
+
+  return redirect(`/order-confirmation/${orderId}`);
+}
+
+export async function loader() {
+  try {
+    const user = await getCurrentUser();
+    return { user };
+  } catch {
+    return {};
+  }
+}
+
 export default function Checkout() {
-  const { cart, clearCart, loading: cartLoading } = useCart();
-  const { user } = useAuth();
+  const { cart, loading: cartLoading } = useCart(); // pendiente de mover
+
+  const { user } = useLoaderData() as LoaderData;
+  const submit = useSubmit();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const [isOrderCompleted, setIsOrderCompleted] = useState(false);
+  const [loading] = useState(false);
+  const [isOrderCompleted] = useState(false);
   const {
     register,
     handleSubmit,
@@ -95,25 +153,13 @@ export default function Checkout() {
   async function onSubmit(formData: CheckoutForm) {
     if (!cart) return;
 
-    setLoading(true);
-    try {
-      const items = cart.items.map((item) => ({
-        productId: item.product.id,
-        quantity: item.quantity,
-        title: item.product.title,
-        price: item.product.price,
-        imgSrc: item.product.imgSrc,
-      }));
-
-      const { orderId } = await createOrder(items, formData);
-      setIsOrderCompleted(true);
-      navigate(`/order-confirmation/${orderId}`);
-      clearCart();
-    } catch (error) {
-      console.error("Failed to create order:", error);
-    } finally {
-      setLoading(false);
-    }
+    submit(
+      {
+        shippingDetailsJson: JSON.stringify(formData),
+        cartItemsJson: JSON.stringify(cart.items),
+      },
+      { method: "POST" }
+    );
   }
 
   if (!cart || !cart.items.length) {
@@ -125,9 +171,7 @@ export default function Checkout() {
       <Container>
         <div className="flex flex-col gap-12 max-w-2xl mx-auto lg:flex-row lg:max-w-none">
           <div className="flex-grow">
-            <h2 className="text-lg font-medium mb-4">
-              Resumen de la orden
-            </h2>
+            <h2 className="text-lg font-medium mb-4">Resumen de la orden</h2>
             <div className="border border-border rounded-xl bg-background flex flex-col">
               {cart?.items?.map(({ product, quantity }) => (
                 <div

@@ -5,11 +5,15 @@ import { action as loginAction } from "./routes/login";
 import { loader as productLoader } from "./routes/product";
 
 import { loader as categoryLoader } from "./routes/category";
+import {
+  action as checkoutAction,
+  loader as checkoutLoader,
+} from "./routes/checkout";
 import { loader as homeLoader } from "./routes/home";
 import { loader as loginLoader, action as loginAction } from "./routes/login";
-import { action as signupAction } from "./routes/signup";
 import { action as logoutAction } from "./routes/logout";
 import { action as rootAction, loader as rootLoader } from "./routes/root";
+import { action as signupAction } from "./routes/signup";
 
 const router = createBrowserRouter([
   {
@@ -40,6 +44,8 @@ const router = createBrowserRouter([
       {
         path: "/checkout",
         Component: lazy(() => import("./routes/checkout")),
+        loader: checkoutLoader,
+        action: checkoutAction,
       },
       {
         path: "/order-confirmation/:orderId",
