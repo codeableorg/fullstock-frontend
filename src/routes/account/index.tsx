@@ -1,4 +1,4 @@
-import { Navigate, Outlet, NavLink, useLoaderData } from "react-router";
+import { Outlet, NavLink, redirect } from "react-router";
 
 import { Container, Section } from "@/components/ui";
 import { cn, removeToken } from "@/lib/utils";
@@ -10,7 +10,7 @@ export type LoaderData = { user?: Omit<User, "password"> };
 export async function loader(): Promise<LoaderData> {
   try {
     const user = await getCurrentUser();
-    if (!user) <Navigate to="/login" />;
+    if (!user) throw redirect("/login");
     return { user };
   } catch {
     removeToken();
@@ -19,7 +19,6 @@ export async function loader(): Promise<LoaderData> {
 }
 
 export default function Account() {
-  const { user } = useLoaderData<typeof loader>() as LoaderData;
   return (
     <Section>
       <Container className="width-3xl">
