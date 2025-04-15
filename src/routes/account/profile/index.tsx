@@ -1,9 +1,24 @@
 import { useState } from "react";
-import { Navigate, useLoaderData } from "react-router";
+import { redirect, useLoaderData } from "react-router";
 
 import { Button, InputField } from "@/components/ui";
 import { updateUser } from "@/services/user.service";
-import { LoaderData } from "..";
+import { User } from "@/models/user.model";
+import { removeToken } from "@/lib/utils";
+import { getCurrentUser } from "@/services/auth.service";
+
+type LoaderData = { user?: Omit<User, "password"> };
+
+export async function loader(): Promise<LoaderData> {
+  try {
+    const user = await getCurrentUser();
+    if (!user) throw redirect("/login");
+    return { user };
+  } catch {
+    removeToken();
+    return {};
+  }
+}
 
 export default function Profile() {
   const { user } = useLoaderData() as LoaderData;
@@ -15,11 +30,10 @@ export default function Profile() {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const updatedUser = await updateUser({
+      await updateUser({
         name,
         ...(newPassword ? { password: newPassword } : {}),
       });
-      //setUser(updatedUser);
       setNewPassword("");
     } catch (error) {
       console.error(error);
@@ -28,17 +42,13 @@ export default function Profile() {
     }
   };
 
-  if (!user) {
-    return <Navigate to="/login" />;
-  }
-
   return (
     <form className="max-w-md flex flex-col gap-6" onSubmit={handleSubmit}>
       <InputField
         label="Correo electrónico"
         name="email"
         type="email"
-        value={user.email}
+        value={user!.email}
         disabled
       />
       <InputField

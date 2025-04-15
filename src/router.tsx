@@ -19,6 +19,9 @@ import { loader as accountLoader } from "./routes/account";
 
 import { loader as orderConfirmationLoader } from "./routes/order-confirmation";
 
+import { loader as orderLoader } from "./routes/account/orders";
+import { loader as profileLoader } from "./routes/account/profile";
+
 const router = createBrowserRouter([
   {
     Component: lazy(() => import("./routes/root")),
@@ -79,18 +82,12 @@ const router = createBrowserRouter([
           { index: true, element: <Navigate to="profile" replace /> },
           {
             path: "profile",
-            loader: async () => {
-              const { user } = await accountLoader();
-              return { user };
-            },
+            loader: profileLoader,
             Component: lazy(() => import("./routes/account/profile")),
           },
           {
             path: "orders",
-            loader: async () => {
-              const { user } = await accountLoader();
-              return { user };
-            },
+            loader: orderLoader,
             Component: lazy(() => import("./routes/account/orders")),
           },
         ],

@@ -1,24 +1,30 @@
-import { Navigate, useLoaderData } from "react-router";
-import { ContainerLoader } from "@/components/ui";
-import { useAsync } from "@/hooks/use-async";
+import { redirect, useLoaderData } from "react-router";
 import { Order } from "@/models/order.model";
 import { getOrdersByUser } from "@/services/order.service";
-import { LoaderData } from "..";
+import { getCurrentUser } from "@/services/auth.service";
+import { removeToken } from "@/lib/utils";
+
+type LoaderData = { data?: Order[] };
+
+export async function loader(): Promise<LoaderData> {
+  try {
+    const user = await getCurrentUser();
+    const data = await getOrdersByUser();
+    if (!user) throw redirect("/login");
+    return { data };
+  } catch {
+    removeToken();
+    return {};
+  }
+}
 
 export default function Orders() {
-  const { user } = useLoaderData() as LoaderData;
-  const { data, loading } = useAsync<Order[]>(getOrdersByUser);
+  const { data } = useLoaderData() as LoaderData;
   let orders: Order[] = [];
 
   if (data) {
     orders = data.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   }
-
-  if (!user) {
-    return <Navigate to="/login" />;
-  }
-
-  if (loading) return <ContainerLoader />;
 
   return (
     <div>
