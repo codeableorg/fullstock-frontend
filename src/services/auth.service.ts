@@ -1,8 +1,17 @@
-import { client, removeToken, setToken } from "@/lib/utils";
+import { client, getToken, removeToken, setToken } from "@/lib/utils";
 import { AuthResponse } from "@/models/user.model";
 
-export async function getCurrentUser(): Promise<AuthResponse["user"]> {
-  return client<AuthResponse["user"]>("/users/me");
+export async function getCurrentUser(): Promise<AuthResponse["user"] | null> {
+  const token = getToken();
+  if (!token) return null;
+
+  try {
+    return client<AuthResponse["user"]>("/users/me");
+  } catch (error) {
+    console.error("Error fetching current user:", error);
+    removeToken();
+    return null;
+  }
 }
 
 export async function login(

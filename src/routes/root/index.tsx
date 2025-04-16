@@ -17,7 +17,6 @@ import {
   Section,
   Separator,
 } from "@/components/ui";
-import { getToken, removeToken } from "@/lib/utils";
 import { User } from "@/models/user.model";
 import { getCurrentUser } from "@/services/auth.service";
 
@@ -42,16 +41,8 @@ export async function action({ request }: ActionFunctionArgs) {
 type LoaderData = { user?: Omit<User, "password"> };
 
 export async function loader(): Promise<LoaderData> {
-  const token = getToken();
-  if (!token) return {};
-
-  try {
-    const user = await getCurrentUser();
-    return { user };
-  } catch {
-    removeToken();
-    return {};
-  }
+  const user = await getCurrentUser();
+  return user ? { user } : {};
 }
 
 export default function Root() {
