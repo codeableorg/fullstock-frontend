@@ -9,9 +9,12 @@ type LoaderData = { data?: Order[] };
 export async function loader(): Promise<LoaderData> {
   try {
     const user = await getCurrentUser();
-    const data = await getOrdersByUser();
+    const orders = await getOrdersByUser();
     if (!user) throw redirect("/login");
-    return { data };
+
+    orders.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+
+    return { data: orders };
   } catch {
     removeToken();
     return {};
@@ -19,18 +22,13 @@ export async function loader(): Promise<LoaderData> {
 }
 
 export default function Orders() {
-  const { data } = useLoaderData() as LoaderData;
-  let orders: Order[] = [];
-
-  if (data) {
-    orders = data.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-  }
+  const { data: orders } = useLoaderData() as LoaderData;
 
   return (
     <div>
-      {orders.length > 0 ? (
+      {orders!.length > 0 ? (
         <div className="flex flex-col gap-4">
-          {orders.map((order) => (
+          {orders!.map((order) => (
             <div key={order.id}>
               <div className="rounded-lg bg-muted py-4 px-6">
                 <dl className="flex flex-col gap-4 w-full sm:flex-row">
