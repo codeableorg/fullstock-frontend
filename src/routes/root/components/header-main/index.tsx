@@ -6,7 +6,6 @@ import { User } from "@/models/user.model";
 
 import HeaderActions from "../header-actions";
 import MainNav from "../main-nav";
-import { User } from "@/models/user.model";
 
 const navigation = [
   { to: "polos", label: "Polos" },

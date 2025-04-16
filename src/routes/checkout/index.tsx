@@ -114,8 +114,7 @@ export default function Checkout() {
   const { user } = useLoaderData() as LoaderData;
   const submit = useSubmit();
   const navigate = useNavigate();
-  const [loading] = useState(false);
-  const [isOrderCompleted] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -140,7 +139,7 @@ export default function Checkout() {
   useEffect(() => {
     if (cartLoading) return;
 
-    if ((!cart || !cart.items.length) && !isOrderCompleted) {
+    if (!cart || !cart.items.length) {
       navigate("/");
     }
   }, [cart, navigate, isOrderCompleted, cartLoading]);
@@ -278,11 +277,7 @@ export default function Checkout() {
                 />
               </div>
             </fieldset>
-            <Button
-              size="xl"
-              className="w-full mt-6"
-              disabled={!isValid || loading}
-            >
+            <Button size="xl" className="w-full mt-6" disabled={!isValid}>
               {loading ? "Procesando..." : "Confirmar Orden"}
             </Button>
           </form>
