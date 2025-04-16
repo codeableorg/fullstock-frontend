@@ -1,16 +1,18 @@
 import { useCallback } from "react";
-import { useParams } from "react-router";
+import { useOutletContext, useParams, useSubmit } from "react-router";
 
 import { Button, Container, ContainerLoader, Separator } from "@/components/ui";
 import { useCart } from "@/contexts/cart.context";
 import { useAsync } from "@/hooks/use-async";
-import { type Product } from "@/models/product.model";
 import { getProductById } from "@/services/product.service";
 
 import NotFound from "../not-found";
+import type { Product } from "@/models/product.model";
 
 export default function Product() {
   const { loading: cartLoading, changeItemQuantity } = useCart();
+
+  const { submit } = useOutletContext();
 
   const { id } = useParams<{ id: string }>();
 
@@ -18,6 +20,12 @@ export default function Product() {
     () => getProductById(parseInt(id!)),
     [id]
   );
+
+  const handleClick = (product: Product) => {
+    const formData = new FormData();
+    formData.set("product", JSON.stringify(product));
+    submit(formData, { method: "post" });
+  };
 
   const { data: product, loading } = useAsync(fetchProductById);
 
@@ -46,10 +54,13 @@ export default function Product() {
             <p className="text-sm leading-5 text-muted-foreground mb-10">
               {product.description}
             </p>
+
             <Button
               size="xl"
               className="w-full md:w-80"
-              onClick={() => changeItemQuantity(product)}
+              name="intent"
+              value="changeItemQuantity"
+              onClick={() => handleClick(product)}
               disabled={cartLoading}
             >
               {cartLoading ? "Agregando..." : "Agregar al Carrito"}

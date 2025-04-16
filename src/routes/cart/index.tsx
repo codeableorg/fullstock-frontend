@@ -1,11 +1,17 @@
 import { Minus, Plus, Trash2 } from "lucide-react";
-import { Link } from "react-router";
+import { Link, useOutletContext } from "react-router";
 
 import { Button, Container, Section } from "@/components/ui";
-import { useCart } from "@/contexts/cart.context";
+//import { useCart } from "@/contexts/cart.context";
+import { User } from "@/models/user.model";
+import type { Cart } from "@/models/cart.model";
+
+type LoaderData = { user?: Omit<User, "password">; cart: Cart | null };
 
 export default function Cart() {
-  const { cart, changeItemQuantity, removeItem } = useCart();
+  //const { cart, changeItemQuantity, removeItem } = useCart();
+
+  const { cart } = useOutletContext() as LoaderData;
 
   return (
     <Section>
@@ -29,6 +35,8 @@ export default function Cart() {
                   <Button
                     size="sm-icon"
                     variant="outline"
+                    name="intent"
+                    value="removeItem"
                     onClick={() => removeItem(id)}
                   >
                     <Trash2 />
@@ -43,6 +51,8 @@ export default function Cart() {
                       onClick={() => changeItemQuantity(product, -1)}
                       variant="outline"
                       size="sm-icon"
+                      name="intent"
+                      value="changeItemQuantity"
                       disabled={quantity === 1}
                     >
                       <Minus />
@@ -53,6 +63,8 @@ export default function Cart() {
                     <Button
                       onClick={() => changeItemQuantity(product, 1)}
                       variant="outline"
+                      name="intent"
+                      value="changeItemQuantity"
                       size="sm-icon"
                     >
                       <Plus />

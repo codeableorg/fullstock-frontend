@@ -7,6 +7,7 @@ import {
   useFetcher,
   useLoaderData,
   useLocation,
+  useSubmit,
 } from "react-router";
 
 import {
@@ -22,10 +23,75 @@ import { getCurrentUser } from "@/services/auth.service";
 
 import AuthNav from "./components/auth-nav";
 import HeaderMain from "./components/header-main";
-import { createRemoteItems, deleteLocalCart, getLocalCart, getRemoteCart } from "@/services/cart.service";
+import {
+  alterQuantityCartItem,
+  createRemoteItems,
+  deleteLocalCart,
+  getLocalCart,
+  getRemoteCart,
+} from "@/services/cart.service";
+import { Cart } from "@/models/cart.model";
+import { Product } from "@/models/product.model";
+
+// Method to change quantity of item in cart
+const changeItemQuantity = async (product: Product, quantity: number = 1) => {
+  // MODIFICAR PARA GRABAR EN LA BBDD
+  //setLoading(true);
+  try {
+    if (user) {
+      const updatedCart = await alterQuantityCartItem(product.id, quantity);
+      //setCart(updatedCart);
+      return;
+    }
+
+    const updatedItems = cart ? [...cart.items] : [];
+    const existingItem = updatedItems.find(
+      (item) => item.product.id === product.id
+    );
+
+    if (existingItem) {
+      existingItem.quantity += quantity;
+    } else if (quantity > 0) {
+      updatedItems.push({
+        id: Date.now(),
+        product,
+        quantity,
+      });
+    }
+
+    const updatedCart = {
+      id: Date.now(),
+      items: updatedItems,
+      total: updatedItems.reduce(
+        (total, item) => total + item.product.price * item.quantity,
+        0
+      ),
+    };
+    //setLocalCart(updatedCart);
+    //setCart(updatedCart);
+  } catch (error) {
+    console.error(error);
+    //setError("Failed to add item");
+  } finally {
+    //setLoading(false);
+  }
+};
 
 export async function action({ request }: ActionFunctionArgs) {
   const data = await request.formData();
+
+  const intent = data.get("intent");
+
+  const product = JSON.parse(data.get("product") as string) as Product;
+
+  switch (intent) {
+    case "changeItemQuantity":
+      await changeItemQuantity(product);
+
+      break;
+    default:
+      throw new Error("Acción no soportada");
+  }
 
   try {
     await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -39,17 +105,16 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 }
 
-type LoaderData = { user?: Omit<User, "password"> };
+type LoaderData = { user?: Omit<User, "password">; cart: Cart | null };
 
-export async function loader(): Promise<LoaderData> {
+export async function loader(): Promise<LoaderData | undefined> {
   const user = await getCurrentUser();
-
   try {
     const localCart = getLocalCart(); // obtiene carrito del localstorage
     if (!user) {
       // SIN USUARIO
       //setCart(localCart);
-      return {};
+      return { cart: localCart };
     }
     // CON USUARIO
     const remoteCart = await getRemoteCart(); // obtiene carrito de la bbdd
@@ -57,7 +122,7 @@ export async function loader(): Promise<LoaderData> {
       // CARRITO DDBB CON PRODUCTOS
       //setCart(remoteCart);
       deleteLocalCart(); // borra carrito del localstorage
-      return {};
+      return { user, cart: remoteCart };
     }
     //CARRITO DDBB SIN PRODUCTOS
     if (localCart) {
@@ -65,24 +130,23 @@ export async function loader(): Promise<LoaderData> {
       const updatedCart = await createRemoteItems(localCart.items); // graba carrito local en la bbdd
       //setCart(updatedCart);
       deleteLocalCart(); // borra carrito del localstorage
+      return { user, cart: updatedCart };
     }
   } catch (error) {
     console.error(error);
     //setError("Failed to load cart");
-  } finally {
-    //setLoading(false);
   }
-
-  return user ? { user } : {};
+  //return user ? { user, cart: null } : undefined;
 }
 
 export default function Root() {
-  const { user } = useLoaderData() as LoaderData;
+  const { user, cart } = useLoaderData() as LoaderData;
 
   const location = useLocation();
   const fetcher = useFetcher();
   const emailRef = useRef<HTMLInputElement>(null);
   const isSubmitting = fetcher.state === "submitting";
+  const submit = useSubmit();
 
   useEffect(() => {
     if (fetcher.data?.ok && emailRef.current) {
@@ -98,7 +162,7 @@ export default function Root() {
       </header>
       <main>
         <Suspense fallback={<ContainerLoader />} key={location.key}>
-          <Outlet />
+          <Outlet context={{ cart, submit }} />
         </Suspense>
       </main>
       <footer className="border-t border-border">
