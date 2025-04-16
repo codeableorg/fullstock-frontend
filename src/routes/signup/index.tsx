@@ -11,9 +11,9 @@ import {
 import { z } from "zod";
 
 import { Button, Container, InputField, Section } from "@/components/ui";
-import { debounceAsync} from "@/lib/utils";
+import { debounceAsync } from "@/lib/utils";
+import { getCurrentUser, signup } from "@/services/auth.service";
 import { findEmail } from "@/services/user.service";
-import { signup } from "@/services/auth.service";
 
 const debouncedFindEmail = debounceAsync(findEmail, 300);
 
@@ -35,7 +35,7 @@ type SignupForm = z.infer<typeof SignupSchema>;
 
 type ActionData = { error: string } | undefined;
 
-export async function action ({ request }: ActionFunctionArgs) {
+export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
@@ -49,6 +49,11 @@ export async function action ({ request }: ActionFunctionArgs) {
     }
     return { error: "Error desconocido" };
   }
+}
+
+export async function loader() {
+  const user = await getCurrentUser();
+  if (user) return redirect("/");
 }
 
 export default function Signup() {
@@ -78,11 +83,10 @@ export default function Signup() {
   return (
     <Section>
       <Container className="max-w-sm mx-auto">
-        <h1 className="text-2xl font-bold text-center mb-10">Crea una cuenta</h1>
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="flex flex-col gap-6"
-        >
+        <h1 className="text-2xl font-bold text-center mb-10">
+          Crea una cuenta
+        </h1>
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
           <InputField
             label="Correo electrónico"
             type="email"
@@ -107,7 +111,9 @@ export default function Signup() {
             {isSubmitting ? "Creando..." : "Crear cuenta"}
           </Button>
           {data?.error && (
-            <p className="text-red-500 text-sm text-center mt-2">{data.error}</p>
+            <p className="text-red-500 text-sm text-center mt-2">
+              {data.error}
+            </p>
           )}
         </form>
         <div className="flex justify-center gap-2 mt-10 text-sm">

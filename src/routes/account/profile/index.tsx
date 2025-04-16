@@ -6,22 +6,18 @@ import {
 } from "react-router";
 
 import { Button, InputField } from "@/components/ui";
-import { updateUser } from "@/services/user.service";
 import { User } from "@/models/user.model";
-import { removeToken } from "@/lib/utils";
 import { getCurrentUser } from "@/services/auth.service";
+import { updateUser } from "@/services/user.service";
 
-type LoaderData = { user?: Omit<User, "password"> };
+type LoaderData = { user: Omit<User, "password"> };
 
 export async function loader(): Promise<LoaderData> {
-  try {
-    const user = await getCurrentUser();
-    if (!user) throw redirect("/login");
-    return { user };
-  } catch {
-    removeToken();
-    return {};
-  }
+  const user = await getCurrentUser();
+
+  if (!user) throw redirect("/login");
+
+  return { user };
 }
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -46,7 +42,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function Profile() {
   const { user } = useLoaderData() as LoaderData;
-  let fetcher = useFetcher();
+  const fetcher = useFetcher();
   const isSubmitting = fetcher.state === "submitting";
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {

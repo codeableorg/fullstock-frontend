@@ -11,7 +11,6 @@ import {
 import { z } from "zod";
 
 import { Button, Container, InputField, Section } from "@/components/ui";
-import { getToken } from "@/lib/utils";
 import { getCurrentUser, login } from "@/services/auth.service";
 
 const LoginSchema = z.object({
@@ -38,15 +37,8 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export async function loader() {
-  const token = getToken();
-  if (!token) return;
-
-  try {
-    const user = await getCurrentUser();
-    if (user) return redirect("/");
-  } catch {
-    return;
-  }
+  const user = await getCurrentUser();
+  if (user) return redirect("/");
 }
 
 type LoginForm = z.infer<typeof LoginSchema>;

@@ -2,10 +2,10 @@ import { Link } from "react-router";
 
 import logo from "@/assets/fullstock-logo.svg";
 import { Container, Separator } from "@/components/ui";
+import { User } from "@/models/user.model";
 
 import HeaderActions from "../header-actions";
 import MainNav from "../main-nav";
-import { User } from "@/models/user.model";
 
 const navigation = [
   { to: "polos", label: "Polos" },
