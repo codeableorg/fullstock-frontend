@@ -2,11 +2,14 @@ import { ShoppingCart, User2 } from "lucide-react";
 import { Link } from "react-router";
 
 import { Button, Separator } from "@/components/ui";
-import { useAuth } from "@/contexts/auth.context";
 import { useCart } from "@/contexts/cart.context";
+import { User } from "@/models/user.model";
 
-export default function HeaderActions() {
-  const { user } = useAuth();
+export default function HeaderActions({
+  user,
+}: {
+  user?: Omit<User, "password">;
+}) {
   const { cart } = useCart();
   const totalItems =
     cart?.items?.reduce((sum, item) => sum + item.quantity, 0) || 0;

@@ -12,6 +12,16 @@ import { action as logoutAction } from "./routes/logout";
 import { action as rootAction, loader as rootLoader } from "./routes/root";
 import { action as signupAction } from "./routes/signup";
 
+import { loader as accountLoader } from "./routes/account";
+
+import { loader as orderConfirmationLoader } from "./routes/order-confirmation";
+
+import { loader as orderLoader } from "./routes/account/orders";
+import {
+  loader as profileLoader,
+  action as profileAction,
+} from "./routes/account/profile";
+
 const router = createBrowserRouter([
   {
     Component: lazy(() => import("./routes/root")),
@@ -45,6 +55,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/order-confirmation/:orderId",
+        loader: orderConfirmationLoader,
         Component: lazy(() => import("./routes/order-confirmation")),
       },
       {
@@ -64,15 +75,19 @@ const router = createBrowserRouter([
       },
       {
         path: "/account",
+        loader: accountLoader,
         Component: lazy(() => import("./routes/account")),
         children: [
           { index: true, element: <Navigate to="profile" replace /> },
           {
             path: "profile",
+            loader: profileLoader,
+            action: profileAction,
             Component: lazy(() => import("./routes/account/profile")),
           },
           {
             path: "orders",
+            loader: orderLoader,
             Component: lazy(() => import("./routes/account/orders")),
           },
         ],

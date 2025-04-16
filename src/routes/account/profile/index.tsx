@@ -1,36 +1,65 @@
-import { useState } from "react";
-import { Navigate } from "react-router";
+import {
+  redirect,
+  useLoaderData,
+  useFetcher,
+  ActionFunctionArgs,
+} from "react-router";
 
 import { Button, InputField } from "@/components/ui";
-import { useAuth } from "@/contexts/auth.context";
 import { updateUser } from "@/services/user.service";
+import { User } from "@/models/user.model";
+import { removeToken } from "@/lib/utils";
+import { getCurrentUser } from "@/services/auth.service";
+
+type LoaderData = { user?: Omit<User, "password"> };
+
+export async function loader(): Promise<LoaderData> {
+  try {
+    const user = await getCurrentUser();
+    if (!user) throw redirect("/login");
+    return { user };
+  } catch {
+    removeToken();
+    return {};
+  }
+}
+
+export async function action({ request }: ActionFunctionArgs) {
+  const data = await request.formData();
+
+  try {
+    await updateUser({
+      name: data.get("name") as string,
+      ...(data.get("newPassword")
+        ? { password: data.get("newPassword") as string }
+        : {}),
+    });
+
+    return {
+      ok: true,
+    };
+  } catch (error) {
+    console.error(error);
+    return { ok: false };
+  }
+}
 
 export default function Profile() {
-  const { user, setUser } = useAuth();
-  const [name, setName] = useState(user?.name || "");
-  const [newPassword, setNewPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const { user } = useLoaderData() as LoaderData;
+  let fetcher = useFetcher();
+  const isSubmitting = fetcher.state === "submitting";
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsLoading(true);
-    try {
-      const updatedUser = await updateUser({
-        name,
-        ...(newPassword ? { password: newPassword } : {}),
-      });
-      setUser(updatedUser);
-      setNewPassword("");
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    fetcher.submit(event.target as HTMLFormElement, { method: "post" });
+
+    (
+      (event.target as HTMLFormElement).elements.namedItem(
+        "newPassword"
+      ) as HTMLInputElement
+    ).value = "";
   };
-
-  if (!user) {
-    return <Navigate to="/login" />;
-  }
 
   return (
     <form className="max-w-md flex flex-col gap-6" onSubmit={handleSubmit}>
@@ -38,33 +67,30 @@ export default function Profile() {
         label="Correo electrónico"
         name="email"
         type="email"
-        value={user.email}
+        value={user!.email}
         disabled
       />
       <InputField
         label="Nombre"
         name="name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
+        defaultValue={user?.name || ""}
         minLength={1}
-        disabled={isLoading}
+        disabled={isSubmitting}
       />
       <InputField
         label="Nueva contraseña"
         name="newPassword"
         type="password"
-        value={newPassword}
-        onChange={(e) => setNewPassword(e.target.value)}
         minLength={6}
-        disabled={isLoading}
+        disabled={isSubmitting}
       />
       <Button
         type="submit"
         size="xl"
         className="self-stretch"
-        disabled={isLoading}
+        disabled={isSubmitting}
       >
-        {isLoading ? "Guardando..." : "Guardar cambios"}
+        {isSubmitting ? "Guardando..." : "Guardar cambios"}
       </Button>
     </form>
   );
