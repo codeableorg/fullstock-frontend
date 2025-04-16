@@ -1,28 +1,28 @@
 import { redirect, useLoaderData } from "react-router";
-import { Order } from "@/models/order.model";
-import { getOrdersByUser } from "@/services/order.service";
-import { getCurrentUser } from "@/services/auth.service";
-import { removeToken } from "@/lib/utils";
 
-type LoaderData = { data?: Order[] };
+import { Order } from "@/models/order.model";
+import { getCurrentUser } from "@/services/auth.service";
+import { getOrdersByUser } from "@/services/order.service";
+
+type LoaderData = { orders?: Order[] };
 
 export async function loader(): Promise<LoaderData> {
-  try {
-    const user = await getCurrentUser();
-    const orders = await getOrdersByUser();
-    if (!user) throw redirect("/login");
+  const user = await getCurrentUser();
 
+  if (!user) throw redirect("/login");
+
+  try {
+    const orders = await getOrdersByUser();
     orders.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
-    return { data: orders };
+    return { orders };
   } catch {
-    removeToken();
     return {};
   }
 }
 
 export default function Orders() {
-  const { data: orders } = useLoaderData() as LoaderData;
+  const { orders } = useLoaderData() as LoaderData;
 
   return (
     <div>

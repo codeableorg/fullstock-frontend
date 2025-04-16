@@ -1,21 +1,13 @@
 import { Outlet, NavLink, redirect } from "react-router";
 
 import { Container, Section } from "@/components/ui";
-import { cn, removeToken } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { getCurrentUser } from "@/services/auth.service";
-import { User } from "@/models/user.model";
 
-export type LoaderData = { user?: Omit<User, "password"> };
+export async function loader() {
+  const user = await getCurrentUser();
 
-export async function loader(): Promise<LoaderData> {
-  try {
-    const user = await getCurrentUser();
-    if (!user) throw redirect("/login");
-    return { user };
-  } catch {
-    removeToken();
-    return {};
-  }
+  if (!user) throw redirect("/login");
 }
 
 export default function Account() {
