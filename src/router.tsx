@@ -13,7 +13,10 @@ import { loader as homeLoader } from "./routes/home";
 import { loader as loginLoader, action as loginAction } from "./routes/login";
 import { action as logoutAction } from "./routes/logout";
 import { action as rootAction, loader as rootLoader } from "./routes/root";
-import { action as signupAction } from "./routes/signup";
+import {
+  loader as signupLoader,
+  action as signupAction,
+} from "./routes/signup";
 
 import { loader as accountLoader } from "./routes/account";
 
@@ -71,6 +74,7 @@ const router = createBrowserRouter([
       {
         path: "/signup",
         Component: lazy(() => import("./routes/signup")),
+        loader: signupLoader,
         action: signupAction,
       },
       {

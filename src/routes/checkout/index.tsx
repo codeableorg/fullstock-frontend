@@ -20,7 +20,6 @@ import {
   SelectField,
   ContainerLoader,
 } from "@/components/ui";
-import { useAuth } from "@/contexts/auth.context";
 import { useCart } from "@/contexts/cart.context";
 import { CartItem } from "@/models/cart.model";
 import { User } from "@/models/user.model";
@@ -105,12 +104,8 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export async function loader() {
-  try {
-    const user = await getCurrentUser();
-    return { user };
-  } catch {
-    return {};
-  }
+  const user = await getCurrentUser();
+  return user ? { user } : {};
 }
 
 export default function Checkout() {
