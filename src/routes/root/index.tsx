@@ -22,6 +22,7 @@ import { getCurrentUser } from "@/services/auth.service";
 
 import AuthNav from "./components/auth-nav";
 import HeaderMain from "./components/header-main";
+import { createRemoteItems, deleteLocalCart, getLocalCart, getRemoteCart } from "@/services/cart.service";
 
 export async function action({ request }: ActionFunctionArgs) {
   const data = await request.formData();
@@ -42,6 +43,38 @@ type LoaderData = { user?: Omit<User, "password"> };
 
 export async function loader(): Promise<LoaderData> {
   const user = await getCurrentUser();
+
+  try {
+          const localCart = getLocalCart(); // obtiene carrito del localstorage
+  
+          if (!user) {
+            // SIN USUARIO
+            //setCart(localCart);
+            return {};
+          }
+  
+          // CON USUARIO
+          const remoteCart = await getRemoteCart(); // obtiene carrito de la bbdd
+          if (remoteCart?.items.length) {
+            // CARRITO DDBB CON PRODUCTOS
+            //setCart(remoteCart);
+            deleteLocalCart(); // borra carrito del localstorage
+            return;
+          }
+          //CARRITO DDBB SIN PRODUCTOS
+          if (localCart) {
+            // CARRITO LOCAL CON PRODUCTOS
+            const updatedCart = await createRemoteItems(localCart.items); // graba carrito local en la bbdd
+            setCart(updatedCart);
+            deleteLocalCart(); // borra carrito del localstorage
+          }
+        } catch (error) {
+          console.error(error);
+          //setError("Failed to load cart");
+        } finally {
+          //setLoading(false);
+        }
+
   return user ? { user } : {};
 }
 
