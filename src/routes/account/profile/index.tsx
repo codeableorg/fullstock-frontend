@@ -1,5 +1,9 @@
-import { useState } from "react";
-import { redirect, useLoaderData } from "react-router";
+import {
+  redirect,
+  useLoaderData,
+  useFetcher,
+  ActionFunctionArgs,
+} from "react-router";
 
 import { Button, InputField } from "@/components/ui";
 import { updateUser } from "@/services/user.service";
@@ -20,26 +24,41 @@ export async function loader(): Promise<LoaderData> {
   }
 }
 
+export async function action({ request }: ActionFunctionArgs) {
+  const data = await request.formData();
+
+  try {
+    await updateUser({
+      name: data.get("name") as string,
+      ...(data.get("newPassword")
+        ? { password: data.get("newPassword") as string }
+        : {}),
+    });
+
+    return {
+      ok: true,
+    };
+  } catch (error) {
+    console.error(error);
+    return { ok: false };
+  }
+}
+
 export default function Profile() {
   const { user } = useLoaderData() as LoaderData;
-  const [name, setName] = useState(user?.name || "");
-  const [newPassword, setNewPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  let fetcher = useFetcher();
+  const isSubmitting = fetcher.state === "submitting";
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsLoading(true);
-    try {
-      await updateUser({
-        name,
-        ...(newPassword ? { password: newPassword } : {}),
-      });
-      setNewPassword("");
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    fetcher.submit(event.target as HTMLFormElement, { method: "post" });
+
+    (
+      (event.target as HTMLFormElement).elements.namedItem(
+        "newPassword"
+      ) as HTMLInputElement
+    ).value = "";
   };
 
   return (
@@ -54,27 +73,24 @@ export default function Profile() {
       <InputField
         label="Nombre"
         name="name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
+        defaultValue={user?.name || ""}
         minLength={1}
-        disabled={isLoading}
+        disabled={isSubmitting}
       />
       <InputField
         label="Nueva contraseña"
         name="newPassword"
         type="password"
-        value={newPassword}
-        onChange={(e) => setNewPassword(e.target.value)}
         minLength={6}
-        disabled={isLoading}
+        disabled={isSubmitting}
       />
       <Button
         type="submit"
         size="xl"
         className="self-stretch"
-        disabled={isLoading}
+        disabled={isSubmitting}
       >
-        {isLoading ? "Guardando..." : "Guardar cambios"}
+        {isSubmitting ? "Guardando..." : "Guardar cambios"}
       </Button>
     </form>
   );

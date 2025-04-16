@@ -12,7 +12,10 @@ import { loader as accountLoader } from "./routes/account";
 import { loader as orderConfirmationLoader } from "./routes/order-confirmation";
 
 import { loader as orderLoader } from "./routes/account/orders";
-import { loader as profileLoader } from "./routes/account/profile";
+import {
+  loader as profileLoader,
+  action as profileAction,
+} from "./routes/account/profile";
 
 const router = createBrowserRouter([
   {
@@ -71,6 +74,7 @@ const router = createBrowserRouter([
           {
             path: "profile",
             loader: profileLoader,
+            action: profileAction,
             Component: lazy(() => import("./routes/account/profile")),
           },
           {
