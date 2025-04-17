@@ -17,6 +17,7 @@ import {
   Section,
   Separator,
 } from "@/components/ui";
+import { getCart } from "@/lib/cart";
 import { User } from "@/models/user.model";
 import { getCurrentUser } from "@/services/auth.service";
 
@@ -38,15 +39,19 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 }
 
-type LoaderData = { user?: Omit<User, "password"> };
+type LoaderData = { user?: Omit<User, "password">; totalItems: number };
 
 export async function loader(): Promise<LoaderData> {
   const user = await getCurrentUser();
-  return user ? { user } : {};
+  const cart = await getCart();
+  const totalItems =
+    cart?.items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
+
+  return user ? { user, totalItems } : { totalItems };
 }
 
 export default function Root() {
-  const { user } = useLoaderData() as LoaderData;
+  const { user, totalItems } = useLoaderData() as LoaderData;
 
   const location = useLocation();
   const fetcher = useFetcher();
@@ -63,7 +68,7 @@ export default function Root() {
     <div className="grid grid-rows-[auto_1fr_auto] min-h-screen bg-background">
       <header className="sticky top-0 bg-background border-b border-border z-50">
         <AuthNav user={user} />
-        <HeaderMain user={user} />
+        <HeaderMain user={user} totalItems={totalItems} />
       </header>
       <main>
         <Suspense fallback={<ContainerLoader />} key={location.key}>

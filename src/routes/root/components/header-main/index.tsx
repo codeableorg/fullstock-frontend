@@ -15,8 +15,10 @@ const navigation = [
 
 export default function HeaderMain({
   user,
+  totalItems,
 }: {
   user?: Omit<User, "password">;
+  totalItems: number;
 }) {
   return (
     <Container className="relative">
@@ -24,7 +26,7 @@ export default function HeaderMain({
         <Link to="/">
           <img src={logo} alt="FullStock inicio" width="128" height="32" />
         </Link>
-        <HeaderActions user={user} />
+        <HeaderActions user={user} totalItems={totalItems} />
       </div>
       <Separator className="block sm:hidden" />
       <MainNav items={navigation} />

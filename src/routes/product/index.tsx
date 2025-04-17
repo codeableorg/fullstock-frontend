@@ -1,8 +1,7 @@
 import { useCallback } from "react";
-import { useParams } from "react-router";
+import { Form, useNavigation, useParams } from "react-router";
 
 import { Button, Container, ContainerLoader, Separator } from "@/components/ui";
-import { useCart } from "@/contexts/cart.context";
 import { useAsync } from "@/hooks/use-async";
 import { type Product } from "@/models/product.model";
 import { getProductById } from "@/services/product.service";
@@ -10,7 +9,8 @@ import { getProductById } from "@/services/product.service";
 import NotFound from "../not-found";
 
 export default function Product() {
-  const { loading: cartLoading, changeItemQuantity } = useCart();
+  const navigation = useNavigation();
+  const cartLoading = navigation.state === "submitting";
 
   const { id } = useParams<{ id: string }>();
 
@@ -46,14 +46,18 @@ export default function Product() {
             <p className="text-sm leading-5 text-muted-foreground mb-10">
               {product.description}
             </p>
-            <Button
-              size="xl"
-              className="w-full md:w-80"
-              onClick={() => changeItemQuantity(product)}
-              disabled={cartLoading}
-            >
-              {cartLoading ? "Agregando..." : "Agregar al Carrito"}
-            </Button>
+            <Form method="post" action="/cart/add-item">
+              <Button
+                size="xl"
+                className="w-full md:w-80"
+                type="submit"
+                name="productId"
+                value={product.id}
+                disabled={cartLoading}
+              >
+                {cartLoading ? "Agregando..." : "Agregar al Carrito"}
+              </Button>
+            </Form>
             <Separator className="my-6" />
             <div>
               <h2 className="text-sm font-semibold text-accent-foreground mb-6">

@@ -1,6 +1,13 @@
 import { lazy } from "react";
 import { createBrowserRouter, Navigate } from "react-router";
 
+import { loader as accountLoader } from "./routes/account";
+import { loader as orderLoader } from "./routes/account/orders";
+import {
+  loader as profileLoader,
+  action as profileAction,
+} from "./routes/account/profile";
+import { action as addItemAction } from "./routes/cart/add-item";
 import { loader as categoryLoader } from "./routes/category";
 import {
   action as checkoutAction,
@@ -9,21 +16,12 @@ import {
 import { loader as homeLoader } from "./routes/home";
 import { loader as loginLoader, action as loginAction } from "./routes/login";
 import { action as logoutAction } from "./routes/logout";
+import { loader as orderConfirmationLoader } from "./routes/order-confirmation";
 import { action as rootAction, loader as rootLoader } from "./routes/root";
 import {
   loader as signupLoader,
   action as signupAction,
 } from "./routes/signup";
-
-import { loader as accountLoader } from "./routes/account";
-
-import { loader as orderConfirmationLoader } from "./routes/order-confirmation";
-
-import { loader as orderLoader } from "./routes/account/orders";
-import {
-  loader as profileLoader,
-  action as profileAction,
-} from "./routes/account/profile";
 
 const router = createBrowserRouter([
   {
@@ -49,6 +47,10 @@ const router = createBrowserRouter([
       {
         path: "/cart",
         Component: lazy(() => import("./routes/cart")),
+      },
+      {
+        path: "/cart/add-item",
+        action: addItemAction,
       },
       {
         path: "/checkout",
