@@ -7,7 +7,9 @@ import {
   loader as profileLoader,
   action as profileAction,
 } from "./routes/account/profile";
+import { loader as cartLoader } from "./routes/cart";
 import { action as addItemAction } from "./routes/cart/add-item";
+import { action as removeItemAction } from "./routes/cart/remove-item";
 import { loader as categoryLoader } from "./routes/category";
 import {
   action as checkoutAction,
@@ -49,10 +51,15 @@ const router = createBrowserRouter([
       {
         path: "/cart",
         Component: lazy(() => import("./routes/cart")),
+        loader: cartLoader,
       },
       {
         path: "/cart/add-item",
         action: addItemAction,
+      },
+      {
+        path: "/cart/remove-item",
+        action: removeItemAction,
       },
       {
         path: "/checkout",

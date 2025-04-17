@@ -1,14 +1,13 @@
 import { ActionFunctionArgs, redirect } from "react-router";
 
-import { addToCart } from "@/lib/cart";
+import { removeFromCart } from "@/lib/cart";
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
-  const productId = Number(formData.get("productId"));
-  const quantity = Number(formData.get("quantity")) || 1;
+  const itemId = Number(formData.get("itemId"));
   const redirectTo = formData.get("redirectTo") as string | null;
 
-  await addToCart(productId, quantity);
+  await removeFromCart(itemId);
 
   return redirect(redirectTo || "/cart");
 }
