@@ -1,12 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { X } from "lucide-react";
-import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   ActionFunctionArgs,
   redirect,
   useLoaderData,
-  useNavigate,
+  useNavigation,
   useSubmit,
 } from "react-router";
 import { z } from "zod";
@@ -18,10 +17,9 @@ import {
   Section,
   Separator,
   SelectField,
-  ContainerLoader,
 } from "@/components/ui";
-import { useCart } from "@/contexts/cart.context";
-import { CartItem } from "@/models/cart.model";
+import { getCart } from "@/lib/cart";
+import { Cart, CartItem } from "@/models/cart.model";
 import { User } from "@/models/user.model";
 import { getCurrentUser } from "@/services/auth.service";
 import { deleteLocalCart, deleteRemoteCart } from "@/services/cart.service";
@@ -68,6 +66,7 @@ type CheckoutForm = z.infer<typeof CheckoutFormSchema>;
 
 type LoaderData = {
   user?: Omit<User, "password">;
+  cart: Cart;
 };
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -104,16 +103,20 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export async function loader() {
-  const user = await getCurrentUser();
-  return user ? { user } : {};
+  const [user, cart] = await Promise.all([getCurrentUser(), getCart()]);
+
+  if (!cart) {
+    return redirect("/");
+  }
+
+  return user ? { user, cart } : { cart };
 }
 
 export default function Checkout() {
-  const { cart, loading: cartLoading } = useCart(); // pendiente de mover
-
-  const { user } = useLoaderData() as LoaderData;
+  const { user, cart } = useLoaderData() as LoaderData;
+  const navigation = useNavigation();
   const submit = useSubmit();
-  const navigate = useNavigate();
+  const loading = navigation.state === "submitting";
 
   const {
     register,
@@ -136,17 +139,7 @@ export default function Checkout() {
     mode: "onTouched",
   });
 
-  useEffect(() => {
-    if (cartLoading) return;
-
-    if (!cart || !cart.items.length) {
-      navigate("/");
-    }
-  }, [cart, navigate, isOrderCompleted, cartLoading]);
-
   async function onSubmit(formData: CheckoutForm) {
-    if (!cart) return;
-
     submit(
       {
         shippingDetailsJson: JSON.stringify(formData),
@@ -154,10 +147,6 @@ export default function Checkout() {
       },
       { method: "POST" }
     );
-  }
-
-  if (!cart || !cart.items.length) {
-    return <ContainerLoader />;
   }
 
   return (

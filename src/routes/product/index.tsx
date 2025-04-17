@@ -1,27 +1,33 @@
-import { useCallback } from "react";
-import { Form, useNavigation, useParams } from "react-router";
+import {
+  Form,
+  LoaderFunctionArgs,
+  useLoaderData,
+  useNavigation,
+} from "react-router";
 
-import { Button, Container, ContainerLoader, Separator } from "@/components/ui";
-import { useAsync } from "@/hooks/use-async";
+import { Button, Container, Separator } from "@/components/ui";
 import { type Product } from "@/models/product.model";
 import { getProductById } from "@/services/product.service";
 
 import NotFound from "../not-found";
 
+type LoaderData = {
+  product?: Product;
+};
+
+export async function loader({ params }: LoaderFunctionArgs) {
+  try {
+    const product = await getProductById(parseInt(params.id!));
+    return { product };
+  } catch {
+    return {};
+  }
+}
+
 export default function Product() {
+  const { product } = useLoaderData() as LoaderData;
   const navigation = useNavigation();
   const cartLoading = navigation.state === "submitting";
-
-  const { id } = useParams<{ id: string }>();
-
-  const fetchProductById = useCallback(
-    () => getProductById(parseInt(id!)),
-    [id]
-  );
-
-  const { data: product, loading } = useAsync(fetchProductById);
-
-  if (loading) return <ContainerLoader />;
 
   if (!product) {
     return <NotFound />;
@@ -47,6 +53,11 @@ export default function Product() {
               {product.description}
             </p>
             <Form method="post" action="/cart/add-item">
+              <input
+                type="hidden"
+                name="redirectTo"
+                value={`/products/${product.id}`}
+              />
               <Button
                 size="xl"
                 className="w-full md:w-80"

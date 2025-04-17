@@ -1,9 +1,11 @@
+import { CartItem } from "@/models/cart.model";
 import { Product } from "@/models/product.model";
 import { getCurrentUser } from "@/services/auth.service";
 import {
   alterQuantityCartItem,
   createRemoteItems,
   deleteLocalCart,
+  deleteRemoteCartItem,
   getLocalCart,
   getRemoteCart,
   setLocalCart,
@@ -86,6 +88,36 @@ export async function addToCart(
     };
     setLocalCart(updatedCart);
     return updatedCart;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
+export async function removeFromCart(itemId: CartItem["id"]) {
+  const user = await getCurrentUser();
+
+  try {
+    if (user) {
+      const updatedCart = await deleteRemoteCartItem(itemId);
+      return updatedCart;
+    } else {
+      const cart = getLocalCart(); // obtiene carrito del localstorage
+
+      const updatedItems = cart
+        ? cart.items.filter((item) => item.id !== itemId)
+        : [];
+      const updatedCart = {
+        id: cart?.id || Date.now(),
+        items: updatedItems,
+        total: updatedItems.reduce(
+          (total, item) => total + item.product.price * item.quantity,
+          0
+        ),
+      };
+      setLocalCart(updatedCart);
+      return updatedCart;
+    }
   } catch (error) {
     console.error(error);
     return null;
