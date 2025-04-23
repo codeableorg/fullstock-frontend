@@ -6,13 +6,13 @@ type LoaderData = {
   orderId: string;
 };
 
-export async function loader({ params }: LoaderFunctionArgs) {
+export async function clientLoader({ params }: LoaderFunctionArgs) {
   const orderId = params.orderId!;
   return { orderId };
 }
 
 export default function OrderConfirmation() {
-  const { orderId } = useLoaderData<typeof loader>() as LoaderData;
+  const { orderId } = useLoaderData() as LoaderData;
 
   return (
     <section className="pt-12 pb-12 sm:pt-14 sm:pb-14 lg:pt-16 lg:pb-16">

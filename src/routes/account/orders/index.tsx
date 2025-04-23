@@ -6,7 +6,7 @@ import { getOrdersByUser } from "@/services/order.service";
 
 type LoaderData = { orders?: Order[] };
 
-export async function loader(): Promise<LoaderData> {
+export async function clientLoader(): Promise<LoaderData> {
   const user = await getCurrentUser();
 
   if (!user) throw redirect("/login");

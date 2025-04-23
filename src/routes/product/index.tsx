@@ -15,7 +15,7 @@ type LoaderData = {
   product?: Product;
 };
 
-export async function loader({ params }: LoaderFunctionArgs) {
+export async function clientLoader({ params }: LoaderFunctionArgs) {
   try {
     const product = await getProductById(parseInt(params.id!));
     return { product };

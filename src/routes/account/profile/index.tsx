@@ -12,7 +12,7 @@ import { updateUser } from "@/services/user.service";
 
 type LoaderData = { user: Omit<User, "password"> };
 
-export async function loader(): Promise<LoaderData> {
+export async function clientLoader(): Promise<LoaderData> {
   const user = await getCurrentUser();
 
   if (!user) throw redirect("/login");
@@ -20,7 +20,7 @@ export async function loader(): Promise<LoaderData> {
   return { user };
 }
 
-export async function action({ request }: ActionFunctionArgs) {
+export async function clientAction({ request }: ActionFunctionArgs) {
   const data = await request.formData();
 
   try {

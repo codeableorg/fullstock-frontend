@@ -9,7 +9,7 @@ type LoaderData = {
   cart: Cart | null;
 };
 
-export async function loader() {
+export async function clientLoader() {
   const cart = await getCart();
 
   return { cart };

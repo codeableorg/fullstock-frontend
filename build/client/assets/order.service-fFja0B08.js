@@ -1,0 +1,1 @@
+import{c as e}from"./utils-CNtvmiS0.js";async function c(t,r){return{orderId:(await e("/orders",{body:{items:t,shippingDetails:r}})).id}}async function d(){return(await e("/orders")).map(r=>({...r,createdAt:new Date(r.createdAt)}))}export{c,d as g};

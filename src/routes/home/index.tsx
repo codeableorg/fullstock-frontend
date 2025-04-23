@@ -1,13 +1,23 @@
+import { ServerCrash } from "lucide-react";
 import { Link, useLoaderData } from "react-router";
 
 import { Truck, Return, Ribbon, Idea } from "@/components/icons";
 import { Button, Container } from "@/components/ui";
-import { getAllCategories } from "@/services/category.service";
-import { ServerCrash } from "lucide-react";
 import { Category } from "@/models/category.model";
+import { getAllCategories } from "@/services/category.service";
+
 import { Categories } from "./components/categories";
 
-export async function loader() {
+type LoaderData = {
+  features: {
+    Icon: (props: React.SVGProps<SVGSVGElement>) => JSX.Element;
+    title: string;
+    description: string;
+  }[];
+  categories: Category[] | null;
+};
+
+export async function clientLoader() {
   const features = [
     {
       Icon: Truck,
@@ -45,7 +55,7 @@ export async function loader() {
 }
 
 export default function Home() {
-  const { features, categories } = useLoaderData();
+  const { features, categories } = useLoaderData() as LoaderData;
   const error = !categories;
   // if (loading) return <ContainerLoader />;
 

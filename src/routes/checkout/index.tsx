@@ -69,7 +69,7 @@ type LoaderData = {
   cart: Cart;
 };
 
-export async function action({ request }: ActionFunctionArgs) {
+export async function clientAction({ request }: ActionFunctionArgs) {
   let user;
 
   try {
@@ -102,7 +102,7 @@ export async function action({ request }: ActionFunctionArgs) {
   return redirect(`/order-confirmation/${orderId}`);
 }
 
-export async function loader() {
+export async function clientLoader() {
   const [user, cart] = await Promise.all([getCurrentUser(), getCart()]);
 
   if (!cart) {

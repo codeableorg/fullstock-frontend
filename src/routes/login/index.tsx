@@ -20,7 +20,7 @@ const LoginSchema = z.object({
 
 type ActionData = { error: string } | undefined;
 
-export async function action({ request }: ActionFunctionArgs) {
+export async function clientAction({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
@@ -36,7 +36,7 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 }
 
-export async function loader() {
+export async function clientLoader() {
   const user = await getCurrentUser();
   if (user) return redirect("/");
 }

@@ -4,7 +4,7 @@ import { Container, Section } from "@/components/ui";
 import { cn } from "@/lib/utils";
 import { getCurrentUser } from "@/services/auth.service";
 
-export async function loader() {
+export async function clientLoader() {
   const user = await getCurrentUser();
 
   if (!user) throw redirect("/login");
