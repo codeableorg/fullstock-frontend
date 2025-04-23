@@ -1,27 +1,33 @@
-import { useCallback } from "react";
-import { useParams } from "react-router";
+import { useLoaderData } from "react-router";
 
-import { Button, Container, ContainerLoader, Separator } from "@/components/ui";
+import { Button, Container, Separator } from "@/components/ui";
 import { useCart } from "@/contexts/cart.context";
-import { useAsync } from "@/hooks/use-async";
-import { type Product } from "@/models/product.model";
+import type { Product } from "@/models/product.model";
 import { getProductById } from "@/services/product.service";
 
 import NotFound from "../not-found";
 
+import type { LoaderFunctionArgs } from "react-router";
+
+type LoaderData = {
+  product?: Product;
+};
+
+export async function loader({ params }: LoaderFunctionArgs) {
+  const id = params.id!;
+
+  try {
+    const product = await getProductById(parseInt(id));
+
+    return { product };
+  } catch {
+    return {};
+  }
+}
+
 export default function Product() {
+  const { product } = useLoaderData<typeof loader>() as LoaderData;
   const { loading: cartLoading, changeItemQuantity } = useCart();
-
-  const { id } = useParams<{ id: string }>();
-
-  const fetchProductById = useCallback(
-    () => getProductById(parseInt(id!)),
-    [id]
-  );
-
-  const { data: product, loading } = useAsync(fetchProductById);
-
-  if (loading) return <ContainerLoader />;
 
   if (!product) {
     return <NotFound />;

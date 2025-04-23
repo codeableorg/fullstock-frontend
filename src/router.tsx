@@ -2,6 +2,7 @@ import { lazy } from "react";
 import { createBrowserRouter, Navigate } from "react-router";
 
 import { action as loginAction } from "./routes/login";
+import { loader as productLoader } from "./routes/product";
 
 const router = createBrowserRouter([
   {
@@ -18,6 +19,7 @@ const router = createBrowserRouter([
       {
         path: "/products/:id",
         Component: lazy(() => import("./routes/product")),
+        loader: productLoader,
       },
       {
         path: "/cart",
