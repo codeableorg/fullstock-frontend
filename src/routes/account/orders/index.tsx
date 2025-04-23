@@ -1,31 +1,34 @@
-import { Navigate } from "react-router";
+import { redirect, useLoaderData } from "react-router";
 
-import { ContainerLoader } from "@/components/ui";
-import { useAuth } from "@/contexts/auth.context";
-import { useAsync } from "@/hooks/use-async";
 import { Order } from "@/models/order.model";
+import { getCurrentUser } from "@/services/auth.service";
 import { getOrdersByUser } from "@/services/order.service";
 
+type LoaderData = { orders?: Order[] };
+
+export async function loader(): Promise<LoaderData> {
+  const user = await getCurrentUser();
+
+  if (!user) throw redirect("/login");
+
+  try {
+    const orders = await getOrdersByUser();
+    orders.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+
+    return { orders };
+  } catch {
+    return {};
+  }
+}
+
 export default function Orders() {
-  const { user } = useAuth();
-  const { data, loading } = useAsync<Order[]>(getOrdersByUser);
-  let orders: Order[] = [];
-
-  if (data) {
-    orders = data.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-  }
-
-  if (!user) {
-    return <Navigate to="/login" />;
-  }
-
-  if (loading) return <ContainerLoader />;
+  const { orders } = useLoaderData() as LoaderData;
 
   return (
     <div>
-      {orders.length > 0 ? (
+      {orders!.length > 0 ? (
         <div className="flex flex-col gap-4">
-          {orders.map((order) => (
+          {orders!.map((order) => (
             <div key={order.id}>
               <div className="rounded-lg bg-muted py-4 px-6">
                 <dl className="flex flex-col gap-4 w-full sm:flex-row">
@@ -63,19 +66,33 @@ export default function Orders() {
                 <caption className="sr-only">Productos</caption>
                 <thead className="not-sr-only text-left">
                   <tr>
-                    <th scope="col" className="py-3 pl-16">Producto</th>
-                    <th scope="col" className="py-3 pr-8 text-center hidden sm:table-cell sm:w-1/5">Precio</th>
-                    <th scope="col" className="py-3 pr-8 text-center hidden sm:table-cell sm:w-1/5">Cantidad</th>
-                    <th scope="col" className="py-3 pr-8 text-center">Total</th>
+                    <th scope="col" className="py-3 pl-16">
+                      Producto
+                    </th>
+                    <th
+                      scope="col"
+                      className="py-3 pr-8 text-center hidden sm:table-cell sm:w-1/5"
+                    >
+                      Precio
+                    </th>
+                    <th
+                      scope="col"
+                      className="py-3 pr-8 text-center hidden sm:table-cell sm:w-1/5"
+                    >
+                      Cantidad
+                    </th>
+                    <th scope="col" className="py-3 pr-8 text-center">
+                      Total
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="border-t border-b border-border">
                   {order.items.map((item) => (
-                    <tr key={item.productId}> 
+                    <tr key={item.productId}>
                       <td className="py-6 pl-6">
                         <div className="flex items-center gap-2">
                           <div className="w-16 rounded-xl bg-muted">
-                            <img src={item.imgSrc} alt={item.title}/>
+                            <img src={item.imgSrc} alt={item.title} />
                           </div>
                           <div>
                             <div className="font-medium text-foreground">

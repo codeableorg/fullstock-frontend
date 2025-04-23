@@ -1,16 +1,16 @@
-import { Navigate, Outlet, NavLink } from "react-router";
+import { Outlet, NavLink, redirect } from "react-router";
 
 import { Container, Section } from "@/components/ui";
-import { useAuth } from "@/contexts/auth.context";
 import { cn } from "@/lib/utils";
+import { getCurrentUser } from "@/services/auth.service";
+
+export async function loader() {
+  const user = await getCurrentUser();
+
+  if (!user) throw redirect("/login");
+}
 
 export default function Account() {
-  const { user } = useAuth();
-
-  if (!user) {
-    return <Navigate to="/login" />;
-  }
-
   return (
     <Section>
       <Container className="width-3xl">
@@ -28,7 +28,8 @@ export default function Account() {
               className={({ isActive }) =>
                 cn(
                   "pb-2 pl-1 pr-1 text-muted-foreground",
-                  isActive && "border-b-2 border-primary font-medium text-foreground"
+                  isActive &&
+                    "border-b-2 border-primary font-medium text-foreground"
                 )
               }
             >
@@ -39,7 +40,8 @@ export default function Account() {
               className={({ isActive }) =>
                 cn(
                   "pb-2 pl-1 pr-1 text-muted-foreground",
-                  isActive && "border-b-2 border-primary font-medium text-foreground"
+                  isActive &&
+                    "border-b-2 border-primary font-medium text-foreground"
                 )
               }
             >

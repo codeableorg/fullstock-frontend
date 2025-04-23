@@ -1,24 +1,23 @@
-import { useLoaderData } from "react-router";
+import {
+  Form,
+  LoaderFunctionArgs,
+  useLoaderData,
+  useNavigation,
+} from "react-router";
 
 import { Button, Container, Separator } from "@/components/ui";
-import { useCart } from "@/contexts/cart.context";
-import type { Product } from "@/models/product.model";
+import { type Product } from "@/models/product.model";
 import { getProductById } from "@/services/product.service";
 
 import NotFound from "../not-found";
-
-import type { LoaderFunctionArgs } from "react-router";
 
 type LoaderData = {
   product?: Product;
 };
 
 export async function loader({ params }: LoaderFunctionArgs) {
-  const id = params.id!;
-
   try {
-    const product = await getProductById(parseInt(id));
-
+    const product = await getProductById(parseInt(params.id!));
     return { product };
   } catch {
     return {};
@@ -26,8 +25,9 @@ export async function loader({ params }: LoaderFunctionArgs) {
 }
 
 export default function Product() {
-  const { product } = useLoaderData<typeof loader>() as LoaderData;
-  const { loading: cartLoading, changeItemQuantity } = useCart();
+  const { product } = useLoaderData() as LoaderData;
+  const navigation = useNavigation();
+  const cartLoading = navigation.state === "submitting";
 
   if (!product) {
     return <NotFound />;
@@ -52,14 +52,23 @@ export default function Product() {
             <p className="text-sm leading-5 text-muted-foreground mb-10">
               {product.description}
             </p>
-            <Button
-              size="xl"
-              className="w-full md:w-80"
-              onClick={() => changeItemQuantity(product)}
-              disabled={cartLoading}
-            >
-              {cartLoading ? "Agregando..." : "Agregar al Carrito"}
-            </Button>
+            <Form method="post" action="/cart/add-item">
+              <input
+                type="hidden"
+                name="redirectTo"
+                value={`/products/${product.id}`}
+              />
+              <Button
+                size="xl"
+                className="w-full md:w-80"
+                type="submit"
+                name="productId"
+                value={product.id}
+                disabled={cartLoading}
+              >
+                {cartLoading ? "Agregando..." : "Agregar al Carrito"}
+              </Button>
+            </Form>
             <Separator className="my-6" />
             <div>
               <h2 className="text-sm font-semibold text-accent-foreground mb-6">

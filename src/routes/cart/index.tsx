@@ -1,11 +1,22 @@
 import { Minus, Plus, Trash2 } from "lucide-react";
-import { Link } from "react-router";
+import { Form, Link, useLoaderData } from "react-router";
 
 import { Button, Container, Section } from "@/components/ui";
-import { useCart } from "@/contexts/cart.context";
+import { getCart } from "@/lib/cart";
+import { type Cart } from "@/models/cart.model";
+
+type LoaderData = {
+  cart: Cart | null;
+};
+
+export async function loader() {
+  const cart = await getCart();
+
+  return { cart };
+}
 
 export default function Cart() {
-  const { cart, changeItemQuantity, removeItem } = useCart();
+  const { cart } = useLoaderData() as LoaderData;
 
   return (
     <Section>
@@ -26,37 +37,47 @@ export default function Cart() {
               <div className="flex grow flex-col justify-between">
                 <div className="flex gap-4 justify-between items-center">
                   <h2 className="text-sm">{product.title}</h2>
-                  <Button
-                    size="sm-icon"
-                    variant="outline"
-                    onClick={() => removeItem(id)}
-                  >
-                    <Trash2 />
-                  </Button>
+                  <Form method="post" action="/cart/remove-item">
+                    <Button
+                      size="sm-icon"
+                      variant="outline"
+                      name="itemId"
+                      value={id}
+                    >
+                      <Trash2 />
+                    </Button>
+                  </Form>
                 </div>
                 <div className="flex flex-col gap-2 md:flex-row md:justify-between md:items-center">
                   <p className="text-sm font-medium">
                     ${product.price.toFixed(2)}
                   </p>
                   <div className="flex gap-4 items-center">
-                    <Button
-                      onClick={() => changeItemQuantity(product, -1)}
-                      variant="outline"
-                      size="sm-icon"
-                      disabled={quantity === 1}
-                    >
-                      <Minus />
-                    </Button>
+                    <Form method="post" action="/cart/add-item">
+                      <input type="hidden" name="quantity" value="-1" />
+                      <Button
+                        name="productId"
+                        value={product.id}
+                        variant="outline"
+                        size="sm-icon"
+                        disabled={quantity === 1}
+                      >
+                        <Minus />
+                      </Button>
+                    </Form>
                     <span className="h-8 w-8 flex justify-center items-center border rounded-md py-2 px-4">
                       {quantity}
                     </span>
-                    <Button
-                      onClick={() => changeItemQuantity(product, 1)}
-                      variant="outline"
-                      size="sm-icon"
-                    >
-                      <Plus />
-                    </Button>
+                    <Form method="post" action="/cart/add-item">
+                      <Button
+                        variant="outline"
+                        size="sm-icon"
+                        name="productId"
+                        value={product.id}
+                      >
+                        <Plus />
+                      </Button>
+                    </Form>
                   </div>
                 </div>
               </div>

@@ -2,15 +2,15 @@ import { ShoppingCart, User2 } from "lucide-react";
 import { Link } from "react-router";
 
 import { Button, Separator } from "@/components/ui";
-import { useAuth } from "@/contexts/auth.context";
-import { useCart } from "@/contexts/cart.context";
+import { User } from "@/models/user.model";
 
-export default function HeaderActions() {
-  const { user } = useAuth();
-  const { cart } = useCart();
-  const totalItems =
-    cart?.items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
-
+export default function HeaderActions({
+  user,
+  totalItems,
+}: {
+  user?: Omit<User, "password">;
+  totalItems: number;
+}) {
   return (
     <div className="flex gap-2 items-center">
       {user && (

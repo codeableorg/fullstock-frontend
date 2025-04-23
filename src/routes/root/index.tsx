@@ -1,5 +1,13 @@
-import { Suspense, useState } from "react";
-import { Link, Outlet, ScrollRestoration, useLocation } from "react-router";
+import { Suspense, useEffect, useRef } from "react";
+import {
+  Link,
+  Outlet,
+  ScrollRestoration,
+  ActionFunctionArgs,
+  useFetcher,
+  useLoaderData,
+  useLocation,
+} from "react-router";
 
 import {
   Button,
@@ -9,35 +17,58 @@ import {
   Section,
   Separator,
 } from "@/components/ui";
+import { getCart } from "@/lib/cart";
+import { User } from "@/models/user.model";
+import { getCurrentUser } from "@/services/auth.service";
 
 import AuthNav from "./components/auth-nav";
 import HeaderMain from "./components/header-main";
 
+export async function action({ request }: ActionFunctionArgs) {
+  const data = await request.formData();
+
+  try {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    return {
+      ok: true,
+      message: `Suscripción exitosa con email: ${data.get("email")}`,
+    };
+  } catch (error) {
+    console.error(error);
+    return { ok: false, message: "Hubo un error al procesar tu solicitud" };
+  }
+}
+
+type LoaderData = { user?: Omit<User, "password">; totalItems: number };
+
+export async function loader(): Promise<LoaderData> {
+  const user = await getCurrentUser();
+  const cart = await getCart();
+  const totalItems =
+    cart?.items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
+
+  return user ? { user, totalItems } : { totalItems };
+}
+
 export default function Root() {
-  const [email, setEmail] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const { user, totalItems } = useLoaderData() as LoaderData;
+
   const location = useLocation();
+  const fetcher = useFetcher();
+  const emailRef = useRef<HTMLInputElement>(null);
+  const isSubmitting = fetcher.state === "submitting";
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log("Suscripción exitosa");
-      setEmail("");
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
+  useEffect(() => {
+    if (fetcher.data?.ok && emailRef.current) {
+      emailRef.current.value = "";
     }
-  };
+  }, [fetcher.data]);
 
   return (
     <div className="grid grid-rows-[auto_1fr_auto] min-h-screen bg-background">
       <header className="sticky top-0 bg-background border-b border-border z-50">
-        <AuthNav />
-        <HeaderMain />
+        <AuthNav user={user} />
+        <HeaderMain user={user} totalItems={totalItems} />
       </header>
       <main>
         <Suspense fallback={<ContainerLoader />} key={location.key}>
@@ -95,25 +126,28 @@ export default function Root() {
                 Recibe las últimas ofertas y descuentos en tu correo
                 semanalmente.
               </p>
-              <form className="flex gap-2" onSubmit={handleSubmit}>
+              <fetcher.Form method="post" className="flex gap-2">
                 <Input
                   type="email"
+                  ref={emailRef}
                   aria-label="email"
                   required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  disabled={isLoading}
+                  name="email"
+                  disabled={isSubmitting}
                   placeholder="ejemplo@mail.com"
                 />
                 <Button
                   size="lg"
                   variant="secondary"
                   type="submit"
-                  disabled={isLoading}
+                  disabled={isSubmitting}
                 >
-                  {isLoading ? "Enviando..." : "Suscribirse"}
+                  {isSubmitting ? "Enviando..." : "Suscribirse"}
                 </Button>
-              </form>
+              </fetcher.Form>
+              <p className="text-muted-foreground my-2">
+                {fetcher.data?.message}
+              </p>
             </div>
           </Section>
           <Separator orientation="horizontal" decorative={true} />
