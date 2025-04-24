@@ -50,6 +50,10 @@ export default tseslint.config(
           ],
         },
       ],
+      "@typescript-eslint/consistent-type-imports": [
+        "error",
+        { prefer: "type-imports", fixStyle: "inline-type-imports" },
+      ],
     },
   }
 );

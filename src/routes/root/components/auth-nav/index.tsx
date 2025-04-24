@@ -1,7 +1,7 @@
 import { Form, Link } from "react-router";
 
 import { Button, Container } from "@/components/ui";
-import { User } from "@/models/user.model";
+import { type User } from "@/models/user.model";
 
 export default function AuthNav({ user }: { user?: Omit<User, "password"> }) {
   return (

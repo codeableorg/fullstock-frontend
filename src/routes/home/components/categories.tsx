@@ -1,5 +1,6 @@
-import { Category } from "@/models/category.model";
 import { Link } from "react-router";
+
+import { type Category } from "@/models/category.model";
 
 interface CategoriesProps {
   categories: Category[] | null;

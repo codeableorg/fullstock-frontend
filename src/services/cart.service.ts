@@ -1,6 +1,6 @@
 import { LOCAL_CART_KEY } from "@/config";
 import { client } from "@/lib/utils";
-import { Cart, type CartItem } from "@/models/cart.model";
+import { type Cart, type CartItem } from "@/models/cart.model";
 
 export function getLocalCart(): Cart | null {
   const cart = localStorage.getItem(LOCAL_CART_KEY);

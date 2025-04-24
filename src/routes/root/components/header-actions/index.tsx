@@ -2,7 +2,7 @@ import { ShoppingCart, User2 } from "lucide-react";
 import { Link } from "react-router";
 
 import { Button, Separator } from "@/components/ui";
-import { User } from "@/models/user.model";
+import { type User } from "@/models/user.model";
 
 export default function HeaderActions({
   user,

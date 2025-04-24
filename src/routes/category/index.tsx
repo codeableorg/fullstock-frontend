@@ -1,8 +1,8 @@
-import { LoaderFunctionArgs, redirect, useLoaderData } from "react-router";
+import { redirect, useLoaderData, type LoaderFunctionArgs } from "react-router";
 
 import { Container } from "@/components/ui";
 import { isValidCategorySlug, type Category } from "@/models/category.model";
-import { Product } from "@/models/product.model";
+import { type Product } from "@/models/product.model";
 import { getCategoryBySlug } from "@/services/category.service";
 import { getProductsByCategorySlug } from "@/services/product.service";
 

@@ -1,5 +1,5 @@
-import { CartItem } from "@/models/cart.model";
-import { Product } from "@/models/product.model";
+import type { CartItem } from "@/models/cart.model";
+import { type Product } from "@/models/product.model";
 import { getCurrentUser } from "@/services/auth.service";
 import {
   alterQuantityCartItem,

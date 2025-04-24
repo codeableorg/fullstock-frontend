@@ -1,6 +1,6 @@
 import { client } from "@/lib/utils";
-import { CartItemInput } from "@/models/cart.model";
-import { Order, OrderDetails } from "@/models/order.model";
+import { type CartItemInput } from "@/models/cart.model";
+import { type Order, type OrderDetails } from "@/models/order.model";
 
 export async function createOrder(
   items: CartItemInput[],

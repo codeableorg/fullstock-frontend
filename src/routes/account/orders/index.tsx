@@ -1,6 +1,6 @@
 import { redirect, useLoaderData } from "react-router";
 
-import { Order } from "@/models/order.model";
+import { type Order } from "@/models/order.model";
 import { getCurrentUser } from "@/services/auth.service";
 import { getOrdersByUser } from "@/services/order.service";
 
