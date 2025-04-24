@@ -1,4 +1,4 @@
-import { redirect, useLoaderData, type LoaderFunctionArgs } from "react-router";
+import { redirect, type LoaderFunctionArgs } from "react-router";
 
 import { Container } from "@/components/ui";
 import { isValidCategorySlug, type Category } from "@/models/category.model";
@@ -8,6 +8,15 @@ import { getProductsByCategorySlug } from "@/services/product.service";
 
 import { PriceFilter } from "./components/price-filter";
 import { ProductCard } from "./components/product-card";
+
+import type { Route } from "../../../.react-router/types/src/routes/category/+types/index";
+
+type LoaderData = {
+  category: Category;
+  products: Product[];
+  minPrice: string;
+  maxPrice: string;
+};
 
 export async function clientLoader({ params, request }: LoaderFunctionArgs) {
   const { category: categorySlug } = params;
@@ -55,13 +64,8 @@ export async function clientLoader({ params, request }: LoaderFunctionArgs) {
   }
 }
 
-export default function Category() {
-  const { category, products, minPrice, maxPrice } = useLoaderData() as {
-    category: Category;
-    products: Product[];
-    minPrice: string;
-    maxPrice: string;
-  };
+export default function Category({ loaderData }: Route.ComponentProps) {
+  const { category, products, minPrice, maxPrice } = (loaderData || {}) as LoaderData;
 
   return (
     <>
@@ -94,3 +98,4 @@ export default function Category() {
     </>
   );
 }
+

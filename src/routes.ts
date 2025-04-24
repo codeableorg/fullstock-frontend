@@ -5,10 +5,7 @@ export default [
     file: "./routes/root/index.tsx",
     children: [
       index("./routes/home/index.tsx"),
-      {
-        path: "/:category",
-        file: "./routes/category/index.tsx",
-      },
+      index("./routes/category/index.tsx"),
       {
         path: "/products/:id",
         file: "./routes/product/index.tsx",
