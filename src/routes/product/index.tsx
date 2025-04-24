@@ -1,9 +1,4 @@
-import {
-  Form,
-  LoaderFunctionArgs,
-  useLoaderData,
-  useNavigation,
-} from "react-router";
+import { Form, useLoaderData, useNavigation } from "react-router";
 
 import { Button, Container, Separator } from "@/components/ui";
 import { type Product } from "@/models/product.model";
@@ -11,13 +6,15 @@ import { getProductById } from "@/services/product.service";
 
 import NotFound from "../not-found";
 
+import type { Route } from "../../../.react-router/types/src/routes/product/+types/index";
+
 type LoaderData = {
   product?: Product;
 };
 
-export async function clientLoader({ params }: LoaderFunctionArgs) {
+export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   try {
-    const product = await getProductById(parseInt(params.id!));
+    const product = await getProductById(parseInt(params.id));
     return { product };
   } catch {
     return {};

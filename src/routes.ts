@@ -1,13 +1,10 @@
-import type { RouteConfig } from "@react-router/dev/routes";
+import { index, type RouteConfig } from "@react-router/dev/routes";
 
 export default [
   {
     file: "./routes/root/index.tsx",
     children: [
-      {
-        index: true,
-        file: "./routes/home/index.tsx",
-      },
+      index("./routes/home/index.tsx"),
       {
         path: "/:category",
         file: "./routes/category/index.tsx",
