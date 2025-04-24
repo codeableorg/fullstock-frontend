@@ -1,4 +1,4 @@
-import { index, type RouteConfig } from "@react-router/dev/routes";
+import { index, route, type RouteConfig } from "@react-router/dev/routes";
 
 export default [
   {
@@ -33,10 +33,7 @@ export default [
         path: "/order-confirmation/:orderId",
         file: "./routes/order-confirmation/index.tsx",
       },
-      {
-        path: "/login",
-        file: "./routes/login/index.tsx",
-      },
+      route("/login", "./routes/login/index.tsx"),
       {
         path: "/signup",
         file: "./routes/signup/index.tsx",
