@@ -9,16 +9,9 @@ import { getProductsByCategorySlug } from "@/services/product.service";
 import { PriceFilter } from "./components/price-filter";
 import { ProductCard } from "./components/product-card";
 
-import type { Route } from "../../../.react-router/types/src/routes/category/+types/index";
+import type { Route } from "./+types";
 
-type LoaderData = {
-  category: Category;
-  products: Product[];
-  minPrice: string;
-  maxPrice: string;
-};
-
-export async function clientLoader({ params, request }: LoaderFunctionArgs) {
+export async function clientLoader({ params, request }: Route.LoaderArgs) {
   const { category: categorySlug } = params;
 
   if (!isValidCategorySlug(categorySlug)) {
@@ -65,7 +58,7 @@ export async function clientLoader({ params, request }: LoaderFunctionArgs) {
 }
 
 export default function Category({ loaderData }: Route.ComponentProps) {
-  const { category, products, minPrice, maxPrice } = (loaderData || {}) as LoaderData;
+  const { category, products, minPrice, maxPrice } = loaderData;
 
   return (
     <>
