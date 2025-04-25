@@ -36,10 +36,7 @@ export default [
             path: "profile",
             file: "./routes/account/profile/index.tsx",
           },
-          {
-            path: "orders",
-            file: "./routes/account/orders/index.tsx",
-          },
+          route(":orders","./routes/account/orders/index.tsx"),
         ],
       },
       route("/not-found", "./routes/not-found/index.tsx"),
