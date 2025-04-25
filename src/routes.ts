@@ -33,10 +33,7 @@ export default [
         path: "/order-confirmation/:orderId",
         file: "./routes/order-confirmation/index.tsx",
       },
-      {
-        path: "/login",
-        file: "./routes/login/index.tsx",
-      },
+      route("/login", "./routes/login/index.tsx"),
       route("/signup", "./routes/signup/index.tsx"),
       {
         path: "/logout",
