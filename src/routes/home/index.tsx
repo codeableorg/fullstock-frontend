@@ -3,21 +3,12 @@ import { Link } from "react-router";
 
 import { Truck, Return, Ribbon, Idea } from "@/components/icons";
 import { Button, Container } from "@/components/ui";
-import { Category } from "@/models/category.model";
+import { type Category } from "@/models/category.model";
 import { getAllCategories } from "@/services/category.service";
 
 import { Categories } from "./components/categories";
 
-import type { Route } from "../../../.react-router/types/src/routes/home/+types/index";
-
-type LoaderData = {
-  features: {
-    Icon: (props: React.SVGProps<SVGSVGElement>) => JSX.Element;
-    title: string;
-    description: string;
-  }[];
-  categories: Category[] | null;
-};
+import type { Route } from "./+types";
 
 export async function clientLoader() {
   const features = [
@@ -57,7 +48,7 @@ export async function clientLoader() {
 }
 
 export default function Home({ loaderData }: Route.ComponentProps) {
-  const { features, categories } = (loaderData || {}) as LoaderData;
+  const { features, categories } = loaderData;
   const error = !categories;
   // if (loading) return <ContainerLoader />;
 

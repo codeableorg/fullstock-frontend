@@ -3,7 +3,7 @@ import { twMerge } from "tailwind-merge";
 
 import { API_URL, TOKEN_KEY } from "@/config";
 import { isApiError } from "@/models/error.model";
-import { RequestConfig } from "@/models/request.model";
+import { type RequestConfig } from "@/models/request.model";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

@@ -1,5 +1,5 @@
 import { client, getToken, removeToken, setToken } from "@/lib/utils";
-import { AuthResponse } from "@/models/user.model";
+import { type AuthResponse } from "@/models/user.model";
 
 export async function getCurrentUser(): Promise<AuthResponse["user"] | null> {
   const token = getToken();

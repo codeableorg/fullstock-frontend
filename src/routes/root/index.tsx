@@ -3,7 +3,7 @@ import {
   Link,
   Outlet,
   ScrollRestoration,
-  ActionFunctionArgs,
+  type ActionFunctionArgs,
   useFetcher,
   useLoaderData,
   useLocation,
@@ -18,18 +18,11 @@ import {
   Separator,
 } from "@/components/ui";
 import { getCart } from "@/lib/cart";
-import { User } from "@/models/user.model";
+import { type User } from "@/models/user.model";
 import { getCurrentUser } from "@/services/auth.service";
 
 import AuthNav from "./components/auth-nav";
 import HeaderMain from "./components/header-main";
-
-export async function loader() {
-  // Ejemplo de uso de código en backend
-  fetch("https://jsonplaceholder.typicode.com/todos/1")
-    .then((response) => response.json())
-    .then((json) => console.log(json));
-}
 
 export async function clientAction({ request }: ActionFunctionArgs) {
   const data = await request.formData();

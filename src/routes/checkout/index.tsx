@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import {
-  ActionFunctionArgs,
+  type ActionFunctionArgs,
   redirect,
   useLoaderData,
   useNavigation,
@@ -19,8 +19,8 @@ import {
   SelectField,
 } from "@/components/ui";
 import { getCart } from "@/lib/cart";
-import { Cart, CartItem } from "@/models/cart.model";
-import { User } from "@/models/user.model";
+import { type Cart, type CartItem } from "@/models/cart.model";
+import { type User } from "@/models/user.model";
 import { getCurrentUser } from "@/services/auth.service";
 import { deleteLocalCart, deleteRemoteCart } from "@/services/cart.service";
 import { createOrder } from "@/services/order.service";

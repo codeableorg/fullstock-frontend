@@ -1,6 +1,8 @@
-import React, { createContext, useContext } from "react";
+import { createContext, useContext } from "react";
 
-import { User } from "@/models/user.model";
+import { type User } from "@/models/user.model";
+
+import type React from "react";
 
 interface AuthContextType {
   user: Omit<User, "password"> | null;
