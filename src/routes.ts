@@ -29,10 +29,7 @@ export default [
         path: "/checkout",
         file: "./routes/checkout/index.tsx",
       },
-      {
-        path: "/order-confirmation/:orderId",
-        file: "./routes/order-confirmation/index.tsx",
-      },
+      route("/order-confirmation/:orderId", "./routes/order-confirmation/index.tsx"),
       route("/login", "./routes/login/index.tsx"),
       route("/signup", "./routes/signup/index.tsx"),
       {
