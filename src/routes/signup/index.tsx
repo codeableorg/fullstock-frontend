@@ -1,12 +1,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import {
-  type ActionFunctionArgs,
   Link,
   redirect,
-  useActionData,
   useNavigation,
-  useSubmit,
+  useSubmit
 } from "react-router";
 import { z } from "zod";
 
@@ -14,6 +12,8 @@ import { Button, Container, InputField, Section } from "@/components/ui";
 import { debounceAsync } from "@/lib/utils";
 import { getCurrentUser, signup } from "@/services/auth.service";
 import { findEmail } from "@/services/user.service";
+
+import type { Route } from "./+types";
 
 const debouncedFindEmail = debounceAsync(findEmail, 300);
 
@@ -33,9 +33,7 @@ const SignupSchema = z.object({
 
 type SignupForm = z.infer<typeof SignupSchema>;
 
-type ActionData = { error: string } | undefined;
-
-export async function clientAction({ request }: ActionFunctionArgs) {
+export async function clientAction({ request }: Route.ActionArgs) {
   const formData = await request.formData();
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
@@ -56,10 +54,10 @@ export async function clientLoader() {
   if (user) return redirect("/");
 }
 
-export default function Signup() {
+export default function Signup({ actionData }: Route.ComponentProps) {
   const submit = useSubmit();
   const navigation = useNavigation();
-  const data = useActionData() as ActionData;
+  const data = actionData;
 
   const isSubmitting = navigation.state === "submitting";
 
