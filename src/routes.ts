@@ -27,22 +27,17 @@ export default [
         path: "/logout",
         file: "./routes/logout/index.tsx",
       },
+      route("account", "./routes/account/index.tsx", [
+        {
+          path: "profile",
+          file: "./routes/account/profile/index.tsx",
+        },
+        route("orders", "./routes/account/orders/index.tsx"),
+      ]),
       {
-        path: "/account",
-        file: "./routes/account/index.tsx",
-        children: [
-          // { index: true, element: <Navigate to="profile" replace /> },
-          {
-            path: "profile",
-            file: "./routes/account/profile/index.tsx",
-          },
-          {
-            path: "orders",
-            file: "./routes/account/orders/index.tsx",
-          },
-        ],
+        path: "/not-found",
+        file: "./routes/not-found/index.tsx",
       },
-      route("/not-found", "./routes/not-found/index.tsx"),
     ],
   },
 ] satisfies RouteConfig;
