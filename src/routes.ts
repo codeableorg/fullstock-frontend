@@ -19,11 +19,11 @@ export default [
         path: "/cart/remove-item",
         file: "./routes/cart/remove-item/index.tsx",
       },
-      {
-        path: "/checkout",
-        file: "./routes/checkout/index.tsx",
-      },
-      route("/order-confirmation/:orderId", "./routes/order-confirmation/index.tsx"),
+      route("/checkout", "./routes/checkout/index.tsx"),
+      route(
+        "/order-confirmation/:orderId",
+        "./routes/order-confirmation/index.tsx"
+      ),
       route("/login", "./routes/login/index.tsx"),
       route("/signup", "./routes/signup/index.tsx"),
       {
