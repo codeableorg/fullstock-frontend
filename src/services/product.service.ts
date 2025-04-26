@@ -1,6 +1,6 @@
 import { client } from "@/lib/utils";
-import { Category } from "@/models/category.model";
-import { Product } from "@/models/product.model";
+import { type Category } from "@/models/category.model";
+import { type Product } from "@/models/product.model";
 
 export async function getProductsByCategorySlug(categorySlug: Category["slug"]): Promise<Product[]> {
   const category = await client<Category>(`/categories/${categorySlug}`);

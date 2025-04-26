@@ -1,0 +1,1 @@
+import{c as o,s as t}from"./utils-CNtvmiS0.js";async function a(s){return await o("/users/findEmail",{body:{email:s}})}async function r(s){const n=await o("/users/me",{body:{updatedUser:s},method:"PATCH"});return t(n.token),n.user}export{a as f,r as u};

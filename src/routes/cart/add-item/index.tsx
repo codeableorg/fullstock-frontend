@@ -1,8 +1,10 @@
-import { ActionFunctionArgs, redirect } from "react-router";
+import { redirect } from "react-router";
 
 import { addToCart } from "@/lib/cart";
 
-export async function action({ request }: ActionFunctionArgs) {
+import type { Route } from "../+types";
+
+export async function clientAction({ request }: Route.ClientActionArgs) {
   const formData = await request.formData();
   const productId = Number(formData.get("productId"));
   const quantity = Number(formData.get("quantity")) || 1;

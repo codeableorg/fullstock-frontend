@@ -1,17 +1,20 @@
-import { ErrorBoundary } from "react-error-boundary";
-import { LoaderFunctionArgs, redirect, useLoaderData } from "react-router";
+import { redirect } from "react-router";
 
 import { Container } from "@/components/ui";
 import { isValidCategorySlug, type Category } from "@/models/category.model";
-import { Product } from "@/models/product.model";
+import { type Product } from "@/models/product.model";
 import { getCategoryBySlug } from "@/services/category.service";
 import { getProductsByCategorySlug } from "@/services/product.service";
 
 import { PriceFilter } from "./components/price-filter";
 import { ProductCard } from "./components/product-card";
-import { ProductCardFallback } from "./components/product-card-fallback";
 
-export async function loader({ params, request }: LoaderFunctionArgs) {
+import type { Route } from "./+types";
+
+export async function clientLoader({
+  params,
+  request,
+}: Route.ClientLoaderArgs) {
   const { category: categorySlug } = params;
 
   if (!isValidCategorySlug(categorySlug)) {
@@ -40,7 +43,11 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
       );
     };
 
-    const filteredProducts = filterProductsByPrice(products, minPrice, maxPrice);
+    const filteredProducts = filterProductsByPrice(
+      products,
+      minPrice,
+      maxPrice
+    );
 
     return {
       category,
@@ -53,13 +60,8 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
   }
 }
 
-export default function Category() {
-  const { category, products, minPrice, maxPrice } = useLoaderData() as {
-    category: Category;
-    products: Product[];
-    minPrice: string;
-    maxPrice: string;
-  };
+export default function Category({ loaderData }: Route.ComponentProps) {
+  const { category, products, minPrice, maxPrice } = loaderData;
 
   return (
     <>
@@ -83,12 +85,7 @@ export default function Category() {
             />
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 flex-grow">
               {products.map((product) => (
-                <ErrorBoundary 
-                  FallbackComponent={ProductCardFallback} 
-                  key={product.id}
-                >
-                  <ProductCard product={product} />
-                </ErrorBoundary>
+                <ProductCard product={product} key={product.id} />
               ))}
             </div>
           </div>

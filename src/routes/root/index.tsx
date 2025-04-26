@@ -3,7 +3,7 @@ import {
   Link,
   Outlet,
   ScrollRestoration,
-  ActionFunctionArgs,
+  type ActionFunctionArgs,
   useFetcher,
   useLoaderData,
   useLocation,
@@ -18,13 +18,13 @@ import {
   Separator,
 } from "@/components/ui";
 import { getCart } from "@/lib/cart";
-import { User } from "@/models/user.model";
+import { type User } from "@/models/user.model";
 import { getCurrentUser } from "@/services/auth.service";
 
 import AuthNav from "./components/auth-nav";
 import HeaderMain from "./components/header-main";
 
-export async function action({ request }: ActionFunctionArgs) {
+export async function clientAction({ request }: ActionFunctionArgs) {
   const data = await request.formData();
 
   try {
@@ -41,7 +41,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
 type LoaderData = { user?: Omit<User, "password">; totalItems: number };
 
-export async function loader(): Promise<LoaderData> {
+export async function clientLoader(): Promise<LoaderData> {
   const user = await getCurrentUser();
   const cart = await getCart();
   const totalItems =

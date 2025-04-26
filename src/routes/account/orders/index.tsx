@@ -1,29 +1,22 @@
-import { redirect, useLoaderData } from "react-router";
 
-import { Order } from "@/models/order.model";
-import { getCurrentUser } from "@/services/auth.service";
 import { getOrdersByUser } from "@/services/order.service";
 
-type LoaderData = { orders?: Order[] };
+import type { Route } from "./+types"
 
-export async function loader(): Promise<LoaderData> {
-  const user = await getCurrentUser();
 
-  if (!user) throw redirect("/login");
 
+export async function clientLoader(){
   try {
-    const orders = await getOrdersByUser();
-    orders.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-
+    const orders = await getOrdersByUser(); 
+    orders.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());   
     return { orders };
   } catch {
     return {};
   }
 }
 
-export default function Orders() {
-  const { orders } = useLoaderData() as LoaderData;
-
+export default function Orders({loaderData}: Route.ComponentProps) { 
+  const { orders } = loaderData;
   return (
     <div>
       {orders!.length > 0 ? (

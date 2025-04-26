@@ -1,13 +1,16 @@
-import { Link, useLoaderData } from "react-router";
+import { ServerCrash } from "lucide-react";
+import { Link } from "react-router";
 
 import { Truck, Return, Ribbon, Idea } from "@/components/icons";
 import { Button, Container } from "@/components/ui";
+import { type Category } from "@/models/category.model";
 import { getAllCategories } from "@/services/category.service";
-import { ServerCrash } from "lucide-react";
-import { Category } from "@/models/category.model";
+
 import { Categories } from "./components/categories";
 
-export async function loader() {
+import type { Route } from "./+types";
+
+export async function clientLoader() {
   const features = [
     {
       Icon: Truck,
@@ -44,8 +47,8 @@ export async function loader() {
   }
 }
 
-export default function Home() {
-  const { features, categories } = useLoaderData();
+export default function Home({ loaderData }: Route.ComponentProps) {
+  const { features, categories } = loaderData;
   const error = !categories;
   // if (loading) return <ContainerLoader />;
 

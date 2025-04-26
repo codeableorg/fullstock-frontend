@@ -1,26 +1,19 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import {
-  ActionFunctionArgs,
-  Link,
-  redirect,
-  useActionData,
-  useNavigation,
-  useSubmit,
-} from "react-router";
+import { Link, redirect, useNavigation, useSubmit } from "react-router";
 import { z } from "zod";
 
 import { Button, Container, InputField, Section } from "@/components/ui";
 import { getCurrentUser, login } from "@/services/auth.service";
+
+import type { Route } from "./+types";
 
 const LoginSchema = z.object({
   email: z.string().email("Correo electrónico inválido"),
   password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
 });
 
-type ActionData = { error: string } | undefined;
-
-export async function action({ request }: ActionFunctionArgs) {
+export async function clientAction({ request }: Route.ClientActionArgs) {
   const formData = await request.formData();
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
@@ -36,17 +29,17 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 }
 
-export async function loader() {
+export async function clientLoader() {
   const user = await getCurrentUser();
   if (user) return redirect("/");
 }
 
 type LoginForm = z.infer<typeof LoginSchema>;
 
-export default function Login() {
+export default function Login({ actionData }: Route.ComponentProps) {
   const submit = useSubmit();
   const navigation = useNavigation();
-  const data = useActionData() as ActionData;
+  const data = actionData;
 
   const isSubmitting = navigation.state === "submitting";
 
