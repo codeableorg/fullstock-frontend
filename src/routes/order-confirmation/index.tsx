@@ -1,18 +1,15 @@
-import { type LoaderFunctionArgs, useLoaderData } from "react-router";
-
 import { Container } from "@/components/ui";
 
-type LoaderData = {
-  orderId: string;
-};
+import type { Route } from "./+types";
 
-export async function clientLoader({ params }: LoaderFunctionArgs) {
-  const orderId = params.orderId!;
+
+export async function clientLoader({ params }: Route.LoaderArgs) {
+  const orderId = params.orderId;
   return { orderId };
 }
 
-export default function OrderConfirmation() {
-  const { orderId } = useLoaderData() as LoaderData;
+export default function OrderConfirmation({ loaderData } : Route.ComponentProps) {
+  const { orderId } = loaderData;
 
   return (
     <section className="pt-12 pb-12 sm:pt-14 sm:pb-14 lg:pt-16 lg:pb-16">
