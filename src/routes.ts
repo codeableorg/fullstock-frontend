@@ -28,15 +28,14 @@ export default [
         file: "./routes/logout/index.tsx",
       },
       {
-        path: "/account",
         file: "./routes/account/index.tsx",
         children: [
-          // { index: true, element: <Navigate to="profile" replace /> },
+          route("account","./routes/account/index.tsx"),
           {
             path: "profile",
             file: "./routes/account/profile/index.tsx",
           },
-          route(":orders","./routes/account/orders/index.tsx"),
+          route("orders","./routes/account/orders/index.tsx"),
         ],
       },
       route("/not-found", "./routes/not-found/index.tsx"),
