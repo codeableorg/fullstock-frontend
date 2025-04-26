@@ -2,13 +2,14 @@ import { Container } from "@/components/ui";
 
 import type { Route } from "./+types";
 
-
-export async function clientLoader({ params }: Route.LoaderArgs) {
+export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const orderId = params.orderId;
   return { orderId };
 }
 
-export default function OrderConfirmation({ loaderData } : Route.ComponentProps) {
+export default function OrderConfirmation({
+  loaderData,
+}: Route.ComponentProps) {
   const { orderId } = loaderData;
 
   return (

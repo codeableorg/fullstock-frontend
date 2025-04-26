@@ -1,11 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import {
-  Link,
-  redirect,
-  useNavigation,
-  useSubmit
-} from "react-router";
+import { Link, redirect, useNavigation, useSubmit } from "react-router";
 import { z } from "zod";
 
 import { Button, Container, InputField, Section } from "@/components/ui";
@@ -33,7 +28,7 @@ const SignupSchema = z.object({
 
 type SignupForm = z.infer<typeof SignupSchema>;
 
-export async function clientAction({ request }: Route.ActionArgs) {
+export async function clientAction({ request }: Route.ClientActionArgs) {
   const formData = await request.formData();
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;

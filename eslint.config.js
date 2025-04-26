@@ -6,7 +6,7 @@ import importPlugin from "eslint-plugin-import";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  { ignores: ["dist"] },
+  { ignores: ["dist", ".react-router"] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ["**/*.{ts,tsx}"],
@@ -22,7 +22,7 @@ export default tseslint.config(
     rules: {
       ...reactHooks.configs.recommended.rules,
       "react-refresh/only-export-components": [
-        "warn",
+        "off",
         { allowConstantExport: true },
       ],
       "import/order": [
@@ -49,6 +49,10 @@ export default tseslint.config(
             },
           ],
         },
+      ],
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
       ],
       "@typescript-eslint/consistent-type-imports": [
         "error",

@@ -1,4 +1,4 @@
-import { redirect, type LoaderFunctionArgs } from "react-router";
+import { redirect } from "react-router";
 
 import { Container } from "@/components/ui";
 import { isValidCategorySlug, type Category } from "@/models/category.model";
@@ -11,7 +11,10 @@ import { ProductCard } from "./components/product-card";
 
 import type { Route } from "./+types";
 
-export async function clientLoader({ params, request }: Route.LoaderArgs) {
+export async function clientLoader({
+  params,
+  request,
+}: Route.ClientLoaderArgs) {
   const { category: categorySlug } = params;
 
   if (!isValidCategorySlug(categorySlug)) {
@@ -91,4 +94,3 @@ export default function Category({ loaderData }: Route.ComponentProps) {
     </>
   );
 }
-

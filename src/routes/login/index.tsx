@@ -13,7 +13,7 @@ const LoginSchema = z.object({
   password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
 });
 
-export async function clientAction({ request }: Route.ActionArgs) {
+export async function clientAction({ request }: Route.ClientActionArgs) {
   const formData = await request.formData();
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;

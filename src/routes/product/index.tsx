@@ -7,7 +7,7 @@ import { getProductById } from "@/services/product.service";
 import NotFound from "../not-found";
 import { type Route } from "./+types";
 
-export async function clientLoader({ params }: Route.LoaderArgs) {
+export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   try {
     const product = await getProductById(parseInt(params.id));
     return { product };

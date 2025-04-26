@@ -1,5 +1,7 @@
-import { removeFromCart } from "@/lib/cart";
 import { redirect } from "react-router";
+
+import { removeFromCart } from "@/lib/cart";
+
 import type { Route } from "../+types";
 
 export async function clientAction({ request }: Route.ClientActionArgs) {

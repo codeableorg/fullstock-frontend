@@ -1,12 +1,6 @@
-import {
-  redirect,
-  useLoaderData,
-  useFetcher,
-  type ActionFunctionArgs,
-} from "react-router";
+import { redirect, useFetcher } from "react-router";
 
 import { Button, InputField } from "@/components/ui";
-import { type User } from "@/models/user.model";
 import { getCurrentUser } from "@/services/auth.service";
 import { updateUser } from "@/services/user.service";
 
