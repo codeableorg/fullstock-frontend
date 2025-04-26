@@ -7,7 +7,8 @@ import type { Route } from "./+types"
 
 export async function clientLoader(){
   try {
-    const orders = await getOrdersByUser();    
+    const orders = await getOrdersByUser(); 
+    orders.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());   
     return { orders };
   } catch {
     return {};
