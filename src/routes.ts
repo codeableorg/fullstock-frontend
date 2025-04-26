@@ -42,10 +42,7 @@ export default [
           },
         ],
       },
-      {
-        path: "/not-found",
-        file: "./routes/not-found/index.tsx",
-      },
+      route("/not-found", "./routes/not-found/index.tsx"),
     ],
   },
 ] satisfies RouteConfig;
