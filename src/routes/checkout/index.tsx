@@ -1,13 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { X } from "lucide-react";
 import { useForm } from "react-hook-form";
-import {
-  type ActionFunctionArgs,
-  redirect,
-  useLoaderData,
-  useNavigation,
-  useSubmit,
-} from "react-router";
+import { redirect, useNavigation, useSubmit } from "react-router";
 import { z } from "zod";
 
 import {
@@ -19,11 +13,12 @@ import {
   SelectField,
 } from "@/components/ui";
 import { getCart } from "@/lib/cart";
-import { type Cart, type CartItem } from "@/models/cart.model";
-import { type User } from "@/models/user.model";
+import { type CartItem } from "@/models/cart.model";
 import { getCurrentUser } from "@/services/auth.service";
 import { deleteLocalCart, deleteRemoteCart } from "@/services/cart.service";
 import { createOrder } from "@/services/order.service";
+
+import type { Route } from "./+types";
 
 const countryOptions = [
   { value: "AR", label: "Argentina" },
@@ -64,12 +59,7 @@ export const CheckoutFormSchema = z.object({
 
 type CheckoutForm = z.infer<typeof CheckoutFormSchema>;
 
-type LoaderData = {
-  user?: Omit<User, "password">;
-  cart: Cart;
-};
-
-export async function clientAction({ request }: ActionFunctionArgs) {
+export async function clientAction({ request }: Route.ClientActionArgs) {
   let user;
 
   try {
@@ -112,8 +102,8 @@ export async function clientLoader() {
   return user ? { user, cart } : { cart };
 }
 
-export default function Checkout() {
-  const { user, cart } = useLoaderData() as LoaderData;
+export default function Checkout({ loaderData }: Route.ComponentProps) {
+  const { user, cart } = loaderData;
   const navigation = useNavigation();
   const submit = useSubmit();
   const loading = navigation.state === "submitting";
