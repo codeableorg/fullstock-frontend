@@ -22,10 +22,7 @@ export default [
         route("profile", "./routes/account/profile/index.tsx"),
         route("orders", "./routes/account/orders/index.tsx"),
       ]),
-      {
-        path: "/not-found",
-        file: "./routes/not-found/index.tsx",
-      },
+      route("/not-found", "./routes/not-found/index.tsx"),
     ],
   },
 ] satisfies RouteConfig;
