@@ -7,10 +7,7 @@ export default [
       index("./routes/home/index.tsx"),
       route("/:category", "./routes/category/index.tsx"),
       route("/products/:id", "./routes/product/index.tsx"),
-      {
-        path: "/cart",
-        file: "./routes/cart/index.tsx",
-      },
+      route("/cart", "./routes/cart/index.tsx"),
       {
         path: "/cart/add-item",
         file: "./routes/cart/add-item/index.tsx",

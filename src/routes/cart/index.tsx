@@ -1,13 +1,11 @@
 import { Minus, Plus, Trash2 } from "lucide-react";
-import { Form, Link, useLoaderData } from "react-router";
+import { Form, Link } from "react-router";
 
 import { Button, Container, Section } from "@/components/ui";
 import { getCart } from "@/lib/cart";
 import { type Cart } from "@/models/cart.model";
 
-type LoaderData = {
-  cart: Cart | null;
-};
+import type { Route } from "./+types";
 
 export async function clientLoader() {
   const cart = await getCart();
@@ -15,8 +13,8 @@ export async function clientLoader() {
   return { cart };
 }
 
-export default function Cart() {
-  const { cart } = useLoaderData() as LoaderData;
+export default function Cart({ loaderData }: Route.ComponentProps) {
+  const { cart } = loaderData;
 
   return (
     <Section>
