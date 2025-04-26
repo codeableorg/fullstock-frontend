@@ -20,7 +20,7 @@ export async function clientLoader() {
   return { user };
 }
 
-export async function clientAction({ request }: Route.ActionArgs) {
+export async function clientAction({ request }: Route.ClientActionArgs) {
   const data = await request.formData();
 
   try {
