@@ -28,10 +28,7 @@ export default [
         file: "./routes/logout/index.tsx",
       },
       route("account", "./routes/account/index.tsx", [
-        {
-          path: "profile",
-          file: "./routes/account/profile/index.tsx",
-        },
+        route("profile", "./routes/account/profile/index.tsx"),
         route("orders", "./routes/account/orders/index.tsx"),
       ]),
       {
