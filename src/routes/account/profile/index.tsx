@@ -10,9 +10,9 @@ import { type User } from "@/models/user.model";
 import { getCurrentUser } from "@/services/auth.service";
 import { updateUser } from "@/services/user.service";
 
-type LoaderData = { user: Omit<User, "password"> };
+import type { Route } from "./+types";
 
-export async function clientLoader(): Promise<LoaderData> {
+export async function clientLoader() {
   const user = await getCurrentUser();
 
   if (!user) throw redirect("/login");
@@ -20,7 +20,7 @@ export async function clientLoader(): Promise<LoaderData> {
   return { user };
 }
 
-export async function clientAction({ request }: ActionFunctionArgs) {
+export async function clientAction({ request }: Route.ActionArgs) {
   const data = await request.formData();
 
   try {
@@ -40,8 +40,8 @@ export async function clientAction({ request }: ActionFunctionArgs) {
   }
 }
 
-export default function Profile() {
-  const { user } = useLoaderData() as LoaderData;
+export default function Profile({ loaderData }: Route.ComponentProps) {
+  const { user } = loaderData;
   const fetcher = useFetcher();
   const isSubmitting = fetcher.state === "submitting";
 
