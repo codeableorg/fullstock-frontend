@@ -4,23 +4,56 @@ import { Link, redirect, useNavigation, useSubmit } from "react-router";
 import { z } from "zod";
 
 import { Button, Container, InputField, Section } from "@/components/ui";
-import { getCurrentUser, login } from "@/services/auth.service";
+import { API_URL } from "@/config";
+import { commitSession, getSession } from "@/session.server";
 
 import type { Route } from "./+types";
+
+function redirectIfAuthenticated() {
+  const random = Math.random();
+  const user = random > 0.5 ? null : { id: 1, name: "John Doe" };
+
+  if (user) {
+    console.log("Usurio autenticado", user);
+    throw redirect("/");
+  }
+  return null;
+}
 
 const LoginSchema = z.object({
   email: z.string().email("Correo electrónico inválido"),
   password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
 });
 
-export async function clientAction({ request }: Route.ClientActionArgs) {
+export async function action({ request }: Route.ActionArgs) {
+  console.log("login action");
+  const session = await getSession();
+
   const formData = await request.formData();
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
+  console.log({ email, password });
 
   try {
-    await login(email, password);
-    return redirect("/");
+    const response = await fetch(API_URL + "/auth/login", {
+      method: "POST",
+      body: JSON.stringify({ email, password }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message);
+    }
+
+    const { token } = await response.json();
+    session.set("token", token);
+
+    return redirect("/", {
+      headers: { "Set-Cookie": await commitSession(session) },
+    });
   } catch (error) {
     if (error instanceof Error) {
       return { error: error.message };
@@ -29,9 +62,12 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
   }
 }
 
-export async function clientLoader() {
-  const user = await getCurrentUser();
-  if (user) return redirect("/");
+export async function loader() {
+  // redirige si el usuario existe
+  redirectIfAuthenticated();
+
+  // quiero hacer mas cosas si el usuario no existe
+  console.log("No hay usuario autenticado");
 }
 
 type LoginForm = z.infer<typeof LoginSchema>;
