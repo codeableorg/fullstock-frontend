@@ -1,14 +1,17 @@
 import { API_URL } from "@/config";
 import { isApiError } from "@/models/error.model";
 import type { RequestConfig } from "@/models/request.model";
+import { getSession } from "@/session.server";
 
 export async function serverClient<T>(
   endpoint: string,
-  // agregar el `request` como argumento
+  request: Request,
   { body, headers: customHeaders, ...customConfig }: RequestConfig = {}
 ) {
   // Obtener el token desde las cookies
-  const token = getToken();
+  const cookieHeader = request.headers.get("Cookie");
+  const session = await getSession(cookieHeader);
+  const token = session.get("token");
 
   const config: RequestInit = {
     method: body ? "POST" : "GET",
@@ -32,9 +35,10 @@ export async function serverClient<T>(
     if (response.status === 401 && token) {
       // En lugar de eliminar el token y redirigir, emitir un error customizado
       // para el caller se encargue de manejar el caso de error de autenticación
-      removeToken();
+      throw new Error("Unauthorized");
+      // removeToken();
       // window.location.assign(window.location.pathname);
-      window.location.assign("/login");
+      // window.location.assign("/login");
     }
 
     if (isApiError(data)) throw new Error(data.error.message);
