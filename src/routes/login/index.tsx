@@ -4,21 +4,10 @@ import { Link, redirect, useNavigation, useSubmit } from "react-router";
 import { z } from "zod";
 
 import { Button, Container, InputField, Section } from "@/components/ui";
-import { API_URL } from "@/config";
+import { login, redirectIfAuthenticated } from "@/services/auth.server";
 import { commitSession, getSession } from "@/session.server";
 
 import type { Route } from "./+types";
-
-function redirectIfAuthenticated() {
-  const random = Math.random();
-  const user = random > 0.5 ? null : { id: 1, name: "John Doe" };
-
-  if (user) {
-    console.log("Usurio autenticado", user);
-    throw redirect("/");
-  }
-  return null;
-}
 
 const LoginSchema = z.object({
   email: z.string().email("Correo electrónico inválido"),
@@ -26,29 +15,14 @@ const LoginSchema = z.object({
 });
 
 export async function action({ request }: Route.ActionArgs) {
-  console.log("login action");
   const session = await getSession();
 
   const formData = await request.formData();
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
-  console.log({ email, password });
 
   try {
-    const response = await fetch(API_URL + "/auth/login", {
-      method: "POST",
-      body: JSON.stringify({ email, password }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message);
-    }
-
-    const { token } = await response.json();
+    const { token } = await login(request, email, password);
     session.set("token", token);
 
     return redirect("/", {
@@ -62,12 +36,9 @@ export async function action({ request }: Route.ActionArgs) {
   }
 }
 
-export async function loader() {
-  // redirige si el usuario existe
-  redirectIfAuthenticated();
-
-  // quiero hacer mas cosas si el usuario no existe
-  console.log("No hay usuario autenticado");
+export async function loader({ request }: Route.LoaderArgs) {
+  await redirectIfAuthenticated(request);
+  return null;
 }
 
 type LoginForm = z.infer<typeof LoginSchema>;

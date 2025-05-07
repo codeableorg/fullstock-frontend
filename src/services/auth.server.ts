@@ -65,8 +65,7 @@ export async function redirectIfAuthenticated(
 ): Promise<null> {
   const user = await getCurrentUser(request);
 
-  if (!user) {
-    console.log("User not authenticated");
+  if (user) {
     throw redirect(redirectTo);
   }
 
