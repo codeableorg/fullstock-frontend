@@ -14,9 +14,13 @@ export function ThemeProvider({
   storageKey = "fullstock-ui-theme",
   ...props
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(
-    () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
-  );
+  console.log("ThemeProvider", { defaultTheme, storageKey });
+  const [theme, setTheme] = useState<Theme>(defaultTheme);
+
+  useEffect(() => {
+    const userTheme = localStorage.getItem(storageKey) as Theme;
+    setTheme(userTheme || defaultTheme);
+  }, [defaultTheme, storageKey]);
 
   useEffect(() => {
     const root = window.document.documentElement;

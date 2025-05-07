@@ -5,7 +5,8 @@ import { type Product } from "@/models/product.model";
 import { getProductById } from "@/services/product.service";
 
 import NotFound from "../not-found";
-import { type Route } from "./+types";
+
+import type { Route } from "./+types";
 
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   try {

@@ -5,7 +5,6 @@ import {
   ScrollRestoration,
   type ActionFunctionArgs,
   useFetcher,
-  useLoaderData,
   useLocation,
 } from "react-router";
 
@@ -17,12 +16,12 @@ import {
   Section,
   Separator,
 } from "@/components/ui";
-import { getCart } from "@/lib/cart";
-import { type User } from "@/models/user.model";
-import { getCurrentUser } from "@/services/auth.service";
+import { getCurrentUser } from "@/services/auth.server";
 
 import AuthNav from "./components/auth-nav";
 import HeaderMain from "./components/header-main";
+
+import type { Route } from "./+types";
 
 export async function clientAction({ request }: ActionFunctionArgs) {
   const data = await request.formData();
@@ -39,19 +38,17 @@ export async function clientAction({ request }: ActionFunctionArgs) {
   }
 }
 
-type LoaderData = { user?: Omit<User, "password">; totalItems: number };
+export async function loader({ request }: Route.LoaderArgs) {
+  const user = await getCurrentUser(request);
+  // const cart = await getCart(user);
+  //   const totalItems =
+  //     cart?.items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
 
-export async function clientLoader(): Promise<LoaderData> {
-  const user = await getCurrentUser();
-  const cart = await getCart();
-  const totalItems =
-    cart?.items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
-
-  return user ? { user, totalItems } : { totalItems };
+  return user ? { user, totalItems: 0 } : { totalItems: 0 };
 }
 
-export default function Root() {
-  const { user, totalItems } = useLoaderData() as LoaderData;
+export default function Root({ loaderData }: Route.ComponentProps) {
+  const { totalItems, user } = loaderData;
 
   const location = useLocation();
   const fetcher = useFetcher();

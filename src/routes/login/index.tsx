@@ -4,7 +4,8 @@ import { Link, redirect, useNavigation, useSubmit } from "react-router";
 import { z } from "zod";
 
 import { Button, Container, InputField, Section } from "@/components/ui";
-import { getCurrentUser, login } from "@/services/auth.service";
+import { login, redirectIfAuthenticated } from "@/services/auth.server";
+import { commitSession, getSession } from "@/session.server";
 
 import type { Route } from "./+types";
 
@@ -13,14 +14,20 @@ const LoginSchema = z.object({
   password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
 });
 
-export async function clientAction({ request }: Route.ClientActionArgs) {
+export async function action({ request }: Route.ActionArgs) {
+  const session = await getSession();
+
   const formData = await request.formData();
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
   try {
-    await login(email, password);
-    return redirect("/");
+    const { token } = await login(request, email, password);
+    session.set("token", token);
+
+    return redirect("/", {
+      headers: { "Set-Cookie": await commitSession(session) },
+    });
   } catch (error) {
     if (error instanceof Error) {
       return { error: error.message };
@@ -29,9 +36,9 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
   }
 }
 
-export async function clientLoader() {
-  const user = await getCurrentUser();
-  if (user) return redirect("/");
+export async function loader({ request }: Route.LoaderArgs) {
+  await redirectIfAuthenticated(request);
+  return null;
 }
 
 type LoginForm = z.infer<typeof LoginSchema>;
