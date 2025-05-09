@@ -10,7 +10,7 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
   const quantity = Number(formData.get("quantity")) || 1;
   const redirectTo = formData.get("redirectTo") as string | null;
 
-  await addToCart(productId, quantity);
+  await addToCart(productId, quantity, request);
 
   return redirect(redirectTo || "/cart");
 }

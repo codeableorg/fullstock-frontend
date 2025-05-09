@@ -1,6 +1,6 @@
 import type { CartItem } from "@/models/cart.model";
 import { type Product } from "@/models/product.model";
-import { getCurrentUser } from "@/services/auth.service";
+import { getCurrentUser } from "@/services/auth.server";
 import {
   alterQuantityCartItem,
   createRemoteItems,
@@ -11,9 +11,10 @@ import {
   setLocalCart,
 } from "@/services/cart.service";
 import { getProductById } from "@/services/product.service";
+import { getSession } from "@/session.server";
 
-export async function getCart() {
-  const user = await getCurrentUser();
+export async function getCart(request: Request) {
+  const user = await getCurrentUser(request);
 
   try {
     const localCart = getLocalCart(); // obtiene carrito del localstorage
@@ -48,16 +49,22 @@ export async function getCart() {
 
 export async function addToCart(
   productId: Product["id"],
-  quantity: number = 1
+  quantity: number = 1,
+  request: Request
 ) {
   const [user, product] = await Promise.all([
-    getCurrentUser(),
+    getCurrentUser(request),
     getProductById(productId),
   ]);
 
   try {
     if (user) {
       const updatedCart = await alterQuantityCartItem(product.id, quantity);
+
+      const session = await getSession();
+
+      session.set("cartSessionId", updatedCart.id);
+
       return updatedCart;
     }
 

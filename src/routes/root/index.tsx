@@ -22,6 +22,7 @@ import AuthNav from "./components/auth-nav";
 import HeaderMain from "./components/header-main";
 
 import type { Route } from "./+types";
+import { getLocalCart } from "@/services/cart.service";
 
 export async function clientAction({ request }: ActionFunctionArgs) {
   const data = await request.formData();
@@ -40,7 +41,7 @@ export async function clientAction({ request }: ActionFunctionArgs) {
 
 export async function loader({ request }: Route.LoaderArgs) {
   const user = await getCurrentUser(request);
-  // const cart = await getCart(user);
+  //const cart = await getLocalCart(user);
   //   const totalItems =
   //     cart?.items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
 
