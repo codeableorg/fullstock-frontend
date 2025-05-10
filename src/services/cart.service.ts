@@ -1,19 +1,39 @@
-import { LOCAL_CART_KEY } from "@/config";
 import { client } from "@/lib/utils";
 import { type Cart, type CartItem } from "@/models/cart.model";
+import { getCardIdFromSession } from "@/session.server";
 
-export function getLocalCart(): Cart | null {
-  const cart = localStorage.getItem(LOCAL_CART_KEY);
-  return cart ? JSON.parse(cart) : null;
+// export function getLocalCart(): Cart | null {
+//   const cart = localStorage.getItem(LOCAL_CART_KEY);
+//   return cart ? JSON.parse(cart) : null;
+// }
+
+// export function setLocalCart(cart: Cart): void {
+//   localStorage.setItem(LOCAL_CART_KEY, JSON.stringify(cart));
+// }
+
+export async function getGuestCart() : Promise<Cart | null> {
+  const cartId = await getCardIdFromSession();
+  if (!cartId) return null;
+
+  return client<Cart>(`/cart/${cartId}`); // END POINT A CREAR
 }
 
-export function setLocalCart(cart: Cart): void {
-  localStorage.setItem(LOCAL_CART_KEY, JSON.stringify(cart));
+export async function getUserCart(): Promise<Cart | null> {
+  return client<Cart>("/cart"); // POR EMAIL DEL TOKEN
 }
 
-export async function getRemoteCart(): Promise<Cart | null> {
-  return client<Cart>("/cart");
+export async function createGuestCart(): Promise<Cart> {  // END POINT A CREAR
+  const cartId = await getCardIdFromSession();
+  if (!cartId) {
+    throw new Error("No cartId found in session");
+  }
+  return client<Cart>(`/cart`, {
+    method: "POST",
+    body: { cartId },
+  });
 }
+
+// AQUI NOS QUEDAMOS
 
 export async function createRemoteItems(items: CartItem[]): Promise<Cart> {
   const payload = {
@@ -51,6 +71,14 @@ export async function deleteRemoteCart(): Promise<void> {
   });
 }
 
-export function deleteLocalCart(): void {
-  localStorage.removeItem(LOCAL_CART_KEY);
+// export function deleteLocalCart(): void {
+//   localStorage.removeItem(LOCAL_CART_KEY);
+// }
+
+export async function getGuestCartId(): Promise<string> {
+  return client("/cart/guest-cart-id", {
+    method: "POST",
+  });
 }
+
+

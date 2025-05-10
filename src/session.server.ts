@@ -1,7 +1,10 @@
 import { createCookieSessionStorage } from "react-router";
 
+import { getGuestCartId } from "./services/cart.service";
+
 type SessionData = {
   token: string;
+  cartId: string;
 };
 
 type SessionFlashData = {
@@ -29,4 +32,23 @@ const { getSession, commitSession, destroySession } =
     },
   });
 
-export { getSession, commitSession, destroySession };
+async function addCartToSession() {  // MOVE TO CART
+  const cartId = await getGuestCartId();
+  const session = await getSession();
+  session.set("cartId", cartId);
+  return commitSession(session);
+}
+
+async function getCardIdFromSession() {
+  const session = await getSession();
+  return session.get("cartId");
+}
+
+export {
+  getSession,
+  commitSession,
+  destroySession,
+  addCartToSession,
+  getCardIdFromSession,
+};
+
