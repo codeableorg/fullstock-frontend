@@ -32,7 +32,7 @@ export async function alterQuantityCartItem(
   productId: number,
   quantity: number = 1
 ): Promise<Cart> {
-  return client<Cart>("/cart/add-item", {
+  return client<Cart>("/cart/add-item-without-auth", {
     body: { productId, quantity },
   });
 }
