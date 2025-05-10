@@ -92,8 +92,8 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
   return redirect(`/order-confirmation/${orderId}`);
 }
 
-export async function clientLoader() {
-  const [user, cart] = await Promise.all([getCurrentUser(), getCart()]);
+export async function loader(request: Request) {
+  const [user, cart] = await Promise.all([getCurrentUser(), getCart(request)]);
 
   if (!cart) {
     return redirect("/");

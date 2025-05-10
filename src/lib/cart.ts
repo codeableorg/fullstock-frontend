@@ -6,9 +6,10 @@ import {
   createRemoteItems,
   getRemoteCart,
 } from "@/services/cart.server";
+import { getProductById } from "@/services/product.server";
 
-import { getProductById } from "@/services/product.service";
-import { getSession } from "@/session.server";
+import { commitSession, getSession } from "@/session.server";
+import type { Session, SessionData } from "react-router";
 
 export async function getCart(request: Request) {
   const user = await getCurrentUser(request);
@@ -55,7 +56,7 @@ export async function addToCart(
 ) {
   const [user, product] = await Promise.all([
     getCurrentUser(request),
-    getProductById(productId),
+    getProductById(productId, request),
   ]);
 
   try {
@@ -105,7 +106,13 @@ export async function addToCart(
 
     //setLocalCart(updatedCart);
 
-    return updatedCart2;
+    const session = await getSession();
+
+    session.set("cartSessionId", updatedCart.id);
+
+    console.log(updatedCart.id);
+
+    return updatedCart;
   } catch (error) {
     console.error(error);
     return null;
