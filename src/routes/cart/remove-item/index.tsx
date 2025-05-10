@@ -9,7 +9,7 @@ export async function action({ request }: Route.ActionArgs) {
   const itemId = Number(formData.get("itemId"));
   const redirectTo = formData.get("redirectTo") as string | null;
 
-  await removeFromCart(itemId);
+  await removeFromCart(itemId, request);
 
   return redirect(redirectTo || "/cart");
 }

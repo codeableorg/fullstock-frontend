@@ -4,7 +4,9 @@ import { getCurrentUser } from "@/services/auth.server";
 import {
   alterQuantityCartItem,
   createRemoteItems,
-  getRemoteCart,
+  deleteRemoteCartItem,
+  getCurrentCart,
+  // getRemoteCart,
 } from "@/services/cart.server";
 import { getProductById } from "@/services/product.server";
 
@@ -12,20 +14,16 @@ import { commitSession, getSession } from "@/session.server";
 import type { Session, SessionData } from "react-router";
 
 export async function getCart(request: Request) {
-  const user = await getCurrentUser(request);
-
   try {
-    if (!user) {
-      // SIN USUARIO
+    const cart = await getCurrentCart(request);
+
+    if (!cart) {
+      // SIN CART
       return null;
     }
 
-    const remoteCart = await getRemoteCart(request); // obtiene carrito del localstorage
-    const cookieHeader = request.headers.get("Cookie");
-    const session = await getSession(cookieHeader);
-    session.set("cartSessionId", remoteCart?.id);
+    return cart;
 
-    return remoteCart;
     // CON USUARIO
     //const remoteCart = await getRemoteCart(); // obtiene carrito de la bbdd
 
@@ -54,63 +52,62 @@ export async function addToCart(
   quantity: number = 1,
   request: Request
 ) {
-  const [user, product] = await Promise.all([
-    getCurrentUser(request),
+  const [cart, product] = await Promise.all([
+    getCurrentCart(request),
     getProductById(productId, request),
   ]);
 
   try {
-    if (!user) {
-      const updatedCart = await alterQuantityCartItem(
-        product.id,
-        quantity,
-        request
-      );
-
-      const session = await getSession();
-
-      session.set("cartSessionId", updatedCart.id);
-
-      console.log(updatedCart.id);
-
-      return updatedCart;
-    }
-
-    const cart = await getRemoteCart(request); // obtiene carrito del localstorage
-
-    const updatedItems = cart ? [...cart.items] : [];
-    const existingItem = updatedItems.find(
-      (item) => item.product.id === product.id
+    const updatedCart = await alterQuantityCartItem(
+      cart!.id,
+      product.id,
+      quantity,
+      request
     );
 
-    if (existingItem) {
-      existingItem.quantity += quantity;
-    } else if (quantity > 0) {
-      updatedItems.push({
-        id: Date.now(),
-        product,
-        quantity,
-      });
+    if (!cart && updatedCart) {
+      const session = await getSession();
+      session.set("cartSessionId", updatedCart.id);
     }
 
-    const updatedCart = {
-      id: Date.now(),
-      items: updatedItems,
-      total: updatedItems.reduce(
-        (total, item) => total + item.product.price * item.quantity,
-        0
-      ),
-    };
+    // const session = await getSession();
+    //   session.set("cartSessionId", updatedCart.id);
 
-    const updatedCart2 = await createRemoteItems(updatedCart.items, request);
+    //const cart = await getRemoteCart(request); // obtiene carrito del localstorage
+
+    // const updatedItems = updatedCart ? [...updatedCart.items] : [];
+    // const existingItem = updatedItems.find(
+    //   (item) => item.product.id === product.id
+    // );
+
+    // if (existingItem) {
+    //   existingItem.quantity += quantity;
+    // } else if (quantity > 0) {
+    //   updatedItems.push({
+    //     id: Date.now(),
+    //     product,
+    //     quantity,
+    //   });
+    // }
+
+    // const updatedCart = {
+    //   id: Date.now(),
+    //   items: updatedItems,
+    //   total: updatedItems.reduce(
+    //     (total, item) => total + item.product.price * item.quantity,
+    //     0
+    //   ),
+    // };
+
+    //const updatedCart2 = await createRemoteItems(updatedCart.items, request);
 
     //setLocalCart(updatedCart);
 
-    const session = await getSession();
+    // const session = await getSession();
 
-    session.set("cartSessionId", updatedCart.id);
+    // session.set("cartSessionId", updatedCart.id);
 
-    console.log(updatedCart.id);
+    // console.log(updatedCart.id);
 
     return updatedCart;
   } catch (error) {
@@ -119,32 +116,35 @@ export async function addToCart(
   }
 }
 
-// export async function removeFromCart(itemId: CartItem["id"]) {
-//   const user = await getCurrentUser();
+export async function removeFromCart(itemId: CartItem["id"], request: Request) {
+  //const user = await getCurrentUser();
 
-//   try {
-//     if (user) {
-//       const updatedCart = await deleteRemoteCartItem(itemId);
-//       return updatedCart;
-//     } else {
-//       const cart = getLocalCart(); // obtiene carrito del localstorage
+  try {
+    const cart = await getCurrentCart(request);
+    const updatedCart = await deleteRemoteCartItem(cart!.id, itemId, request);
 
-//       const updatedItems = cart
-//         ? cart.items.filter((item) => item.id !== itemId)
-//         : [];
-//       const updatedCart = {
-//         id: cart?.id || Date.now(),
-//         items: updatedItems,
-//         total: updatedItems.reduce(
-//           (total, item) => total + item.product.price * item.quantity,
-//           0
-//         ),
-//       };
-//       setLocalCart(updatedCart);
-//       return updatedCart;
-//     }
-//   } catch (error) {
-//     console.error(error);
-//     return null;
-//   }
-// }
+    //if (user) {
+    //const updatedCart = await deleteRemoteCartItem(itemId);
+    //return updatedCart;
+    //} else {
+    //const cart = getLocalCart(); // obtiene carrito del localstorage
+
+    // const updatedItems = cart
+    //   ? cart.items.filter((item) => item.id !== itemId)
+    //   : [];
+    // const updatedCart = {
+    //   id: cart?.id || Date.now(),
+    //   items: updatedItems,
+    //   total: updatedItems.reduce(
+    //     (total, item) => total + item.product.price * item.quantity,
+    //     0
+    //   ),
+    // };
+    // setLocalCart(updatedCart);
+    return updatedCart;
+    //}
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}

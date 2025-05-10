@@ -2,6 +2,7 @@ import { LOCAL_CART_KEY } from "@/config";
 import { serverClient } from "@/lib/client.server";
 import { client } from "@/lib/utils";
 import { type Cart, type CartItem } from "@/models/cart.model";
+import { getSession } from "@/session.server";
 import { request } from "http";
 
 // export function getLocalCart(): Cart | null {
@@ -13,8 +14,23 @@ import { request } from "http";
 //   localStorage.setItem(LOCAL_CART_KEY, JSON.stringify(cart));
 // }
 
-export async function getRemoteCart(request: Request): Promise<Cart | null> {
-  return serverClient<Cart>("/cart", request);
+// export async function getRemoteCart(request: Request): Promise<Cart | null> {
+//   return serverClient<Cart>("/cart", request);
+// }
+
+export async function getCurrentCart(request: Request): Promise<Cart | null> {
+  const cookieHeader = request.headers.get("Cookie");
+  const session = await getSession(cookieHeader);
+  const cartSessionId = session.get("cartSessionId");
+
+  if (!cartSessionId) return null;
+
+  try {
+    return serverClient<Cart>("/cart", request);
+  } catch (error) {
+    console.error("Error fetching current user:", error);
+    return null;
+  }
 }
 
 export async function createRemoteItems(
@@ -34,22 +50,29 @@ export async function createRemoteItems(
 }
 
 export async function alterQuantityCartItem(
+  cartId: number,
   productId: number,
   quantity: number = 1,
   request: Request
 ): Promise<Cart> {
   return serverClient<Cart>("/cart/add-item-without-auth", request, {
-    body: { productId, quantity },
+    body: { cartId, productId, quantity },
   });
 }
 
-// export async function deleteRemoteCartItem(
-//   itemId: CartItem["id"]
-// ): Promise<Cart> {
-//   return client(`/cart/delete-item/${itemId}`, {
-//     method: "DELETE",
-//   });
-// }
+export async function deleteRemoteCartItem(
+  cartId: Cart["id"],
+  itemId: CartItem["id"],
+  request: Request
+): Promise<Cart> {
+  return serverClient(
+    `/cart/delete-item-without-auth/${cartId}/${itemId}`,
+    request,
+    {
+      method: "DELETE",
+    }
+  );
+}
 
 // export async function deleteRemoteCart(): Promise<void> {
 //   return client("/cart", {
