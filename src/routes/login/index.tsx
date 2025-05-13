@@ -5,7 +5,7 @@ import { z } from "zod";
 
 import { Button, Container, InputField, Section } from "@/components/ui";
 import { login, redirectIfAuthenticated } from "@/services/auth.server";
-import { commitSession, getSession } from "@/session.server";
+import { commitSession, destroySession, getSession } from "@/session.server";
 
 import type { Route } from "./+types";
 
@@ -26,10 +26,15 @@ export async function action({ request }: Route.ActionArgs) {
 
   try {
     const { token } = await login(request, email, password, cartSessionId);
-    session.set("token", token);
+
+    await destroySession(session);
+
+    const sessionPostLogin = await getSession();
+
+    sessionPostLogin.set("token", token);
 
     return redirect("/", {
-      headers: { "Set-Cookie": await commitSession(session) },
+      headers: { "Set-Cookie": await commitSession(sessionPostLogin) },
     });
   } catch (error) {
     if (error instanceof Error) {

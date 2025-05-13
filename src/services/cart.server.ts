@@ -19,12 +19,13 @@ export async function getCurrentCart(request: Request): Promise<Cart | null> {
   const cookieHeader = request.headers.get("Cookie");
   const session = await getSession(cookieHeader);
   const cartSessionId = session.get("cartSessionId");
-
-  if (!cartSessionId) return null;
-  let endpoint = `/cart/${cartSessionId}`;
-
   const token = session.get("token");
-  if (token) endpoint = `/cart`;
+  let endpoint = `/cart`;
+
+  if (!cartSessionId && !token) return null;
+  if (cartSessionId && !token) {
+    endpoint = `/cart/${cartSessionId}`;
+  }
 
   try {
     return serverClient<Cart>(endpoint, token);
@@ -66,7 +67,7 @@ export async function alterQuantityCartItem(
   const session = await getSession(cookieHeader);
   const token = session.get("token");
   let endpoint = "/cart/add-item-without-auth";
-  if (token) endpoint = `/add-item`;
+  if (token) endpoint = `/cart/add-item`;
 
   return serverClient<Cart>(endpoint, token, {
     body: { cartId, productId, quantity },
@@ -82,7 +83,7 @@ export async function deleteRemoteCartItem(
   const session = await getSession(cookieHeader);
   const token = session.get("token");
   let endpoint = `/cart/delete-item-without-auth/${cartId}/${itemId}`;
-  if (token) endpoint = `/delete-item/${itemId}`;
+  if (token) endpoint = `/cart/delete-item/${itemId}`;
 
   return serverClient(endpoint, token, {
     method: "DELETE",
