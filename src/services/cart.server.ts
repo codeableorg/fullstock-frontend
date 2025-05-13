@@ -20,9 +20,6 @@ export async function getCurrentCart(request: Request): Promise<Cart | null> {
   const session = await getSession(cookieHeader);
   const cartSessionId = session.get("cartSessionId");
 
-  console.log({ session });
-  console.log({ cartSessionId });
-
   if (!cartSessionId) return null;
   let endpoint = `/cart/${cartSessionId}`;
 

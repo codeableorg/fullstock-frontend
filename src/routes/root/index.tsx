@@ -22,6 +22,7 @@ import AuthNav from "./components/auth-nav";
 import HeaderMain from "./components/header-main";
 
 import type { Route } from "./+types";
+import { getCurrentCart } from "@/services/cart.server";
 
 export async function action({ request }: Route.ActionArgs) {
   const data = await request.formData();
@@ -39,33 +40,14 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
-  // const user = await getCurrentUser(request);
-  // const cart = await getCurrentCart(request);
-
-  // if (!user && !cart) return { totalItems: 0 };
-
-  // if (!user && cart && cart.items?.length > 0) {
-  //   const totalItems =
-  //     cart?.items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
-  //   return { totalItems };
-  // }
-
-  // if (user && !cart) return { user, totalItems: 0 };
-
-  // if (user && cart && cart.items?.length > 0) {
-  //   const totalItems =
-  //     cart?.items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
-
-  //return {  totalItems:0, user: null };
-
-  //}
-
   const user = await getCurrentUser(request);
-  // const cart = await getCart(user);
-  //   const totalItems =
-  //     cart?.items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
 
-  return user ? { user, totalItems: 0 } : { totalItems: 0 };
+  const cart = await getCurrentCart(request);
+
+  const totalItems =
+    cart?.items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
+
+  return user ? { user, totalItems } : { totalItems };
 }
 
 export default function Root({ loaderData }: Route.ComponentProps) {
