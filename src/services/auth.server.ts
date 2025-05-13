@@ -4,8 +4,6 @@ import { serverClient } from "@/lib/client.server";
 import { type AuthResponse } from "@/models/user.model";
 import { getSession } from "@/session.server";
 
-// Recibir el `request` como argumento en las funciones que lo requieran
-
 export async function getCurrentUser(
   request: Request
 ): Promise<AuthResponse["user"] | null> {
@@ -16,7 +14,6 @@ export async function getCurrentUser(
   if (!token) return null;
 
   let endpoint = `/users/me`;
-  //if (token) endpoint = `/delete-item/${itemId}`;
 
   try {
     return serverClient<AuthResponse["user"]>(endpoint, token);
