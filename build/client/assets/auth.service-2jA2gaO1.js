@@ -1,0 +1,1 @@
+import{g as e,c as n,r as t}from"./utils-CNtvmiS0.js";async function c(){if(!e())return null;try{return n("/users/me")}catch(r){return console.error("Error fetching current user:",r),t(),null}}export{c as g};

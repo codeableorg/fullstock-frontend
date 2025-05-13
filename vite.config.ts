@@ -4,4 +4,9 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
   plugins: [reactRouter(), tsconfigPaths()],
+  build: {
+    sourcemap: true,
+    // Forzar limpieza del directorio de salida
+    emptyOutDir: true,
+  },
 });

@@ -1,9 +1,6 @@
-import { LOCAL_CART_KEY } from "@/config";
 import { serverClient } from "@/lib/client.server";
-import { client } from "@/lib/utils";
 import { type Cart, type CartItem } from "@/models/cart.model";
 import { getSession } from "@/session.server";
-import { request } from "http";
 
 // export function getLocalCart(): Cart | null {
 //   const cart = localStorage.getItem(LOCAL_CART_KEY);
@@ -23,39 +20,58 @@ export async function getCurrentCart(request: Request): Promise<Cart | null> {
   const session = await getSession(cookieHeader);
   const cartSessionId = session.get("cartSessionId");
 
+  console.log({ session });
+  console.log({ cartSessionId });
+
   if (!cartSessionId) return null;
+  let endpoint = `/cart/${cartSessionId}`;
+
+  const token = session.get("token");
+  if (token) endpoint = `/cart`;
 
   try {
-    return serverClient<Cart>("/cart", request);
+    return serverClient<Cart>(endpoint, token);
   } catch (error) {
     console.error("Error fetching current user:", error);
     return null;
   }
 }
 
-export async function createRemoteItems(
-  items: CartItem[],
-  request: Request
-): Promise<Cart> {
-  const payload = {
-    items: items.map(({ product, quantity }) => ({
-      productId: product.id,
-      quantity,
-    })),
-  };
+// export async function createRemoteItems(
+//   items: CartItem[],
+//   request: Request
+// ): Promise<Cart> {
+//   const payload = {
+//     items: items.map(({ product, quantity }) => ({
+//       productId: product.id,
+//       quantity,
+//     })),
+//   };
 
-  return serverClient<Cart>("/cart/create-items", request, {
-    body: payload,
-  });
-}
+//   const cookieHeader = request.headers.get("Cookie");
+//   const session = await getSession(cookieHeader);
+//   const token = session.get("token");
+//   let endpoint = "/cart/add-item-without-auth";
+//   if (token) endpoint = `/add-item`;
+
+//   return serverClient<Cart>("/cart/create-items", request, {
+//     body: payload,
+//   });
+// }
 
 export async function alterQuantityCartItem(
-  cartId: number,
+  cartId: number | null,
   productId: number,
   quantity: number = 1,
   request: Request
 ): Promise<Cart> {
-  return serverClient<Cart>("/cart/add-item-without-auth", request, {
+  const cookieHeader = request.headers.get("Cookie");
+  const session = await getSession(cookieHeader);
+  const token = session.get("token");
+  let endpoint = "/cart/add-item-without-auth";
+  if (token) endpoint = `/add-item`;
+
+  return serverClient<Cart>(endpoint, token, {
     body: { cartId, productId, quantity },
   });
 }
@@ -65,13 +81,15 @@ export async function deleteRemoteCartItem(
   itemId: CartItem["id"],
   request: Request
 ): Promise<Cart> {
-  return serverClient(
-    `/cart/delete-item-without-auth/${cartId}/${itemId}`,
-    request,
-    {
-      method: "DELETE",
-    }
-  );
+  const cookieHeader = request.headers.get("Cookie");
+  const session = await getSession(cookieHeader);
+  const token = session.get("token");
+  let endpoint = `/cart/delete-item-without-auth/${cartId}/${itemId}`;
+  if (token) endpoint = `/delete-item/${itemId}`;
+
+  return serverClient(endpoint, token, {
+    method: "DELETE",
+  });
 }
 
 // export async function deleteRemoteCart(): Promise<void> {

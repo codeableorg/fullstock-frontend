@@ -1,1 +1,0 @@
-import{r as i}from"./chunk-LSOULM7L-BpBjtIwF.js";import{r as m}from"./cart-CZ8beLYv.js";import"./auth.service-m9myRVhg.js";import"./utils-CNtvmiS0.js";import"./product.service-Cwpiyzog.js";async function d({request:r}){const t=await r.formData(),o=Number(t.get("itemId")),e=t.get("redirectTo");return await m(o),i(e||"/cart")}export{d as clientAction};

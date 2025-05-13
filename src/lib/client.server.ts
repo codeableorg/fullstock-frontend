@@ -5,14 +5,10 @@ import { getSession } from "@/session.server";
 
 export async function serverClient<T>(
   endpoint: string,
-  request: Request,
+  token: string | undefined,
   { body, headers: customHeaders, ...customConfig }: RequestConfig = {}
 ) {
   // Obtener el token desde las cookies
-  const cookieHeader = request.headers.get("Cookie");
-  const session = await getSession(cookieHeader);
-  const token = session.get("token");
-
   const config: RequestInit = {
     method: body ? "POST" : "GET",
     body: body ? JSON.stringify(body) : undefined,
@@ -26,6 +22,7 @@ export async function serverClient<T>(
 
   try {
     const response = await fetch(API_URL + endpoint, config);
+    console.log({ response });
     const data = await response.json();
 
     if (response.ok) {

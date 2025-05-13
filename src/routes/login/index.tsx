@@ -15,14 +15,17 @@ const LoginSchema = z.object({
 });
 
 export async function action({ request }: Route.ActionArgs) {
-  const session = await getSession();
+  const cookieHeader = request.headers.get("Cookie");
+  const session = await getSession(cookieHeader || "");
 
   const formData = await request.formData();
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
+  const cartSessionId = session.get("cartSessionId");
+
   try {
-    const { token } = await login(request, email, password);
+    const { token } = await login(request, email, password, cartSessionId);
     session.set("token", token);
 
     return redirect("/", {

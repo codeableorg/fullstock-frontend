@@ -15,8 +15,11 @@ export async function getCurrentUser(
 
   if (!token) return null;
 
+  let endpoint = `/users/me`;
+  //if (token) endpoint = `/delete-item/${itemId}`;
+
   try {
-    return serverClient<AuthResponse["user"]>("/users/me", request);
+    return serverClient<AuthResponse["user"]>(endpoint, token);
   } catch (error) {
     console.error("Error fetching current user:", error);
     return null;
@@ -26,10 +29,16 @@ export async function getCurrentUser(
 export async function login(
   request: Request,
   email: string,
-  password: string
+  password: string,
+  cartSessionId: number | undefined
 ): Promise<AuthResponse> {
-  const data = await serverClient<AuthResponse>("/auth/login", request, {
-    body: { email, password },
+  const cookieHeader = request.headers.get("Cookie");
+  const session = await getSession(cookieHeader);
+  const token = session.get("token");
+  let endpoint = "/auth/login";
+
+  const data = await serverClient<AuthResponse>(endpoint, token, {
+    body: { email, password, cartSessionId },
   });
   return data;
 }
@@ -39,7 +48,12 @@ export async function signup(
   email: string,
   password: string
 ): Promise<AuthResponse> {
-  const data = await serverClient<AuthResponse>("/auth/signup", request, {
+  const cookieHeader = request.headers.get("Cookie");
+  const session = await getSession(cookieHeader);
+  const token = session.get("token");
+  let endpoint = "/auth/signup";
+
+  const data = await serverClient<AuthResponse>(endpoint, token, {
     body: { email, password },
   });
 
