@@ -5,7 +5,7 @@ import { z } from "zod";
 
 import { Button, Container, InputField, Section } from "@/components/ui";
 import { login, redirectIfAuthenticated } from "@/services/auth.server";
-import { commitSession, destroySession, getSession } from "@/session.server";
+import { commitSession, getSession } from "@/session.server";
 
 import type { Route } from "./+types";
 
