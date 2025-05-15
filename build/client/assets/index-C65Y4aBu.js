@@ -1,1 +1,0 @@
-import{j as m}from"./chunk-LSOULM7L-OaPJ-Plh.js";import{a as o}from"./utils-CNtvmiS0.js";function t({children:x,className:a}){return m.jsx("div",{className:o("mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl",a),children:x})}export{t as C};
