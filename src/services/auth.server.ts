@@ -13,7 +13,7 @@ export async function getCurrentUser(
 
   if (!token) return null;
 
-  let endpoint = `/users/me`;
+  const endpoint = `/users/me`;
 
   try {
     return serverClient<AuthResponse["user"]>(endpoint, token);
@@ -32,7 +32,7 @@ export async function login(
   const session = await getSession(cookieHeader);
   const token = session.get("token");
   const cartSessionId = session.get("cartSessionId");
-  let endpoint = "/auth/login";
+  const endpoint = "/auth/login";
 
   const data = await serverClient<AuthResponse>(endpoint, token, {
     body: { email, password, cartSessionId },
@@ -43,15 +43,16 @@ export async function login(
 export async function signup(
   request: Request,
   email: string,
-  password: string
+  password: string,
+  cartSessionId: number | undefined
 ): Promise<AuthResponse> {
   const cookieHeader = request.headers.get("Cookie");
   const session = await getSession(cookieHeader);
   const token = session.get("token");
-  let endpoint = "/auth/signup";
+  const endpoint = "/auth/signup";
 
   const data = await serverClient<AuthResponse>(endpoint, token, {
-    body: { email, password },
+    body: { email, password, cartSessionId },
   });
 
   return data;

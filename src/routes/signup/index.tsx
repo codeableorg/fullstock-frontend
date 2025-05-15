@@ -7,7 +7,7 @@ import { Button, Container, InputField, Section } from "@/components/ui";
 import { debounceAsync } from "@/lib/utils";
 import { redirectIfAuthenticated, signup } from "@/services/auth.server";
 import { findEmail } from "@/services/user.service";
-import { commitSession, getSession } from "@/session.server";
+import {   commitSession, getSession } from "@/session.server";
 
 import type { Route } from "./+types";
 
@@ -30,15 +30,19 @@ const SignupSchema = z.object({
 type SignupForm = z.infer<typeof SignupSchema>;
 
 export async function action({ request }: Route.ActionArgs) {
+  const cookieHeader = request.headers.get("Cookie");
+  const session = await getSession(cookieHeader || "");
+
   const formData = await request.formData();
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
-  const session = await getSession();
+  
+  const cartSessionId = session.get("cartSessionId");
 
   try {
-    const { token } = await signup(request, email, password);
-    session.set("token", token);
+    const { token } = await signup(request, email, password, cartSessionId);
 
+    await session.set("token", token);
     return redirect("/", {
       headers: {
         "Set-Cookie": await commitSession(session),
