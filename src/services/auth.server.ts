@@ -26,12 +26,12 @@ export async function getCurrentUser(
 export async function login(
   request: Request,
   email: string,
-  password: string,
-  cartSessionId: number | undefined
+  password: string
 ): Promise<AuthResponse> {
   const cookieHeader = request.headers.get("Cookie");
   const session = await getSession(cookieHeader);
   const token = session.get("token");
+  const cartSessionId = session.get("cartSessionId");
   let endpoint = "/auth/login";
 
   const data = await serverClient<AuthResponse>(endpoint, token, {

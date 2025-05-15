@@ -25,16 +25,14 @@ export async function action({ request }: Route.ActionArgs) {
   const cartSessionId = session.get("cartSessionId");
 
   try {
-    const { token } = await login(request, email, password, cartSessionId);
+    const { token } = await login(request, email, password);
 
-    await destroySession(session);
+    session.unset("cartSessionId");
 
-    const sessionPostLogin = await getSession();
-
-    sessionPostLogin.set("token", token);
+    session.set("token", token);
 
     return redirect("/", {
-      headers: { "Set-Cookie": await commitSession(sessionPostLogin) },
+      headers: { "Set-Cookie": await commitSession(session) },
     });
   } catch (error) {
     if (error instanceof Error) {

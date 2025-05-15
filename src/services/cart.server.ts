@@ -29,7 +29,7 @@ export async function getCurrentCart(request: Request): Promise<Cart | null> {
   try {
     return serverClient<Cart>(endpoint, token);
   } catch (error) {
-    console.error("Error fetching current user:", error);
+    console.error("Error fetching current cart:", error);
     return null;
   }
 }
