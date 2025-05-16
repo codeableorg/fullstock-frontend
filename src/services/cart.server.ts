@@ -1,4 +1,5 @@
 import { serverClient } from "@/lib/client.server";
+import { getUrlWithParams } from "@/lib/utils";
 import { type Cart, type CartItem } from "@/models/cart.model";
 import { getSession } from "@/session.server";
 
@@ -20,11 +21,9 @@ export async function getCurrentCart(request: Request): Promise<Cart | null> {
   const session = await getSession(cookieHeader);
   const cartSessionId = session.get("cartSessionId");
   const token = session.get("token");
-  let endpoint = `/cart`;
+  const endpoint = getUrlWithParams("/cart", { cartId: cartSessionId });
 
   if (!cartSessionId && !token) return null;
-
-  if (cartSessionId) endpoint = `/cart?cartId=${cartSessionId}`;
 
   try {
     return serverClient<Cart>(endpoint, token);
@@ -57,7 +56,7 @@ export async function getCurrentCart(request: Request): Promise<Cart | null> {
 // }
 
 export async function alterQuantityCartItem(
-  cartId: number | null,
+  cartId: Cart["id"],
   productId: number,
   quantity: number = 1,
   request: Request
@@ -65,12 +64,10 @@ export async function alterQuantityCartItem(
   const cookieHeader = request.headers.get("Cookie");
   const session = await getSession(cookieHeader);
   const token = session.get("token");
-  //let endpoint = "/cart/add-item-without-auth";
-  //if (token) endpoint = `/cart/add-item`;
-  let endpoint = "/cart/add-item";
+  const endpoint = getUrlWithParams("/cart/add-item", { cartId });
 
   return serverClient<Cart>(endpoint, token, {
-    body: { cartId, productId, quantity },
+    body: { productId, quantity },
   });
 }
 
@@ -82,9 +79,10 @@ export async function deleteRemoteCartItem(
   const cookieHeader = request.headers.get("Cookie");
   const session = await getSession(cookieHeader);
   const token = session.get("token");
+  const endpoint = getUrlWithParams(`/cart/delete-item/${itemId}`, { cartId });
+
   //let endpoint = `/cart/delete-item-without-auth/${cartId}/${itemId}`;
   //if (token) endpoint = `/cart/delete-item/${itemId}`;
-  let endpoint = `/cart/delete-item/${itemId}?cartId=${cartId}`;
 
   return serverClient(endpoint, token, {
     method: "DELETE",

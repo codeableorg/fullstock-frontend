@@ -8,7 +8,6 @@ import {
   // getRemoteCart,
 } from "@/services/cart.server";
 import { getProductById } from "@/services/product.server";
-
 import { commitSession, getSession } from "@/session.server";
 
 export async function getCart(request: Request) {
@@ -33,13 +32,14 @@ export async function addToCart(
   ]);
 
   try {
+    console.log({ cart });
     const updatedCart = await alterQuantityCartItem(
       cart?.id || null,
       product.id,
       quantity,
       request
     );
-
+    console.log({ updatedCart });
     if (!cart && updatedCart) {
       const cookieHeader = request.headers.get("Cookie");
       const session = await getSession(cookieHeader);

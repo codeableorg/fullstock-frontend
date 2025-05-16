@@ -1,6 +1,7 @@
 import { redirect } from "react-router";
 
 import { serverClient } from "@/lib/client.server";
+import { getUrlWithParams } from "@/lib/utils";
 import { type AuthResponse } from "@/models/user.model";
 import { getSession } from "@/session.server";
 
@@ -32,10 +33,10 @@ export async function login(
   const session = await getSession(cookieHeader);
   const token = session.get("token");
   const cartSessionId = session.get("cartSessionId");
-  const endpoint = "/auth/login";
+  const endpoint = getUrlWithParams("/auth/login", { cartId: cartSessionId });
 
   const data = await serverClient<AuthResponse>(endpoint, token, {
-    body: { email, password, cartSessionId },
+    body: { email, password },
   });
   return data;
 }
@@ -49,10 +50,10 @@ export async function signup(
   const cookieHeader = request.headers.get("Cookie");
   const session = await getSession(cookieHeader);
   const token = session.get("token");
-  const endpoint = "/auth/signup";
+  const endpoint = getUrlWithParams("/auth/signup", { cartId: cartSessionId });
 
   const data = await serverClient<AuthResponse>(endpoint, token, {
-    body: { email, password, cartSessionId },
+    body: { email, password },
   });
 
   return data;

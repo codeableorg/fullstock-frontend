@@ -80,3 +80,19 @@ export function debounceAsync<T extends (...args: any[]) => Promise<any>>(
     });
   };
 }
+
+export function getUrlWithParams(
+  apiUrl: string,
+  params: Record<string, number | undefined>
+) {
+  const notEmptyParamValue: Record<string, string> = {};
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined) {
+      notEmptyParamValue[key] = String(value);
+    }
+  });
+
+  const queryParams = new URLSearchParams(notEmptyParamValue);
+  const queryStringParams = queryParams.toString();
+  return queryStringParams ? `${apiUrl}?${queryParams}` : apiUrl;
+}
