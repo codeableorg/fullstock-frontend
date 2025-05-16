@@ -26,23 +26,21 @@ export async function addToCart(
   quantity: number = 1,
   request: Request
 ) {
-  const [cart, product] = await Promise.all([
-    getCurrentCart(request),
-    getProductById(productId, request),
-  ]);
+  
 
   try {
-    console.log({ cart });
+    const product = await getProductById(productId, request);
+
+  
     const updatedCart = await alterQuantityCartItem(
-      cart?.id || null,
+      
       product.id,
       quantity,
       request
     );
-    console.log({ updatedCart });
-    if (!cart && updatedCart) {
-      const cookieHeader = request.headers.get("Cookie");
-      const session = await getSession(cookieHeader);
+
+     if (updatedCart) {
+      const session = await getSession(request.headers.get("Cookie"));
       session.set("cartSessionId", updatedCart.id);
       const committedSession = await commitSession(session);
 
@@ -65,27 +63,9 @@ export async function removeFromCart(itemId: CartItem["id"], request: Request) {
   //const user = await getCurrentUser();
 
   try {
-    const cart = await getCurrentCart(request);
-    const updatedCart = await deleteRemoteCartItem(cart!.id, itemId, request);
+  
+    const updatedCart = await deleteRemoteCartItem( itemId, request);
 
-    //if (user) {
-    //const updatedCart = await deleteRemoteCartItem(itemId);
-    //return updatedCart;
-    //} else {
-    //const cart = getLocalCart(); // obtiene carrito del localstorage
-
-    // const updatedItems = cart
-    //   ? cart.items.filter((item) => item.id !== itemId)
-    //   : [];
-    // const updatedCart = {
-    //   id: cart?.id || Date.now(),
-    //   items: updatedItems,
-    //   total: updatedItems.reduce(
-    //     (total, item) => total + item.product.price * item.quantity,
-    //     0
-    //   ),
-    // };
-    // setLocalCart(updatedCart);
     return updatedCart;
     //}
   } catch (error) {
