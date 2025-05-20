@@ -7,7 +7,7 @@ import { Button, Container, InputField, Section } from "@/components/ui";
 import { debounceAsync } from "@/lib/utils";
 import { redirectIfAuthenticated, signup } from "@/services/auth.server";
 import { findEmail } from "@/services/user.service";
-import {   commitSession, getSession } from "@/session.server";
+import { commitSession, getSession } from "@/session.server";
 
 import type { Route } from "./+types";
 

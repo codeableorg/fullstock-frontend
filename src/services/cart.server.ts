@@ -3,7 +3,6 @@ import { getUrlWithParams } from "@/lib/utils";
 import { type Cart, type CartItem } from "@/models/cart.model";
 import { getSession } from "@/session.server";
 
-
 export async function getCurrentCart(request: Request): Promise<Cart | null> {
   const cookieHeader = request.headers.get("Cookie");
   const session = await getSession(cookieHeader);
@@ -21,8 +20,6 @@ export async function getCurrentCart(request: Request): Promise<Cart | null> {
   }
 }
 
-
-
 export async function alterQuantityCartItem(
   productId: number,
   quantity: number = 1,
@@ -32,7 +29,7 @@ export async function alterQuantityCartItem(
   const cartSessionId = session.get("cartSessionId");
   const token = session.get("token");
 
-  const endpoint = getUrlWithParams("/cart/add-item", { cartSessionId });
+  const endpoint = getUrlWithParams("/cart/add-item", { cartId: cartSessionId });
 
   return serverClient<Cart>(endpoint, token, {
     body: { productId, quantity }
@@ -47,7 +44,7 @@ export async function deleteRemoteCartItem(
   const cartSessionId = session.get("cartSessionId");
   const token = session.get("token");
 
-  const endpoint = getUrlWithParams(`/cart/delete-item/${itemId}`, { cartSessionId });
+  const endpoint = getUrlWithParams(`/cart/delete-item/${itemId}`, { cartId: cartSessionId });
 
   return serverClient(endpoint, token, {
     method: "DELETE"

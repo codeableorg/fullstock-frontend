@@ -22,13 +22,10 @@ export async function action({ request }: Route.ActionArgs) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
-  const cartSessionId = session.get("cartSessionId");
-
   try {
     const { token } = await login(request, email, password);
 
     session.unset("cartSessionId");
-
     session.set("token", token);
 
     return redirect("/", {
