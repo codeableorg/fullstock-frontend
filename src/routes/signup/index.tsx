@@ -37,10 +37,8 @@ export async function action({ request }: Route.ActionArgs) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
   
-  const cartSessionId = session.get("cartSessionId");
-
   try {
-    const { token } = await signup(request, email, password, cartSessionId);
+    const { token } = await signup(request, email, password);
 
     await session.set("token", token);
     return redirect("/", {
