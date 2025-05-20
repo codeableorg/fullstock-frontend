@@ -1,4 +1,4 @@
-import { client, setToken } from "@/lib/utils";
+import { client } from "@/lib/utils";
 import { type AuthResponse, type User } from "@/models/user.model";
 
 export async function findOrCreateGuestUser(email: string): Promise<void> {
@@ -7,7 +7,7 @@ export async function findOrCreateGuestUser(email: string): Promise<void> {
   });
 
   if (body.token.length > 0) {
-    setToken(body.token);
+    // setToken(body.token);
   }
 }
 
@@ -27,6 +27,5 @@ export async function updateUser(
     method: "PATCH",
   });
 
-  setToken(body.token);
   return body.user;
 }

@@ -1,13 +1,13 @@
 import { redirect, useFetcher } from "react-router";
 
 import { Button, InputField } from "@/components/ui";
-import { getCurrentUser } from "@/services/auth.service";
+import { getCurrentUser } from "@/services/auth.server";
 import { updateUser } from "@/services/user.service";
 
 import type { Route } from "./+types";
 
-export async function clientLoader() {
-  const user = await getCurrentUser();
+export async function loader({request}: Route.ActionArgs) {
+  const user = await getCurrentUser(request);
 
   if (!user) throw redirect("/login");
 

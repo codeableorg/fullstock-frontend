@@ -14,9 +14,10 @@ import {
 } from "@/components/ui";
 import { getCart } from "@/lib/cart";
 import { type CartItem } from "@/models/cart.model";
-import { getCurrentUser } from "@/services/auth.service";
-import { deleteLocalCart, deleteRemoteCart } from "@/services/cart.service";
+import { getCurrentUser } from "@/services/auth.server";
+import { deleteRemoteCart } from "@/services/cart.service";
 import { createOrder } from "@/services/order.service";
+import { getCartIdFromSession } from "@/session.server";
 
 import type { Route } from "./+types";
 
@@ -59,11 +60,11 @@ export const CheckoutFormSchema = z.object({
 
 type CheckoutForm = z.infer<typeof CheckoutFormSchema>;
 
-export async function clientAction({ request }: Route.ClientActionArgs) {
+export async function action({ request }: Route.ActionArgs) {
   let user;
 
   try {
-    user = await getCurrentUser();
+    user = await getCurrentUser(request);
   } catch {
     user = null;
   }
@@ -86,14 +87,20 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
 
   const { orderId } = await createOrder(items, shippingDetails);
 
-  if (user) deleteRemoteCart();
-  else deleteLocalCart();
+  const sessionCartId = await getCartIdFromSession(request)
+  console.log('sessionCartId', sessionCartId);
+  if (user) deleteRemoteCart(request, sessionCartId);
+  // else deleteLocalCart();
 
   return redirect(`/order-confirmation/${orderId}`);
 }
 
-export async function clientLoader() {
-  const [user, cart] = await Promise.all([getCurrentUser(), getCart()]);
+export async function loader({ request }: Route.LoaderArgs) {
+  const sessionCartId = await getCartIdFromSession(request);
+  const [user, cart] = await Promise.all([
+    getCurrentUser(request),
+    getCart(request, sessionCartId)
+  ]);
 
   if (!cart) {
     return redirect("/");

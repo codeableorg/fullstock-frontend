@@ -1,41 +1,13 @@
-import { client } from "@/lib/utils";
+import { serverClient } from "@/lib/client.server";
 import { type Cart, type CartItem } from "@/models/cart.model";
-import { getCardIdFromSession } from "@/session.server";
 
-// export function getLocalCart(): Cart | null {
-//   const cart = localStorage.getItem(LOCAL_CART_KEY);
-//   return cart ? JSON.parse(cart) : null;
-// }
-
-// export function setLocalCart(cart: Cart): void {
-//   localStorage.setItem(LOCAL_CART_KEY, JSON.stringify(cart));
-// }
-
-export async function getGuestCart() : Promise<Cart | null> {
-  const cartId = await getCardIdFromSession();
-  if (!cartId) return null;
-
-  return client<Cart>(`/cart/${cartId}`); // END POINT A CREAR
-}
-
-export async function getUserCart(): Promise<Cart | null> {
-  return client<Cart>("/cart"); // POR EMAIL DEL TOKEN
-}
-
-export async function createGuestCart(): Promise<Cart> {  // END POINT A CREAR
-  const cartId = await getCardIdFromSession();
-  if (!cartId) {
-    throw new Error("No cartId found in session");
-  }
-  return client<Cart>(`/cart`, {
-    method: "POST",
-    body: { cartId },
+export async function getRemoteCart(request: Request, cartSessionId?: string, ): Promise<Cart | null> {
+  return serverClient<Cart>("/cart", request, {
+    headers: cartSessionId ? { "x-cart-id": cartSessionId } : {}
   });
 }
 
-// AQUI NOS QUEDAMOS
-
-export async function createRemoteItems(items: CartItem[]): Promise<Cart> {
+export async function createRemoteItems(request: Request, items: CartItem[], cartSessionId?: string): Promise<Cart> {
   const payload = {
     items: items.map(({ product, quantity }) => ({
       productId: product.id,
@@ -43,41 +15,48 @@ export async function createRemoteItems(items: CartItem[]): Promise<Cart> {
     })),
   };
 
-  return client<Cart>("/cart/create-items", {
+  return serverClient<Cart>("/cart/create-items", request, {
     body: payload,
+    headers: cartSessionId ? { "x-cart-id": cartSessionId } : {},
   });
 }
 
 export async function alterQuantityCartItem(
+  request: Request, 
   productId: number,
-  quantity: number = 1
+  quantity: number = 1,
+  cartSessionId?: string,
 ): Promise<Cart> {
-  return client<Cart>("/cart/add-item", {
+  return serverClient<Cart>("/cart/add-item", request, {
     body: { productId, quantity },
+    headers: cartSessionId ? { "x-cart-id": cartSessionId } : {},
   });
 }
 
 export async function deleteRemoteCartItem(
-  itemId: CartItem["id"]
+  request: Request, 
+  itemId: CartItem["id"],
+  cartSessionId?: string,
 ): Promise<Cart> {
-  return client(`/cart/delete-item/${itemId}`, {
+  return serverClient(`/cart/delete-item/${itemId}`, request, {
     method: "DELETE",
+    headers: cartSessionId ? { "x-cart-id": cartSessionId } : {},
   });
 }
 
-export async function deleteRemoteCart(): Promise<void> {
-  return client("/cart", {
+export async function deleteRemoteCart(request: Request, cartSessionId?: string): Promise<void> {
+  return serverClient("/cart", request, {
     method: "DELETE",
+    headers: cartSessionId ? { "x-cart-id": cartSessionId } : {},
   });
 }
 
-// export function deleteLocalCart(): void {
-//   localStorage.removeItem(LOCAL_CART_KEY);
-// }
-
-export async function getGuestCartId(): Promise<string> {
-  return client("/cart/guest-cart-id", {
+// Vincular el carrito identificado por cartSessionId con el usuario autenticado
+export async function linkCartToUser(request: Request, cartSessionId: string): Promise<Cart> {
+  console.log('SSSSSSSSSSSS', cartSessionId)
+  return serverClient<Cart>("/cart/link-to-user", request, {
     method: "POST",
+    headers: cartSessionId ? { "x-cart-id": cartSessionId } : {},
   });
 }
 

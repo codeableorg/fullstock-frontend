@@ -21,6 +21,7 @@ export async function serverClient<T>(
       Authorization: token ? `Bearer ${token}` : "",
       ...customHeaders,
     },
+    credentials: "include",
     ...customConfig,
   };
 

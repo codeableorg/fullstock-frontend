@@ -1,10 +1,8 @@
 import { createCookieSessionStorage } from "react-router";
 
-import { getGuestCartId } from "./services/cart.service";
-
 type SessionData = {
   token: string;
-  cartId: string;
+  cartSessionId: string;
 };
 
 type SessionFlashData = {
@@ -24,31 +22,23 @@ const { getSession, commitSession, destroySession } =
       //
       // expires: new Date(Date.now() + 60_000),
       httpOnly: true,
-      maxAge: 60,
+      maxAge: 60 * 60 * 24 * 7, // 7 días en segundos (604800 segundos)
       path: "/",
       sameSite: "lax",
       secrets: ["s3cret1"],
-      secure: true,
+      secure: false, //Significa que la cookie solo se enviará a través de conexiones HTTPS
     },
   });
 
-async function addCartToSession() {  // MOVE TO CART
-  const cartId = await getGuestCartId();
-  const session = await getSession();
-  session.set("cartId", cartId);
-  return commitSession(session);
-}
-
-async function getCardIdFromSession() {
-  const session = await getSession();
-  return session.get("cartId");
+async function getCartIdFromSession(request: Request) {
+  const session = await getSession(request.headers.get("Cookie"));
+  return session.get("cartSessionId");
 }
 
 export {
   getSession,
   commitSession,
   destroySession,
-  addCartToSession,
-  getCardIdFromSession,
+  getCartIdFromSession,
 };
 

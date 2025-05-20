@@ -2,10 +2,12 @@ import { Outlet, NavLink, redirect } from "react-router";
 
 import { Container, Section } from "@/components/ui";
 import { cn } from "@/lib/utils";
-import { getCurrentUser } from "@/services/auth.service";
+import { getCurrentUser } from "@/services/auth.server";
 
-export async function clientLoader() {
-  const user = await getCurrentUser();
+import type { Route } from "./+types";
+
+export async function loader({ request }: Route.LoaderArgs) {
+  const user = await getCurrentUser(request);
 
   if (!user) throw redirect("/login");
 }

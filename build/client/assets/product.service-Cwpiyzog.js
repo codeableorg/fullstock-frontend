@@ -1,1 +1,0 @@
-import{c as r}from"./utils-CNtvmiS0.js";async function a(t){const c=await r(`/categories/${t}`);return r(`/products?categoryId=${c.id}`)}async function e(t){return r(`/products/${t}`)}export{a,e as g};

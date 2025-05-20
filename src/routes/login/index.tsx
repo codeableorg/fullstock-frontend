@@ -5,6 +5,7 @@ import { z } from "zod";
 
 import { Button, Container, InputField, Section } from "@/components/ui";
 import { login, redirectIfAuthenticated } from "@/services/auth.server";
+import { linkCartToUser } from "@/services/cart.service";
 import { commitSession, getSession } from "@/session.server";
 
 import type { Route } from "./+types";
@@ -15,7 +16,8 @@ const LoginSchema = z.object({
 });
 
 export async function action({ request }: Route.ActionArgs) {
-  const session = await getSession();
+  const session = await getSession(request.headers.get("Cookie"));
+  const cartSessionId = session.get("cartSessionId");
 
   const formData = await request.formData();
   const email = formData.get("email") as string;
@@ -24,6 +26,20 @@ export async function action({ request }: Route.ActionArgs) {
   try {
     const { token } = await login(request, email, password);
     session.set("token", token);
+
+    // Si tienes cartSessionId en la cookie, vincular el carrito al usuario
+    if (cartSessionId) {
+      try {
+        console.log('I-cartSessionId', cartSessionId)
+        const prueba = await linkCartToUser(request, cartSessionId);
+        console.log("Carrito vinculado al usuario después del login", prueba);
+        
+        // Eliminar el cartSessionId de la sesión
+        session.unset("cartSessionId");
+      } catch (linkError) {
+        console.error("Error al vincular el carrito:", linkError);
+      }
+    }
 
     return redirect("/", {
       headers: { "Set-Cookie": await commitSession(session) },
@@ -57,8 +73,8 @@ export default function Login({ actionData }: Route.ComponentProps) {
   } = useForm<LoginForm>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: "mike@gmail.com",
+      password: "Mike123",
     },
     mode: "onTouched",
   });

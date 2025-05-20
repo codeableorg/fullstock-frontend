@@ -4,11 +4,16 @@ import { Form, Link } from "react-router";
 import { Button, Container, Section } from "@/components/ui";
 import { getCart } from "@/lib/cart";
 import { type Cart } from "@/models/cart.model";
+import { getCartIdFromSession } from "@/session.server";
 
 import type { Route } from "./+types";
 
-export async function clientLoader() {
-  const cart = await getCart();
+export async function loader({ request }: Route.LoaderArgs) {
+  // Obtener el cartSessionId desde la sesión
+  const sessionCartId = await getCartIdFromSession(request);
+  
+  // Obtener el carrito usando el ID de sesión
+  const cart = await getCart(request, sessionCartId);
 
   return { cart };
 }
