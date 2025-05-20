@@ -1,7 +1,6 @@
 import { redirect } from "react-router";
 
 import { serverClient } from "@/lib/client.server";
-import { getUrlWithParams } from "@/lib/utils";
 import { type AuthResponse } from "@/models/user.model";
 import { getSession } from "@/session.server";
 
@@ -29,14 +28,9 @@ export async function login(
   email: string,
   password: string
 ): Promise<AuthResponse> {
-  const cookieHeader = request.headers.get("Cookie");
-  const session = await getSession(cookieHeader);
-  const token = session.get("token");
-  const cartSessionId = session.get("cartSessionId");
-  const endpoint = getUrlWithParams("/auth/login", { cartId: cartSessionId });
-
-  const data = await serverClient<AuthResponse>(endpoint, request, {
+  const data = await serverClient<AuthResponse>("/auth/login", request, {
     body: { email, password },
+    includeCartSessionId: true,
   });
   return data;
 }
@@ -45,15 +39,10 @@ export async function signup(
   request: Request,
   email: string,
   password: string,
-  cartSessionId: number | undefined
 ): Promise<AuthResponse> {
-  const cookieHeader = request.headers.get("Cookie");
-  const session = await getSession(cookieHeader);
-  const token = session.get("token");
-  const endpoint = getUrlWithParams("/auth/signup", { cartId: cartSessionId });
-
-  const data = await serverClient<AuthResponse>(endpoint, request, {
+  const data = await serverClient<AuthResponse>("/auth/signup", request, {
     body: { email, password },
+    includeCartSessionId: true,
   });
 
   return data;

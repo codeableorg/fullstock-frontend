@@ -4,16 +4,8 @@ import { type Cart, type CartItem } from "@/models/cart.model";
 import { getSession } from "@/session.server";
 
 export async function getCurrentCart(request: Request): Promise<Cart | null> {
-  const cookieHeader = request.headers.get("Cookie");
-  const session = await getSession(cookieHeader);
-  const cartSessionId = session.get("cartSessionId");
-  const token = session.get("token");
-  const endpoint = getUrlWithParams("/cart", { cartId: cartSessionId });
-
-  if (!cartSessionId && !token) return null;
-
   try {
-    return serverClient<Cart>(endpoint, request);
+    return serverClient<Cart>("/cart", request, { includeCartSessionId: true });
   } catch (error) {
     console.error("Error fetching current cart:", error);
     return null;
