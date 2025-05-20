@@ -17,7 +17,7 @@ export async function getCurrentUser(
   const endpoint = `/users/me`;
 
   try {
-    return serverClient<AuthResponse["user"]>(endpoint, token);
+    return serverClient<AuthResponse["user"]>(endpoint, request);
   } catch (error) {
     console.error("Error fetching current user:", error);
     return null;
@@ -35,7 +35,7 @@ export async function login(
   const cartSessionId = session.get("cartSessionId");
   const endpoint = getUrlWithParams("/auth/login", { cartId: cartSessionId });
 
-  const data = await serverClient<AuthResponse>(endpoint, token, {
+  const data = await serverClient<AuthResponse>(endpoint, request, {
     body: { email, password },
   });
   return data;
@@ -52,7 +52,7 @@ export async function signup(
   const token = session.get("token");
   const endpoint = getUrlWithParams("/auth/signup", { cartId: cartSessionId });
 
-  const data = await serverClient<AuthResponse>(endpoint, token, {
+  const data = await serverClient<AuthResponse>(endpoint, request, {
     body: { email, password },
   });
 

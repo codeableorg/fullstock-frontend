@@ -13,7 +13,7 @@ export async function getCurrentCart(request: Request): Promise<Cart | null> {
   if (!cartSessionId && !token) return null;
 
   try {
-    return serverClient<Cart>(endpoint, token);
+    return serverClient<Cart>(endpoint, request);
   } catch (error) {
     console.error("Error fetching current cart:", error);
     return null;
@@ -31,7 +31,7 @@ export async function alterQuantityCartItem(
 
   const endpoint = getUrlWithParams("/cart/add-item", { cartId: cartSessionId });
 
-  return serverClient<Cart>(endpoint, token, {
+  return serverClient<Cart>(endpoint, request, {
     body: { productId, quantity }
   });
 }
@@ -46,7 +46,7 @@ export async function deleteRemoteCartItem(
 
   const endpoint = getUrlWithParams(`/cart/delete-item/${itemId}`, { cartId: cartSessionId });
 
-  return serverClient(endpoint, token, {
+  return serverClient(endpoint, request, {
     method: "DELETE"
   });
 }

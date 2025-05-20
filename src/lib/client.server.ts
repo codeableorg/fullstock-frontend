@@ -1,12 +1,18 @@
 import { API_URL } from "@/config";
 import { isApiError } from "@/models/error.model";
 import type { RequestConfig } from "@/models/request.model";
+import { getSession } from "@/session.server";
 
 export async function serverClient<T>(
   endpoint: string,
-  token?: string,
+  request: Request,
   { body, headers: customHeaders, ...customConfig }: RequestConfig = {}
 ) {
+  // Obtener el token desde las cookies
+  const cookieHeader = request.headers.get("Cookie");
+  const session = await getSession(cookieHeader);
+  const token = session.get("token");
+
   const config: RequestInit = {
     method: body ? "POST" : "GET",
     body: body ? JSON.stringify(body) : undefined,
