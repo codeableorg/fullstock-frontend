@@ -17,6 +17,7 @@ import { type CartItem } from "@/models/cart.model";
 import { getCurrentUser } from "@/services/auth.server";
 import { deleteRemoteCart } from "@/services/cart.server";
 import { createOrder } from "@/services/order.server";
+import { commitSession, getSession } from "@/session.server";
 
 import type { Route } from "./+types";
 
@@ -60,6 +61,9 @@ export const CheckoutFormSchema = z.object({
 type CheckoutForm = z.infer<typeof CheckoutFormSchema>;
 
 export async function action({ request }: Route.ActionArgs) {
+  const cookieHeader = request.headers.get("Cookie");
+  const session = await getSession(cookieHeader);
+
   const formData = await request.formData();
   const shippingDetails = JSON.parse(
     formData.get("shippingDetailsJson") as string
@@ -79,8 +83,11 @@ export async function action({ request }: Route.ActionArgs) {
   const { orderId } = await createOrder(items, shippingDetails, request);
 
   await deleteRemoteCart(request);
+  session.unset("cartSessionId");
 
-  return redirect(`/order-confirmation/${orderId}`);
+  return redirect(`/order-confirmation/${orderId}`, {
+    headers: { "Set-Cookie": await commitSession(session) },
+  });
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
