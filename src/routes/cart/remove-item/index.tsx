@@ -11,8 +11,6 @@ export async function action({ request }: Route.ActionArgs) {
   const redirectTo = formData.get("redirectTo") as string | null;
 
   const sessionCartId = await getCartIdFromSession(request)
-  console.log('sessionCartId', sessionCartId);
-
   await removeFromCart(request, itemId, sessionCartId);
 
   return redirect(redirectTo || "/cart");

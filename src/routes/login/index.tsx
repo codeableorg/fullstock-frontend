@@ -5,7 +5,11 @@ import { z } from "zod";
 
 import { Button, Container, InputField, Section } from "@/components/ui";
 import { login, redirectIfAuthenticated } from "@/services/auth.server";
-import { linkCartToUser } from "@/services/cart.service";
+import {
+  getRemoteCart,
+  linkCartToUser,
+  mergeGuestCartWithUserCart,
+} from "@/services/cart.service";
 import { commitSession, getSession } from "@/session.server";
 
 import type { Route } from "./+types";
@@ -27,17 +31,42 @@ export async function action({ request }: Route.ActionArgs) {
     const { token } = await login(request, email, password);
     session.set("token", token);
 
-    // Si tienes cartSessionId en la cookie, vincular el carrito al usuario
+    // Crear una solicitud autenticada con el token
+    const cookie = await commitSession(session);
+    const authenticatedRequest = new Request(request.url, {
+      headers: {
+        Cookie: cookie,
+      },
+      method: "GET",
+    });
+
     if (cartSessionId) {
       try {
-        console.log('I-cartSessionId', cartSessionId)
-        const prueba = await linkCartToUser(request, cartSessionId);
-        console.log("Carrito vinculado al usuario después del login", prueba);
-        
-        // Eliminar el cartSessionId de la sesión
-        session.unset("cartSessionId");
-      } catch (linkError) {
-        console.error("Error al vincular el carrito:", linkError);
+        // Verificar si el usuario ya tiene un carrito usando getRemoteCart sin cartSessionId
+        const existingUserCart = await getRemoteCart(authenticatedRequest);
+
+        if (existingUserCart) {
+          const mergedCart = await mergeGuestCartWithUserCart(
+            authenticatedRequest,
+            cartSessionId
+          );
+
+          if (mergedCart) {
+            session.unset("cartSessionId");
+          }
+        } else {
+          // Si el usuario no tiene carrito, vinculamos el carrito de invitado
+          const linkedCart = await linkCartToUser(
+            authenticatedRequest,
+            cartSessionId
+          );
+
+          if (linkedCart) {
+            session.unset("cartSessionId");
+          }
+        }
+      } catch (cartError) {
+        console.error("Error al gestionar el carrito:", cartError);
       }
     }
 
@@ -45,6 +74,7 @@ export async function action({ request }: Route.ActionArgs) {
       headers: { "Set-Cookie": await commitSession(session) },
     });
   } catch (error) {
+    console.error("Error en el proceso de login:", error);
     if (error instanceof Error) {
       return { error: error.message };
     }
@@ -127,3 +157,4 @@ export default function Login({ actionData }: Route.ComponentProps) {
     </Section>
   );
 }
+

@@ -1,13 +1,20 @@
 import { serverClient } from "@/lib/client.server";
 import { type Cart, type CartItem } from "@/models/cart.model";
 
-export async function getRemoteCart(request: Request, cartSessionId?: string, ): Promise<Cart | null> {
+export async function getRemoteCart(
+  request: Request,
+  cartSessionId?: string
+): Promise<Cart | null> {
   return serverClient<Cart>("/cart", request, {
-    headers: cartSessionId ? { "x-cart-id": cartSessionId } : {}
+    headers: cartSessionId ? { "x-cart-id": cartSessionId } : {},
   });
 }
 
-export async function createRemoteItems(request: Request, items: CartItem[], cartSessionId?: string): Promise<Cart> {
+export async function createRemoteItems(
+  request: Request,
+  items: CartItem[],
+  cartSessionId?: string
+): Promise<Cart> {
   const payload = {
     items: items.map(({ product, quantity }) => ({
       productId: product.id,
@@ -22,10 +29,10 @@ export async function createRemoteItems(request: Request, items: CartItem[], car
 }
 
 export async function alterQuantityCartItem(
-  request: Request, 
+  request: Request,
   productId: number,
   quantity: number = 1,
-  cartSessionId?: string,
+  cartSessionId?: string
 ): Promise<Cart> {
   return serverClient<Cart>("/cart/add-item", request, {
     body: { productId, quantity },
@@ -34,9 +41,9 @@ export async function alterQuantityCartItem(
 }
 
 export async function deleteRemoteCartItem(
-  request: Request, 
+  request: Request,
   itemId: CartItem["id"],
-  cartSessionId?: string,
+  cartSessionId?: string
 ): Promise<Cart> {
   return serverClient(`/cart/delete-item/${itemId}`, request, {
     method: "DELETE",
@@ -44,20 +51,33 @@ export async function deleteRemoteCartItem(
   });
 }
 
-export async function deleteRemoteCart(request: Request, cartSessionId?: string): Promise<void> {
+export async function deleteRemoteCart(
+  request: Request,
+  cartSessionId?: string
+): Promise<void> {
   return serverClient("/cart", request, {
     method: "DELETE",
     headers: cartSessionId ? { "x-cart-id": cartSessionId } : {},
   });
 }
 
-// Vincular el carrito identificado por cartSessionId con el usuario autenticado
-export async function linkCartToUser(request: Request, cartSessionId: string): Promise<Cart> {
-  console.log('SSSSSSSSSSSS', cartSessionId)
+export async function linkCartToUser(
+  request: Request,
+  cartSessionId: string
+): Promise<Cart | null> {
   return serverClient<Cart>("/cart/link-to-user", request, {
     method: "POST",
     headers: cartSessionId ? { "x-cart-id": cartSessionId } : {},
   });
 }
 
+export async function mergeGuestCartWithUserCart(
+  request: Request,
+  cartSessionId: string
+): Promise<Cart | null> {
+  return serverClient<Cart>("/cart/merge-guest-cart", request, {
+    method: "POST",
+    headers: { "x-cart-id": cartSessionId },
+  });
+}
 

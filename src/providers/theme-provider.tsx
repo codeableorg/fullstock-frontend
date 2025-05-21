@@ -14,7 +14,6 @@ export function ThemeProvider({
   storageKey = "fullstock-ui-theme",
   ...props
 }: ThemeProviderProps) {
-  // console.log("ThemeProvider", { defaultTheme, storageKey });
   const [theme, setTheme] = useState<Theme>(defaultTheme);
 
   useEffect(() => {

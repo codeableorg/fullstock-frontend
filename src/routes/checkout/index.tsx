@@ -85,12 +85,10 @@ export async function action({ request }: Route.ActionArgs) {
     imgSrc: item.product.imgSrc,
   }));
 
-  const { orderId } = await createOrder(items, shippingDetails);
+  const { orderId } = await createOrder(request, items, shippingDetails);
 
   const sessionCartId = await getCartIdFromSession(request)
-  console.log('sessionCartId', sessionCartId);
   if (user) deleteRemoteCart(request, sessionCartId);
-  // else deleteLocalCart();
 
   return redirect(`/order-confirmation/${orderId}`);
 }

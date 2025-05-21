@@ -27,7 +27,7 @@ export async function loader({
 
   try {
     const [category, products] = await Promise.all([
-      getCategoryBySlug(categorySlug),
+      getCategoryBySlug(categorySlug, request, ),
       getProductsByCategorySlug(request, categorySlug),
     ]);
 

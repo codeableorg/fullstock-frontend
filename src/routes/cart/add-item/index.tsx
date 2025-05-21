@@ -12,13 +12,9 @@ export async function action({ request }: Route.ActionArgs) {
   const redirectTo = formData.get("redirectTo") as string | null;
 
   const sessionCartId = await getCartIdFromSession(request)
-  console.log('sessionCartId', sessionCartId);
 
   await addToCart(request, productId, quantity, sessionCartId);
 
-  // return redirect(redirectTo || "/cart");
-
-  // Invalidar los datos de la ruta raíz
   return redirect(redirectTo || "/cart", {
     headers: {
       "X-Remix-Revalidate": "root", // Indicar a React Router que debe revalidar la ruta raíz

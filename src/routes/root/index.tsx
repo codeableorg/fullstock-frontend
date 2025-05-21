@@ -42,7 +42,6 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
-  // Obtenemos la sesión actual de la cookie
   const session = await getSession(request.headers.get("Cookie"));
   let cartSessionId = session.get("cartSessionId");
   let totalItems = 0;
@@ -50,36 +49,24 @@ export async function loader({ request }: Route.LoaderArgs) {
   // Obtenemos el usuario actual (autenticado o no)
   const user = await getCurrentUser(request);
   
-  if (user) {
-    console.log('Usuario autenticado:', user);
-    // Aquí podrías obtener el carrito del usuario si está autenticado
-    // O sincronizar el carrito de invitado con el del usuario
-  } else {
-    console.log('Usuario no autenticado');
-    
+  if (!user) {
     // Si no hay cartSessionId, crea un carrito de invitado
     if (!cartSessionId) {
-      console.log("No hay cartSessionId, creando uno nuevo...");
       try {
-        // Llamar a la API para crear un carrito de invitado
         const cart: Cart = await createRemoteItems(request, []);
         console.log("Carrito de invitado creado:", cart);
         const cartId = cart.sessionCartId;
         if(cartId){
-          // Guardar el cartSessionId en la sesión
           session.set("cartSessionId", cartId);
           cartSessionId = cartId;
         }
       } catch (error) {
         console.error("Error al crear carrito de invitado:", error);
       }
-    } else {
-      console.log("Ya existe cartSessionId:", cartSessionId);
     }
   }
 
   // Obtener el carrito actualizado para contar los items
-  
   try {
     const cart = await getCart(request, cartSessionId);
     // Sumar las cantidades de cada ítem

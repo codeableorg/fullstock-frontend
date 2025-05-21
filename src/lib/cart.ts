@@ -44,12 +44,7 @@ export async function addToCart(
 ) {
   try {
     const product = await getProductById(request, productId);
-    console.log('Product', product);
-    
-    // El backend determinará si es un usuario autenticado (por el token)
-    // o un invitado (por el cartSessionId en la cookie)
     const updatedCart = await alterQuantityCartItem(request, product.id, quantity, sessionCartId);
-    console.log(updatedCart)
     return updatedCart;
   } catch (error) {
     console.error(error);
