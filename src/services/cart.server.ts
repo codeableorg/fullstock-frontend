@@ -30,3 +30,9 @@ export async function deleteRemoteCartItem(
     method: "DELETE",
   });
 }
+
+export async function deleteRemoteCart(request: Request): Promise<void> {
+  return serverClient("/cart", request, {
+    method: "DELETE",
+  });
+}

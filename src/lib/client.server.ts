@@ -34,7 +34,14 @@ export async function serverClient<T>(
 
   try {
     const response = await fetch(url, config);
-    const data = await response.json();
+
+    let data = null;
+
+    if (response.status === 204) {
+      return data as T;
+    }
+
+    data = await response.json();
 
     if (response.ok) {
       return data as T;
