@@ -17,12 +17,12 @@ import {
   Separator,
 } from "@/components/ui";
 import { getCurrentUser } from "@/services/auth.server";
+import { getCurrentCart } from "@/services/cart.server";
 
 import AuthNav from "./components/auth-nav";
 import HeaderMain from "./components/header-main";
 
 import type { Route } from "./+types";
-import { getCurrentCart } from "@/services/cart.server";
 
 export async function action({ request }: Route.ActionArgs) {
   const data = await request.formData();

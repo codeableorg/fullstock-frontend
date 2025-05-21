@@ -2,12 +2,13 @@ import { API_URL } from "@/config";
 import { isApiError } from "@/models/error.model";
 import type { RequestConfig } from "@/models/request.model";
 import { getSession } from "@/session.server";
+
 import { getUrlWithParams } from "./utils";
 
 export async function serverClient<T>(
   endpoint: string,
   request: Request,
-  { body, headers: customHeaders, includeCartSessionId = false, ...customConfig }: RequestConfig & { includeCartSessionId?: boolean } = {}
+  { body, headers: customHeaders, ...customConfig }: RequestConfig = {}
 ) {
   // Obtener el token y el cartSessionId desde las cookies de la sesión
   const cookieHeader = request.headers.get("Cookie");
@@ -16,7 +17,7 @@ export async function serverClient<T>(
   const cartSessionId = session.get("cartSessionId");
 
   // Construir la URL con el cartSessionId si es necesario
-  const url = includeCartSessionId && cartSessionId
+  const url = cartSessionId
     ? getUrlWithParams(API_URL + endpoint, { cartId: cartSessionId })
     : API_URL + endpoint;
 
@@ -30,7 +31,6 @@ export async function serverClient<T>(
     },
     ...customConfig,
   };
-
 
   try {
     const response = await fetch(url, config);

@@ -30,7 +30,6 @@ export async function login(
 ): Promise<AuthResponse> {
   const data = await serverClient<AuthResponse>("/auth/login", request, {
     body: { email, password },
-    includeCartSessionId: true,
   });
   return data;
 }
@@ -38,11 +37,10 @@ export async function login(
 export async function signup(
   request: Request,
   email: string,
-  password: string,
+  password: string
 ): Promise<AuthResponse> {
   const data = await serverClient<AuthResponse>("/auth/signup", request, {
     body: { email, password },
-    includeCartSessionId: true,
   });
 
   return data;

@@ -13,6 +13,6 @@ export async function action({ request }: Route.ActionArgs) {
   const result = await addToCart(productId, quantity, request);
 
   return redirect(redirectTo || "/cart", {
-    headers: result?.headers || undefined,
+    headers: result?.headers,
   });
 }

@@ -16,7 +16,7 @@ const LoginSchema = z.object({
 
 export async function action({ request }: Route.ActionArgs) {
   const cookieHeader = request.headers.get("Cookie");
-  const session = await getSession(cookieHeader || "");
+  const session = await getSession(cookieHeader);
 
   const formData = await request.formData();
   const email = formData.get("email") as string;

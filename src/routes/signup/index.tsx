@@ -31,12 +31,12 @@ type SignupForm = z.infer<typeof SignupSchema>;
 
 export async function action({ request }: Route.ActionArgs) {
   const cookieHeader = request.headers.get("Cookie");
-  const session = await getSession(cookieHeader || "");
+  const session = await getSession(cookieHeader);
 
   const formData = await request.formData();
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
-  
+
   try {
     const { token } = await signup(request, email, password);
 
