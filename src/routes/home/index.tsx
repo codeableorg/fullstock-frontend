@@ -1,4 +1,3 @@
-// 1. React primero
 import { ServerCrash } from "lucide-react";
 import { Link } from "react-router";
 
@@ -11,73 +10,48 @@ import { Categories } from "./components/categories";
 
 import type { Route } from "./+types";
 
-interface Feature {
-  icon: "truck" | "return" | "ribbon" | "idea";
-  title: string;
-  description: string;
+export async function loader({ request }: Route.LoaderArgs) {
+  try {
+    const categories: Category[] = await getAllCategories(request);
+    return { categories };
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    return { categories: null as Category[] | null };
+  }
 }
 
-interface LoaderData {
-  features: Feature[];
-  categories: Category[] | null;
-}
+export default function Home({ loaderData }: Route.ComponentProps) {
+  const { categories } = loaderData;
 
-export async function loader({request}: Route.LoaderArgs): Promise<LoaderData> {
-  const features: Feature[] = [
+  const features = [
     {
-      icon: "truck",
+      Icon: Truck,
       title: "Entrega rápida",
       description:
         "Recibe tus productos en tiempo récord, directo a tu puerta, para que puedas disfrutar de ellos cuanto antes.",
     },
     {
-      icon: "return",
+      Icon: Return,
       title: "Satisfacción Garantizada",
       description:
         "Tu felicidad es nuestra prioridad. Si no estás 100% satisfecho, estamos aquí para ayudarte con cambios o devoluciones.",
     },
     {
-      icon: "ribbon",
+      Icon: Ribbon,
       title: "Materiales de Alta Calidad",
       description:
         "Nos aseguramos de que todos nuestros productos estén hechos con materiales de la más alta calidad.",
     },
     {
-      icon: "idea",
+      Icon: Idea,
       title: "Diseños Exclusivos",
       description:
         "Cada producto está diseñado pensando en los desarrolladores, con estilos únicos que no encontrarás en ningún otro lugar.",
     },
   ];
 
-  try {
-    const categories: Category[] = await getAllCategories(request);
-    return { features, categories };
-  } catch (error) {
-    console.error("Error fetching categories:", error);
-    return { features, categories: null as Category[] | null };
-  }
-}
-
-export default function Home({ loaderData }: { loaderData: LoaderData }) {
-  const { features, categories } = loaderData;
   const error = !categories;
   // if (loading) return <ContainerLoader />;
-
-  const renderIcon = (iconName: string, className: string) => {
-    switch (iconName) {
-      case "truck":
-        return Truck ? <Truck className={className} /> : null;
-      case "return":
-        return Return ? <Return className={className} /> : null;
-      case "ribbon":
-        return Ribbon ? <Ribbon className={className} /> : null;
-      case "idea":
-        return Idea ? <Idea className={className} /> : null;
-      default:
-        return null;
-    }
-  };
 
   return (
     <>
@@ -133,9 +107,9 @@ export default function Home({ loaderData }: { loaderData: LoaderData }) {
             Nuestra Promesa de Calidad
           </h2>
           <div className="flex flex-col gap-8 sm:grid sm:grid-cols-2 md:grid-cols-4">
-            {features.map(({ icon, title, description }) => (
+            {features.map(({ Icon, title, description }) => (
               <div key={title} className="">
-                {renderIcon(icon, "inline-block mb-6")}
+                <Icon className="inline-block mb-6" />
                 <h3 className="text-sm leading-5 font-medium mb-2">{title}</h3>
                 <p className="text-sm leading-5 text-muted-foreground">
                   {description}

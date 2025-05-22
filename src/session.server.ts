@@ -26,19 +26,8 @@ const { getSession, commitSession, destroySession } =
       path: "/",
       sameSite: "lax",
       secrets: ["s3cret1"],
-      secure: false, //Significa que la cookie solo se enviará a través de conexiones HTTPS
+      secure: true,
     },
   });
 
-async function getCartIdFromSession(request: Request) {
-  const session = await getSession(request.headers.get("Cookie"));
-  return session.get("cartSessionId");
-}
-
-export {
-  getSession,
-  commitSession,
-  destroySession,
-  getCartIdFromSession,
-};
-
+export { getSession, commitSession, destroySession };

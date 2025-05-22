@@ -4,7 +4,7 @@ import { Link, redirect, useNavigation, useSubmit } from "react-router";
 import { z } from "zod";
 
 import { Button, Container, InputField, Section } from "@/components/ui";
-import { login, redirectIfAuthenticated } from "@/services/auth.server";
+import { login, redirectIfAuthenticated } from "@/services/auth.service";
 import {
   getRemoteCart,
   linkCartToUser,
@@ -47,8 +47,7 @@ export async function action({ request }: Route.ActionArgs) {
 
         if (existingUserCart) {
           const mergedCart = await mergeGuestCartWithUserCart(
-            authenticatedRequest,
-            cartSessionId
+            authenticatedRequest
           );
 
           if (mergedCart) {
@@ -56,10 +55,7 @@ export async function action({ request }: Route.ActionArgs) {
           }
         } else {
           // Si el usuario no tiene carrito, vinculamos el carrito de invitado
-          const linkedCart = await linkCartToUser(
-            authenticatedRequest,
-            cartSessionId
-          );
+          const linkedCart = await linkCartToUser(authenticatedRequest);
 
           if (linkedCart) {
             session.unset("cartSessionId");
@@ -103,8 +99,8 @@ export default function Login({ actionData }: Route.ComponentProps) {
   } = useForm<LoginForm>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
-      email: "mike@gmail.com",
-      password: "Mike123",
+      email: "",
+      password: "",
     },
     mode: "onTouched",
   });
@@ -157,4 +153,3 @@ export default function Login({ actionData }: Route.ComponentProps) {
     </Section>
   );
 }
-

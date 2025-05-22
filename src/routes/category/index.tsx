@@ -11,10 +11,7 @@ import { ProductCard } from "./components/product-card";
 
 import type { Route } from "./+types";
 
-export async function loader({
-  params,
-  request,
-}: Route.LoaderArgs) {
+export async function loader({ params, request }: Route.LoaderArgs) {
   const { category: categorySlug } = params;
 
   if (!isValidCategorySlug(categorySlug)) {
@@ -27,7 +24,7 @@ export async function loader({
 
   try {
     const [category, products] = await Promise.all([
-      getCategoryBySlug(categorySlug, request, ),
+      getCategoryBySlug(categorySlug, request),
       getProductsByCategorySlug(request, categorySlug),
     ]);
 

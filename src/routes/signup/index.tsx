@@ -5,8 +5,8 @@ import { z } from "zod";
 
 import { Button, Container, InputField, Section } from "@/components/ui";
 import { debounceAsync } from "@/lib/utils";
-import { redirectIfAuthenticated, signup } from "@/services/auth.server";
-import { getRemoteCart, linkCartToUser, mergeGuestCartWithUserCart } from "@/services/cart.service";
+import { redirectIfAuthenticated, signup } from "@/services/auth.service";
+import { linkCartToUser } from "@/services/cart.service";
 import { findEmail } from "@/services/user.service";
 import { commitSession, getSession } from "@/session.server";
 
@@ -52,23 +52,12 @@ export async function action({ request }: Route.ActionArgs) {
 
     if (cartSessionId) {
       try {
-        // Verificar si el usuario recién creado ya tiene un carrito
-        const existingUserCart = await getRemoteCart(authenticatedRequest);
-        
-        if (existingUserCart) {
-          const mergedCart = await mergeGuestCartWithUserCart(authenticatedRequest, cartSessionId);
-          
-          if (mergedCart) {
-            session.unset("cartSessionId");
-          }
-        } else {
-          // Vincular el carrito invitado 
-          const linkedCart = await linkCartToUser(authenticatedRequest, cartSessionId);
-          
-          if (linkedCart) {
-            session.unset("cartSessionId");
-          }
+        const linkedCart = await linkCartToUser(authenticatedRequest);
+
+        if (linkedCart) {
+          session.unset("cartSessionId");
         }
+        // }
       } catch (cartError) {
         console.error("Error al gestionar el carrito en signup:", cartError);
       }

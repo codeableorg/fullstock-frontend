@@ -1,12 +1,12 @@
 import { redirect, useFetcher } from "react-router";
 
 import { Button, InputField } from "@/components/ui";
-import { getCurrentUser } from "@/services/auth.server";
+import { getCurrentUser } from "@/services/auth.service";
 import { updateUser } from "@/services/user.service";
 
 import type { Route } from "./+types";
 
-export async function loader({request}: Route.ActionArgs) {
+export async function loader({ request }: Route.ActionArgs) {
   const user = await getCurrentUser(request);
 
   if (!user) throw redirect("/login");
@@ -14,16 +14,19 @@ export async function loader({request}: Route.ActionArgs) {
   return { user };
 }
 
-export async function clientAction({ request }: Route.ClientActionArgs) {
+export async function action({ request }: Route.ActionArgs) {
   const data = await request.formData();
 
   try {
-    await updateUser({
-      name: data.get("name") as string,
-      ...(data.get("newPassword")
-        ? { password: data.get("newPassword") as string }
-        : {}),
-    });
+    await updateUser(
+      {
+        name: data.get("name") as string,
+        ...(data.get("newPassword")
+          ? { password: data.get("newPassword") as string }
+          : {}),
+      },
+      request
+    );
 
     return {
       ok: true,
@@ -57,13 +60,13 @@ export default function Profile({ loaderData }: Route.ComponentProps) {
         label="Correo electrónico"
         name="email"
         type="email"
-        value={user!.email}
+        value={user.email}
         disabled
       />
       <InputField
         label="Nombre"
         name="name"
-        defaultValue={user?.name || ""}
+        defaultValue={user.name || ""}
         minLength={1}
         disabled={isSubmitting}
       />

@@ -1,5 +1,6 @@
 import { Suspense, useEffect, useRef } from "react";
 import {
+  data,
   Link,
   Outlet,
   ScrollRestoration,
@@ -16,8 +17,7 @@ import {
   Separator,
 } from "@/components/ui";
 import { getCart } from "@/lib/cart";
-import type { Cart } from "@/models/cart.model";
-import { getCurrentUser } from "@/services/auth.server";
+import { getCurrentUser } from "@/services/auth.service";
 import { createRemoteItems } from "@/services/cart.service";
 import { commitSession, getSession } from "@/session.server";
 
@@ -43,22 +43,20 @@ export async function action({ request }: Route.ActionArgs) {
 
 export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSession(request.headers.get("Cookie"));
-  let cartSessionId = session.get("cartSessionId");
+  const cartSessionId = session.get("cartSessionId");
   let totalItems = 0;
-  
+
   // Obtenemos el usuario actual (autenticado o no)
   const user = await getCurrentUser(request);
-  
+
   if (!user) {
     // Si no hay cartSessionId, crea un carrito de invitado
     if (!cartSessionId) {
       try {
-        const cart: Cart = await createRemoteItems(request, []);
-        console.log("Carrito de invitado creado:", cart);
+        const cart = await createRemoteItems(request, []);
         const cartId = cart.sessionCartId;
-        if(cartId){
+        if (cartId) {
           session.set("cartSessionId", cartId);
-          cartSessionId = cartId;
         }
       } catch (error) {
         console.error("Error al crear carrito de invitado:", error);
@@ -68,26 +66,26 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   // Obtener el carrito actualizado para contar los items
   try {
-    const cart = await getCart(request, cartSessionId);
+    const cart = await getCart(request);
     // Sumar las cantidades de cada ítem
     if (cart?.items && cart.items.length > 0) {
-      totalItems = cart.items.reduce((sum, item) => sum + (item.quantity || 0), 0);
+      totalItems = cart.items.reduce(
+        (sum, item) => sum + (item.quantity || 0),
+        0
+      );
     }
   } catch (error) {
     console.error("Error al obtener el carrito:", error);
   }
 
   // Preparar datos de respuesta según estado de autenticación
-  const responseData = user 
-    ? { user, totalItems, cartSessionId } 
-    : { totalItems, cartSessionId };
-  
-  // Devolver una Response con los datos y la cookie de sesión actualizada
-  return new Response(JSON.stringify(responseData), {
+  const responseData = user ? { user, totalItems } : { totalItems };
+
+  return data(responseData, {
     headers: {
       "Content-Type": "application/json",
-      "Set-Cookie": await commitSession(session)
-    }
+      "Set-Cookie": await commitSession(session),
+    },
   });
 }
 
