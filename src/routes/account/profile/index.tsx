@@ -2,7 +2,7 @@ import { redirect, useFetcher } from "react-router";
 
 import { Button, InputField } from "@/components/ui";
 import { getCurrentUser } from "@/services/auth.service";
-import { updateUser } from "@/services/user.service";
+import { updateUser } from "@/services/user.server";
 
 import type { Route } from "./+types";
 
