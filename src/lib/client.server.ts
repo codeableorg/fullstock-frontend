@@ -12,6 +12,10 @@ export async function serverClient<T>(
   const cookieHeader = request.headers.get("Cookie");
   const session = await getSession(cookieHeader);
   const token = session.get("token");
+  const cartSessionId = session.get("cartSessionId");
+
+  const cartSessionHeader: { "x-cart-id": string } | Record<string, string> =
+    cartSessionId ? { "x-cart-id": cartSessionId } : {};
 
   const config: RequestInit = {
     method: body ? "POST" : "GET",
@@ -19,26 +23,47 @@ export async function serverClient<T>(
     headers: {
       "Content-Type": "application/json",
       Authorization: token ? `Bearer ${token}` : "",
+      ...cartSessionHeader,
       ...customHeaders,
     },
+    credentials: "include",
     ...customConfig,
   };
 
   try {
     const response = await fetch(API_URL + endpoint, config);
-    const data = await response.json();
+
+    // Verifica si hay contenido antes de intentar parsear como JSON
+    const contentType = response.headers.get("content-type");
+
+    let data: unknown;
+    if (contentType && contentType.includes("application/json")) {
+      // Solo intenta parsear como JSON si el content-type es application/json
+      try {
+        const text = await response.text();
+        // Verificar que el texto no esté vacío antes de parsearlo
+        data = text ? JSON.parse(text) : null;
+      } catch (parseError) {
+        console.error("Error parsing response as JSON:", parseError);
+        throw new Error(
+          `Invalid JSON response from server: ${
+            parseError instanceof Error
+              ? parseError.message
+              : String(parseError)
+          }`
+        );
+      }
+    } else {
+      // Para respuestas no-JSON
+      data = await response.text();
+    }
 
     if (response.ok) {
       return data as T;
     }
 
     if (response.status === 401 && token) {
-      // En lugar de eliminar el token y redirigir, emitir un error customizado
-      // para el caller se encargue de manejar el caso de error de autenticación
       throw new Error("Unauthorized");
-      // removeToken();
-      // window.location.assign(window.location.pathname);
-      // window.location.assign("/login");
     }
 
     if (isApiError(data)) throw new Error(data.error.message);

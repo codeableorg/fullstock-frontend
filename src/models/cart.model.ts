@@ -10,6 +10,7 @@ export interface CartItem {
 export interface Cart {
   id: number;
   userId?: User["id"];
+  sessionCartId?: string;
   items: CartItem[];
   total: number;
 }

@@ -1,45 +1,29 @@
 import type { CartItem } from "@/models/cart.model";
 import { type Product } from "@/models/product.model";
-import { getCurrentUser } from "@/services/auth.service";
 import {
   alterQuantityCartItem,
-  createRemoteItems,
-  deleteLocalCart,
   deleteRemoteCartItem,
-  getLocalCart,
   getRemoteCart,
-  setLocalCart,
 } from "@/services/cart.service";
-import { getProductById } from "@/services/product.service";
+import { getProductById } from "@/services/product.server";
 
-export async function getCart() {
-  const user = await getCurrentUser();
-
+export async function getCart(request: Request) {
   try {
-    const localCart = getLocalCart(); // obtiene carrito del localstorage
+    const remoteCart = await getRemoteCart(request);
 
-    if (!user) {
-      // SIN USUARIO
-      return localCart;
-    }
-
-    // CON USUARIO
-    const remoteCart = await getRemoteCart(); // obtiene carrito de la bbdd
-
-    if (remoteCart?.items.length) {
-      // CARRITO DDBB CON PRODUCTOS
-      deleteLocalCart(); // borra carrito del localstorage
+    // Si ya existe un carrito (con ítems o vacío), lo devolvemos
+    if (remoteCart) {
+      // Si no existe la propiedad total, calcúlala sumando las cantidades de cada ítem
+      if (remoteCart.total === undefined) {
+        remoteCart.total =
+          remoteCart.items?.reduce((total, item) => total + item.quantity, 0) ||
+          0;
+      }
       return remoteCart;
     }
-    //CARRITO DDBB SIN PRODUCTOS
-    if (localCart) {
-      // CARRITO LOCAL CON PRODUCTOS
-      const updatedCart = await createRemoteItems(localCart.items); // graba carrito local en la bbdd
-      deleteLocalCart(); // borra carrito del localstorage
-      return updatedCart;
-    } else {
-      return null; // No hay carrito local ni remoto
-    }
+
+    // No se encontró carrito
+    return null;
   } catch (error) {
     console.error(error);
     return null;
@@ -47,46 +31,17 @@ export async function getCart() {
 }
 
 export async function addToCart(
+  request: Request,
   productId: Product["id"],
   quantity: number = 1
 ) {
-  const [user, product] = await Promise.all([
-    getCurrentUser(),
-    getProductById(productId),
-  ]);
-
   try {
-    if (user) {
-      const updatedCart = await alterQuantityCartItem(product.id, quantity);
-      return updatedCart;
-    }
-
-    const cart = getLocalCart(); // obtiene carrito del localstorage
-
-    const updatedItems = cart ? [...cart.items] : [];
-    const existingItem = updatedItems.find(
-      (item) => item.product.id === product.id
+    const product = await getProductById(request, productId);
+    const updatedCart = await alterQuantityCartItem(
+      request,
+      product.id,
+      quantity
     );
-
-    if (existingItem) {
-      existingItem.quantity += quantity;
-    } else if (quantity > 0) {
-      updatedItems.push({
-        id: Date.now(),
-        product,
-        quantity,
-      });
-    }
-
-    const updatedCart = {
-      id: Date.now(),
-      items: updatedItems,
-      total: updatedItems.reduce(
-        (total, item) => total + item.product.price * item.quantity,
-        0
-      ),
-    };
-    setLocalCart(updatedCart);
     return updatedCart;
   } catch (error) {
     console.error(error);
@@ -94,30 +49,11 @@ export async function addToCart(
   }
 }
 
-export async function removeFromCart(itemId: CartItem["id"]) {
-  const user = await getCurrentUser();
-
+export async function removeFromCart(request: Request, itemId: CartItem["id"]) {
   try {
-    if (user) {
-      const updatedCart = await deleteRemoteCartItem(itemId);
-      return updatedCart;
-    } else {
-      const cart = getLocalCart(); // obtiene carrito del localstorage
-
-      const updatedItems = cart
-        ? cart.items.filter((item) => item.id !== itemId)
-        : [];
-      const updatedCart = {
-        id: cart?.id || Date.now(),
-        items: updatedItems,
-        total: updatedItems.reduce(
-          (total, item) => total + item.product.price * item.quantity,
-          0
-        ),
-      };
-      setLocalCart(updatedCart);
-      return updatedCart;
-    }
+    // El backend determinará si es un usuario autenticado o invitado
+    const updatedCart = await deleteRemoteCartItem(request, itemId);
+    return updatedCart;
   } catch (error) {
     console.error(error);
     return null;

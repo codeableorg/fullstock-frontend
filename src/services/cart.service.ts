@@ -1,21 +1,14 @@
-import { LOCAL_CART_KEY } from "@/config";
-import { client } from "@/lib/utils";
+import { serverClient } from "@/lib/client.server";
 import { type Cart, type CartItem } from "@/models/cart.model";
 
-export function getLocalCart(): Cart | null {
-  const cart = localStorage.getItem(LOCAL_CART_KEY);
-  return cart ? JSON.parse(cart) : null;
+export async function getRemoteCart(request: Request): Promise<Cart | null> {
+  return serverClient<Cart>("/cart", request);
 }
 
-export function setLocalCart(cart: Cart): void {
-  localStorage.setItem(LOCAL_CART_KEY, JSON.stringify(cart));
-}
-
-export async function getRemoteCart(): Promise<Cart | null> {
-  return client<Cart>("/cart");
-}
-
-export async function createRemoteItems(items: CartItem[]): Promise<Cart> {
+export async function createRemoteItems(
+  request: Request,
+  items: CartItem[]
+): Promise<Cart> {
   const payload = {
     items: items.map(({ product, quantity }) => ({
       productId: product.id,
@@ -23,34 +16,46 @@ export async function createRemoteItems(items: CartItem[]): Promise<Cart> {
     })),
   };
 
-  return client<Cart>("/cart/create-items", {
+  return serverClient<Cart>("/cart/create-items", request, {
     body: payload,
   });
 }
 
 export async function alterQuantityCartItem(
+  request: Request,
   productId: number,
   quantity: number = 1
 ): Promise<Cart> {
-  return client<Cart>("/cart/add-item", {
+  return serverClient<Cart>("/cart/add-item", request, {
     body: { productId, quantity },
   });
 }
 
 export async function deleteRemoteCartItem(
+  request: Request,
   itemId: CartItem["id"]
 ): Promise<Cart> {
-  return client(`/cart/delete-item/${itemId}`, {
+  return serverClient(`/cart/delete-item/${itemId}`, request, {
     method: "DELETE",
   });
 }
 
-export async function deleteRemoteCart(): Promise<void> {
-  return client("/cart", {
+export async function deleteRemoteCart(request: Request): Promise<void> {
+  return serverClient("/cart", request, {
     method: "DELETE",
   });
 }
 
-export function deleteLocalCart(): void {
-  localStorage.removeItem(LOCAL_CART_KEY);
+export async function linkCartToUser(request: Request): Promise<Cart | null> {
+  return serverClient<Cart>("/cart/link-to-user", request, {
+    method: "POST",
+  });
+}
+
+export async function mergeGuestCartWithUserCart(
+  request: Request
+): Promise<Cart | null> {
+  return serverClient<Cart>("/cart/merge-guest-cart", request, {
+    method: "POST",
+  });
 }

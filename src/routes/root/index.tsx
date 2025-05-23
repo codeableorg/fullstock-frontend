@@ -1,9 +1,9 @@
 import { Suspense, useEffect, useRef } from "react";
 import {
+  data,
   Link,
   Outlet,
   ScrollRestoration,
-  type ActionFunctionArgs,
   useFetcher,
   useLocation,
 } from "react-router";
@@ -16,14 +16,17 @@ import {
   Section,
   Separator,
 } from "@/components/ui";
-import { getCurrentUser } from "@/services/auth.server";
+import { getCart } from "@/lib/cart";
+import { getCurrentUser } from "@/services/auth.service";
+import { createRemoteItems } from "@/services/cart.service";
+import { commitSession, getSession } from "@/session.server";
 
 import AuthNav from "./components/auth-nav";
 import HeaderMain from "./components/header-main";
 
 import type { Route } from "./+types";
 
-export async function clientAction({ request }: ActionFunctionArgs) {
+export async function action({ request }: Route.ActionArgs) {
   const data = await request.formData();
 
   try {
@@ -39,12 +42,51 @@ export async function clientAction({ request }: ActionFunctionArgs) {
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const user = await getCurrentUser(request);
-  // const cart = await getCart(user);
-  //   const totalItems =
-  //     cart?.items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
+  const session = await getSession(request.headers.get("Cookie"));
+  const cartSessionId = session.get("cartSessionId");
+  let totalItems = 0;
 
-  return user ? { user, totalItems: 0 } : { totalItems: 0 };
+  // Obtenemos el usuario actual (autenticado o no)
+  const user = await getCurrentUser(request);
+
+  if (!user) {
+    // Si no hay cartSessionId, crea un carrito de invitado
+    if (!cartSessionId) {
+      try {
+        const cart = await createRemoteItems(request, []);
+        const cartId = cart.sessionCartId;
+        if (cartId) {
+          session.set("cartSessionId", cartId);
+        }
+      } catch (error) {
+        console.error("Error al crear carrito de invitado:", error);
+      }
+    }
+  }
+
+  // Obtener el carrito actualizado para contar los items
+  try {
+    const cart = await getCart(request);
+    // Sumar las cantidades de cada ítem
+    if (cart?.items && cart.items.length > 0) {
+      totalItems = cart.items.reduce(
+        (sum, item) => sum + (item.quantity || 0),
+        0
+      );
+    }
+  } catch (error) {
+    console.error("Error al obtener el carrito:", error);
+  }
+
+  // Preparar datos de respuesta según estado de autenticación
+  const responseData = user ? { user, totalItems } : { totalItems };
+
+  return data(responseData, {
+    headers: {
+      "Content-Type": "application/json",
+      "Set-Cookie": await commitSession(session),
+    },
+  });
 }
 
 export default function Root({ loaderData }: Route.ComponentProps) {

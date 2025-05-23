@@ -7,8 +7,8 @@ import { type Cart } from "@/models/cart.model";
 
 import type { Route } from "./+types";
 
-export async function clientLoader() {
-  const cart = await getCart();
+export async function loader({ request }: Route.LoaderArgs) {
+  const cart = await getCart(request);
 
   return { cart };
 }

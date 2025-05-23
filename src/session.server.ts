@@ -1,7 +1,8 @@
 import { createCookieSessionStorage } from "react-router";
 
 type SessionData = {
-  token: string;
+  token?: string;
+  cartSessionId?: string;
 };
 
 type SessionFlashData = {
@@ -21,7 +22,7 @@ const { getSession, commitSession, destroySession } =
       //
       // expires: new Date(Date.now() + 60_000),
       httpOnly: true,
-      maxAge: 60,
+      maxAge: 60 * 60 * 24 * 7, // 7 días en segundos (604800 segundos)
       path: "/",
       sameSite: "lax",
       secrets: ["s3cret1"],

@@ -18,7 +18,7 @@ export default [
       route("/login", "./routes/login/index.tsx"),
       route("/signup", "./routes/signup/index.tsx"),
       route("/logout", "./routes/logout/index.tsx"),
-      route("account", "./routes/account/index.tsx", [
+      route("/account", "./routes/account/index.tsx", [
         route("profile", "./routes/account/profile/index.tsx"),
         route("orders", "./routes/account/orders/index.tsx"),
       ]),
