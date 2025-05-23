@@ -1,13 +1,13 @@
 
-import { getOrdersByUser } from "@/services/order.service";
+import { getOrdersByUser } from "@/services/order.server";
 
-import type { Route } from "./+types"
+import type { Route } from "./+types";
 
 
 
-export async function clientLoader(){
+export async function loader( { request }: Route.LoaderArgs) {
   try {
-    const orders = await getOrdersByUser(); 
+    const orders = await getOrdersByUser(request); 
     orders.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());   
     return { orders };
   } catch {

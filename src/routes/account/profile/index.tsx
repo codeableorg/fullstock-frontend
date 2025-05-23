@@ -1,20 +1,18 @@
-import { redirect, useFetcher } from "react-router";
+import { useFetcher } from "react-router";
 
 import { Button, InputField } from "@/components/ui";
-import { getCurrentUser } from "@/services/auth.service";
 import { updateUser } from "@/services/user.service";
 
+import { requireUser } from "@/services/auth.server";
 import type { Route } from "./+types";
 
-export async function clientLoader() {
-  const user = await getCurrentUser();
-
-  if (!user) throw redirect("/login");
+export async function loader( { request }: Route.LoaderArgs) {
+  const user = await requireUser(request);
 
   return { user };
 }
 
-export async function clientAction({ request }: Route.ClientActionArgs) {
+export async function action({ request }: Route.ActionArgs) {
   const data = await request.formData();
 
   try {
@@ -23,7 +21,7 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
       ...(data.get("newPassword")
         ? { password: data.get("newPassword") as string }
         : {}),
-    });
+    }, request);
 
     return {
       ok: true,
