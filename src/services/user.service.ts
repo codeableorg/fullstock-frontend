@@ -1,6 +1,5 @@
-import { serverClient } from "@/lib/client.server";
 import { client, setToken } from "@/lib/utils";
-import { type AuthResponse, type User } from "@/models/user.model";
+import { type AuthResponse } from "@/models/user.model";
 
 export async function findOrCreateGuestUser(email: string): Promise<void> {
   const body = await client<AuthResponse>("/auth/newOrExist", {
@@ -18,16 +17,4 @@ export async function findEmail(email: string): Promise<boolean> {
   });
 
   return body;
-}
-
-export async function updateUser(
-  updatedUser: Partial<User>,
-  request: Request
-): Promise<AuthResponse["user"]> {
-  const body = await serverClient<AuthResponse>("/users/me", request, {
-    body: { updatedUser },
-    method: "PATCH",
-  });
-
-  return body.user;
 }

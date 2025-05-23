@@ -1,7 +1,7 @@
 import { useFetcher } from "react-router";
 
 import { Button, InputField } from "@/components/ui";
-import { updateUser } from "@/services/user.service";
+import { updateUser } from "@/services/user.server";
 
 import { requireUser } from "@/services/auth.server";
 import type { Route } from "./+types";
