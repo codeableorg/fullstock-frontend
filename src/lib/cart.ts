@@ -5,7 +5,7 @@ import {
   deleteRemoteCartItem,
   getRemoteCart,
 } from "@/services/cart.service";
-import { getProductById } from "@/services/product.server";
+import { getProductById } from "@/services/product.service";
 
 export async function getCart(request: Request) {
   try {

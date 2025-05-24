@@ -2,7 +2,7 @@ import { Form, useNavigation } from "react-router";
 
 import { Button, Container, Separator } from "@/components/ui";
 import { type Product } from "@/models/product.model";
-import { getProductById } from "@/services/product.server";
+import { getProductById } from "@/services/product.service";
 
 import NotFound from "../not-found";
 

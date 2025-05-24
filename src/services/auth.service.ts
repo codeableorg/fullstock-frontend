@@ -2,6 +2,7 @@ import { redirect } from "react-router";
 
 import { serverClient } from "@/lib/client.server";
 import { type AuthResponse } from "@/models/user.model";
+import { getUserById } from "@/repositories/user.repository";
 import { getSession } from "@/session.server";
 
 // Recibir el `request` como argumento en las funciones que lo requieran
@@ -11,12 +12,12 @@ export async function getCurrentUser(
 ): Promise<AuthResponse["user"] | null> {
   const cookieHeader = request.headers.get("Cookie");
   const session = await getSession(cookieHeader);
-  const token = session.get("token");
+  const userId = session.get("userId");
 
-  if (!token) return null;
+  if (!userId) return null;
 
   try {
-    return serverClient<AuthResponse["user"]>("/users/me", request);
+    return await getUserById(userId);
   } catch (error) {
     console.error("Error fetching current user:", error);
     return null;

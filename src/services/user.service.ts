@@ -1,10 +1,14 @@
-import { client } from "@/lib/utils";
+import { serverClient } from "@/lib/client.server";
+import type { User, AuthResponse } from "@/models/user.model";
 
-// Se mantiene para hacer la validación de correo electrónico en el registro del lado del cliente
-export async function findEmail(email: string): Promise<boolean> {
-  const body = await client<boolean>("/users/findEmail", {
-    body: { email },
+export async function updateUser(
+  updatedUser: Partial<User>,
+  request: Request
+): Promise<AuthResponse["user"]> {
+  const body = await serverClient<AuthResponse>("/users/me", request, {
+    body: { updatedUser },
+    method: "PATCH",
   });
 
-  return body;
+  return body.user;
 }
