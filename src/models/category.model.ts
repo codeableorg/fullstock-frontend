@@ -7,6 +7,8 @@ export interface Category {
   imgSrc: string;
   alt: string | null;
   description: string | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export function isValidCategorySlug(
