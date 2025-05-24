@@ -1,21 +1,25 @@
+import { redirect } from "react-router";
 
+import { getCurrentUser } from "@/services/auth.service";
 import { getOrdersByUser } from "@/services/order.service";
 
-import type { Route } from "./+types"
+import type { Route } from "./+types";
 
+export async function loader({ request }: Route.LoaderArgs) {
+  const user = await getCurrentUser(request);
 
+  if (!user) throw redirect("/login");
 
-export async function clientLoader(){
   try {
-    const orders = await getOrdersByUser(); 
-    orders.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());   
+    const orders = await getOrdersByUser(request);
+    orders.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
     return { orders };
   } catch {
     return {};
   }
 }
 
-export default function Orders({loaderData}: Route.ComponentProps) { 
+export default function Orders({ loaderData }: Route.ComponentProps) {
   const { orders } = loaderData;
   return (
     <div>

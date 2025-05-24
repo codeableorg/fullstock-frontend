@@ -1,10 +1,10 @@
-import { client } from "@/lib/utils";
+import { serverClient } from "@/lib/client.server";
 import { type Category } from "@/models/category.model";
 
-export async function getAllCategories(): Promise<Category[]> {
-  return client<Category[]>("/categories");
+export async function getAllCategories(request: Request): Promise<Category[]> {
+  return serverClient<Category[]>("/categories", request);
 }
 
-export async function getCategoryBySlug(slug: string): Promise<Category> {
-  return client<Category>(`/categories/${slug}`);
+export async function getCategoryBySlug(slug: string, request: Request): Promise<Category> {
+  return serverClient<Category>(`/categories/${slug}`, request);
 }

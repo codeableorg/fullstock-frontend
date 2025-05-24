@@ -3,14 +3,26 @@ import { Link } from "react-router";
 
 import { Truck, Return, Ribbon, Idea } from "@/components/icons";
 import { Button, Container } from "@/components/ui";
-import { type Category } from "@/models/category.model";
+import type { Category } from "@/models/category.model";
 import { getAllCategories } from "@/services/category.service";
 
 import { Categories } from "./components/categories";
 
 import type { Route } from "./+types";
 
-export async function clientLoader() {
+export async function loader({ request }: Route.LoaderArgs) {
+  try {
+    const categories: Category[] = await getAllCategories(request);
+    return { categories };
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    return { categories: null as Category[] | null };
+  }
+}
+
+export default function Home({ loaderData }: Route.ComponentProps) {
+  const { categories } = loaderData;
+
   const features = [
     {
       Icon: Truck,
@@ -38,17 +50,6 @@ export async function clientLoader() {
     },
   ];
 
-  try {
-    const categories: Category[] = await getAllCategories();
-    return { features, categories };
-  } catch (error) {
-    console.error("Error fetching categories:", error);
-    return { features, categories: null as Category[] | null };
-  }
-}
-
-export default function Home({ loaderData }: Route.ComponentProps) {
-  const { features, categories } = loaderData;
   const error = !categories;
   // if (loading) return <ContainerLoader />;
 

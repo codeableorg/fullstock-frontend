@@ -5,7 +5,8 @@ import { z } from "zod";
 
 import { Button, Container, InputField, Section } from "@/components/ui";
 import { debounceAsync } from "@/lib/utils";
-import { redirectIfAuthenticated, signup } from "@/services/auth.server";
+import { redirectIfAuthenticated, signup } from "@/services/auth.service";
+import { linkCartToUser } from "@/services/cart.service";
 import { findEmail } from "@/services/user.service";
 import { commitSession, getSession } from "@/session.server";
 
@@ -33,11 +34,36 @@ export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
-  const session = await getSession();
+
+  const session = await getSession(request.headers.get("Cookie"));
+  const cartSessionId = session.get("cartSessionId");
 
   try {
     const { token } = await signup(request, email, password);
     session.set("token", token);
+
+    const cookie = await commitSession(session);
+    const authenticatedRequest = new Request(request.url, {
+      headers: {
+        Cookie: cookie,
+      },
+      method: "GET",
+    });
+
+    if (cartSessionId) {
+      try {
+        const linkedCart = await linkCartToUser(authenticatedRequest);
+
+        if (linkedCart) {
+          session.unset("cartSessionId");
+        }
+        // }
+      } catch (cartError) {
+        console.error("Error al gestionar el carrito en signup:", cartError);
+      }
+    } else {
+      console.log("No hay carrito de invitado para vincular en el registro");
+    }
 
     return redirect("/", {
       headers: {

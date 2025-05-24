@@ -2,15 +2,15 @@ import { Form, useNavigation } from "react-router";
 
 import { Button, Container, Separator } from "@/components/ui";
 import { type Product } from "@/models/product.model";
-import { getProductById } from "@/services/product.service";
+import { getProductById } from "@/services/product.server";
 
 import NotFound from "../not-found";
 
 import type { Route } from "./+types";
 
-export async function clientLoader({ params }: Route.ClientLoaderArgs) {
+export async function loader({ request, params }: Route.LoaderArgs) {
   try {
-    const product = await getProductById(parseInt(params.id));
+    const product = await getProductById(request, parseInt(params.id));
     return { product };
   } catch {
     return {};

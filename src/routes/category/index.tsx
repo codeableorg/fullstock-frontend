@@ -4,17 +4,14 @@ import { Container } from "@/components/ui";
 import { isValidCategorySlug, type Category } from "@/models/category.model";
 import { type Product } from "@/models/product.model";
 import { getCategoryBySlug } from "@/services/category.service";
-import { getProductsByCategorySlug } from "@/services/product.service";
+import { getProductsByCategorySlug } from "@/services/product.server";
 
 import { PriceFilter } from "./components/price-filter";
 import { ProductCard } from "./components/product-card";
 
 import type { Route } from "./+types";
 
-export async function clientLoader({
-  params,
-  request,
-}: Route.ClientLoaderArgs) {
+export async function loader({ params, request }: Route.LoaderArgs) {
   const { category: categorySlug } = params;
 
   if (!isValidCategorySlug(categorySlug)) {
@@ -27,8 +24,8 @@ export async function clientLoader({
 
   try {
     const [category, products] = await Promise.all([
-      getCategoryBySlug(categorySlug),
-      getProductsByCategorySlug(categorySlug),
+      getCategoryBySlug(categorySlug, request),
+      getProductsByCategorySlug(request, categorySlug),
     ]);
 
     const filterProductsByPrice = (

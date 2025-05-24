@@ -1,32 +1,10 @@
-import { client, setToken } from "@/lib/utils";
-import { type AuthResponse, type User } from "@/models/user.model";
+import { client } from "@/lib/utils";
 
-export async function findOrCreateGuestUser(email: string): Promise<void> {
-  const body = await client<AuthResponse>("/auth/newOrExist", {
-    body: { email },
-  });
-
-  if (body.token.length > 0) {
-    setToken(body.token);
-  }
-}
-
+// Se mantiene para hacer la validación de correo electrónico en el registro del lado del cliente
 export async function findEmail(email: string): Promise<boolean> {
   const body = await client<boolean>("/users/findEmail", {
     body: { email },
   });
 
   return body;
-}
-
-export async function updateUser(
-  updatedUser: Partial<User>
-): Promise<AuthResponse["user"]> {
-  const body = await client<AuthResponse>("/users/me", {
-    body: { updatedUser },
-    method: "PATCH",
-  });
-
-  setToken(body.token);
-  return body.user;
 }
