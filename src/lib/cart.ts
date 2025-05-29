@@ -35,10 +35,18 @@ export async function addToCart(
   }
 }
 
-export async function removeFromCart(request: Request, itemId: CartItem["id"]) {
+export async function removeFromCart(
+  userId: number | undefined,
+  sessionCartId: string | undefined,
+  itemId: CartItem["id"]
+) {
   try {
     // El backend determinará si es un usuario autenticado o invitado
-    const updatedCart = await deleteRemoteCartItem(request, itemId);
+    const updatedCart = await deleteRemoteCartItem(
+      userId,
+      sessionCartId,
+      itemId
+    );
     return updatedCart;
   } catch (error) {
     console.error(error);

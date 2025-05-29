@@ -95,12 +95,22 @@ export async function alterQuantityCartItem(
 }
 
 export async function deleteRemoteCartItem(
-  request: Request,
+  userId: User["id"] | undefined,
+  sessionCartId: string | undefined,
   itemId: CartItem["id"]
 ): Promise<Cart> {
-  return serverClient(`/cart/delete-item/${itemId}`, request, {
-    method: "DELETE",
-  });
+  let cart: Cart | null = null;
+
+  if (userId || sessionCartId) {
+    cart = await cartRepository.getCart(userId, sessionCartId);
+  }
+
+  if (!cart) throw new Error("Cart not found");
+
+  await cartRepository.removeCartItem(cart.id, itemId);
+
+  const updatedCart = await getOrCreateCart(userId, sessionCartId);
+  return updatedCart;
 }
 
 export async function deleteRemoteCart(request: Request): Promise<void> {
