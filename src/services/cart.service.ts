@@ -1,11 +1,11 @@
-import { serverClient } from "@/lib/client.server";
 import { type Cart, type CartItem } from "@/models/cart.model";
 import type { User } from "@/models/user.model";
 import * as cartRepository from "@/repositories/cart.repository";
 import { getSession } from "@/session.server";
 
-export async function getRemoteCart(request: Request): Promise<Cart | null> {
-  return serverClient<Cart>("/cart", request);
+export async function getRemoteCart(userId: User["id"]): Promise<Cart | null> {
+  const cart = await cartRepository.getCart(userId, undefined);
+  return cart;
 }
 
 export async function getOrCreateCart(
@@ -42,7 +42,6 @@ export async function createRemoteItems(
   }));
 
   const cart = await getOrCreateCart(userId, sessionCartId);
-  console.log("Cart", cart);
 
   if (cart.items.length > 0) {
     await cartRepository.clearCart(cart.id);
@@ -129,16 +128,33 @@ export async function deleteRemoteCart(request: Request): Promise<void> {
   await cartRepository.clearCart(cart.id);
 }
 
-export async function linkCartToUser(request: Request): Promise<Cart | null> {
-  return serverClient<Cart>("/cart/link-to-user", request, {
-    method: "POST",
-  });
+export async function linkCartToUser(
+  userId: User["id"],
+  sessionCartId: string
+): Promise<Cart | null> {
+  if (!sessionCartId) throw new Error("Session cart ID not found");
+  if (!userId) throw new Error("User ID not found");
+
+  const updatedCart = await cartRepository.updateCartBySessionId(
+    sessionCartId,
+    userId
+  );
+
+  if (!updatedCart) throw new Error("Cart not found after linking");
+
+  return updatedCart;
 }
 
 export async function mergeGuestCartWithUserCart(
-  request: Request
+  userId: User["id"],
+  sessionCartId: string
 ): Promise<Cart | null> {
-  return serverClient<Cart>("/cart/merge-guest-cart", request, {
-    method: "POST",
-  });
+  const mergedCart = await cartRepository.mergeGuestCartWithUserCart(
+    userId,
+    sessionCartId
+  );
+
+  if (!mergedCart) throw new Error("Cart not found after merging");
+
+  return mergedCart;
 }

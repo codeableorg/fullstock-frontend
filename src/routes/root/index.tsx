@@ -66,8 +66,6 @@ export async function loader({ request }: Route.LoaderArgs) {
     cart = await getCart(user?.id, sessionCartId);
   }
 
-  console.log("Cart in loader:", cart);
-
   const totalItems =
     cart?.items.reduce((total, item) => total + item.quantity, 0) || 0;
 

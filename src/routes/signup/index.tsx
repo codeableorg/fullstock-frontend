@@ -4,13 +4,12 @@ import { Link, redirect, useNavigation, useSubmit } from "react-router";
 import { z } from "zod";
 
 import { Button, Container, InputField, Section } from "@/components/ui";
-// import { generateToken } from "@/lib/jwt";
 import { hashPassword } from "@/lib/security";
 import { debounceAsync } from "@/lib/utils";
 import type { CreateUserDTO } from "@/models/user.model";
 import { createUser, getUserByEmail } from "@/repositories/user.repository";
 import { redirectIfAuthenticated } from "@/services/auth.service";
-// import { linkCartToUser } from "@/services/cart.service";
+import { linkCartToUser } from "@/services/cart.service";
 import { findEmail } from "@/services/user.client-service";
 import { commitSession, getSession } from "@/session.server";
 
@@ -40,10 +39,9 @@ export async function action({ request }: Route.ActionArgs) {
   const password = formData.get("password") as string;
 
   const session = await getSession(request.headers.get("Cookie"));
-  // const sessionCartId = session.get("sessionCartId");
+  const sessionCartId = session.get("sessionCartId");
 
   try {
-    // Nuevo flujo:
     const existingUser = await getUserByEmail(email);
     if (existingUser) {
       return { error: "El correo electrónico ya existe" };
@@ -61,32 +59,19 @@ export async function action({ request }: Route.ActionArgs) {
     const user = await createUser(newUser);
     session.set("userId", user.id);
 
-    // TODO: Eliminar al terminar el port del backend
-    // const token = generateToken(user);
-    // session.set("token", token);
+    if (sessionCartId) {
+      try {
+        const linkedCart = await linkCartToUser(user.id, sessionCartId);
 
-    // const cookie = await commitSession(session);
-    // const authenticatedRequest = new Request(request.url, {
-    //   headers: {
-    //     Cookie: cookie,
-    //   },
-    //   method: "GET",
-    // });
-
-    // if (sessionCartId) {
-    //   try {
-    //     const linkedCart = await linkCartToUser(authenticatedRequest);
-
-    //     if (linkedCart) {
-    //       session.unset("sessionCartId");
-    //     }
-    //     // }
-    //   } catch (cartError) {
-    //     console.error("Error al gestionar el carrito en signup:", cartError);
-    //   }
-    // } else {
-    //   console.log("No hay carrito de invitado para vincular en el registro");
-    // }
+        if (linkedCart) {
+          session.unset("sessionCartId");
+        }
+      } catch (cartError) {
+        console.error("Error al gestionar el carrito en signup:", cartError);
+      }
+    } else {
+      console.error("No hay carrito de invitado para vincular en el registro");
+    }
 
     return redirect("/", {
       headers: {

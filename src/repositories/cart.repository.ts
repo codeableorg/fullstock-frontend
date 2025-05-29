@@ -169,12 +169,12 @@ export async function updateCartBySessionId(
 }
 
 export async function mergeGuestCartWithUserCart(
-  userId: number | null,
+  userId: number | undefined,
   sessionCartId: string
 ): Promise<Cart | null> {
   // Primero, obtenemos el carrito del usuario y el carrito de invitado
-  const userCart = await getCart(userId);
-  const guestCart = await getCart(null, sessionCartId);
+  const userCart = await getCart(userId, undefined);
+  const guestCart = await getCart(undefined, sessionCartId);
 
   if (!guestCart) {
     return userCart;
@@ -220,5 +220,5 @@ export async function mergeGuestCartWithUserCart(
   ]);
 
   // Devolvemos el carrito actualizado del usuario
-  return await getCart(userId);
+  return await getCart(userId, undefined);
 }
