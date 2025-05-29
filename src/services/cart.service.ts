@@ -41,6 +41,7 @@ export async function createRemoteItems(
   }));
 
   const cart = await getOrCreateCart(userId, sessionCartId);
+  console.log("Cart", cart);
 
   if (cart.items.length > 0) {
     await cartRepository.clearCart(cart.id);

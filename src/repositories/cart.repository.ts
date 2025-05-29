@@ -63,7 +63,8 @@ export async function getCart(
 
 export async function createCart(): Promise<Cart | null> {
   const query = "INSERT INTO carts DEFAULT VALUES RETURNING *";
-  return db.queryOne<Cart>(query);
+  const cart = await db.queryOne<Cart>(query);
+  return getCart(undefined, undefined, cart?.id);
 }
 
 // export async function createGuestCart(sessionCartId: string): Promise<Cart | null> { // new function
