@@ -3,27 +3,13 @@ import { type Product } from "@/models/product.model";
 import {
   alterQuantityCartItem,
   deleteRemoteCartItem,
-  getRemoteCart,
+  getOrCreateCart,
 } from "@/services/cart.service";
 import { getProductById } from "@/services/product.service";
 
-export async function getCart(request: Request) {
+export async function getCart(userId?: number, sessionCartId?: string) {
   try {
-    const remoteCart = await getRemoteCart(request);
-
-    // Si ya existe un carrito (con ítems o vacío), lo devolvemos
-    if (remoteCart) {
-      // Si no existe la propiedad total, calcúlala sumando las cantidades de cada ítem
-      if (remoteCart.total === undefined) {
-        remoteCart.total =
-          remoteCart.items?.reduce((total, item) => total + item.quantity, 0) ||
-          0;
-      }
-      return remoteCart;
-    }
-
-    // No se encontró carrito
-    return null;
+    return getOrCreateCart(userId, sessionCartId);
   } catch (error) {
     console.error(error);
     return null;
