@@ -1,24 +1,65 @@
 import { serverClient } from "@/lib/client.server";
 import { type Cart, type CartItem } from "@/models/cart.model";
+import type { User } from "@/models/user.model";
+import * as cartRepository from "@/repositories/cart.repository";
 
 export async function getRemoteCart(request: Request): Promise<Cart | null> {
   return serverClient<Cart>("/cart", request);
 }
 
-export async function createRemoteItems(
-  request: Request,
-  items: CartItem[]
-): Promise<Cart> {
-  const payload = {
-    items: items.map(({ product, quantity }) => ({
-      productId: product.id,
-      quantity,
-    })),
-  };
+export async function getOrCreateCart(
+  userId: User["id"] | undefined,
+  sessionCartId: string | undefined
+) {
+  let cart: Cart | null = null;
 
-  return serverClient<Cart>("/cart/create-items", request, {
-    body: payload,
-  });
+  cart = await cartRepository.getCart(userId, sessionCartId);
+
+  // Si no se encontró un carrito creamos uno nuevo
+  if (!cart) {
+    // Creamos un carrito sin userId ni sessionCartId, dejando que la BD genere el UUID
+    cart = await cartRepository.createCart();
+    // Si se crea el carrito, lo vinculamos a un usuario si se proporciona un userId
+    if (cart && userId) {
+      await cartRepository.updateCartWithUserId(cart.id, userId);
+    }
+  }
+
+  if (!cart) throw new Error("Failed to create cart");
+
+  return cart;
+}
+
+export async function createRemoteItems(
+  userId: User["id"] | undefined,
+  sessionCartId: string | undefined,
+  items: CartItem[] = []
+): Promise<Cart> {
+  const mappedItems = items.map(({ product, quantity }) => ({
+    productId: product.id,
+    quantity,
+  }));
+
+  const cart = await getOrCreateCart(userId, sessionCartId);
+
+  if (cart.items.length > 0) {
+    await cartRepository.clearCart(cart.id);
+  }
+
+  // Si hay elementos para agregar, agregarlos
+  if (items.length > 0) {
+    await cartRepository.addCartItems(cart.id, mappedItems);
+  }
+
+  const updatedCart = await cartRepository.getCart(
+    userId,
+    sessionCartId,
+    cart.id
+  );
+
+  if (!updatedCart) throw new Error("Cart not found after creation");
+
+  return updatedCart;
 }
 
 export async function alterQuantityCartItem(

@@ -12,10 +12,10 @@ export async function serverClient<T>(
   const cookieHeader = request.headers.get("Cookie");
   const session = await getSession(cookieHeader);
   const token = session.get("token");
-  const cartSessionId = session.get("cartSessionId");
+  const sessionCartId = session.get("sessionCartId");
 
   const cartSessionHeader: { "x-cart-id": string } | Record<string, string> =
-    cartSessionId ? { "x-cart-id": cartSessionId } : {};
+    sessionCartId ? { "x-cart-id": sessionCartId } : {};
 
   const config: RequestInit = {
     method: body ? "POST" : "GET",

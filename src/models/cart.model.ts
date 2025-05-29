@@ -3,16 +3,22 @@ import { type User } from "./user.model";
 
 export interface CartItem {
   id: number;
-  product: Product;
+  product: Pick<
+    Product,
+    "id" | "title" | "imgSrc" | "alt" | "price" | "isOnSale"
+  >;
   quantity: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Cart {
   id: number;
-  userId?: User["id"];
-  sessionCartId?: string;
+  userId: User["id"] | null;
+  sessionCartId: string;
   items: CartItem[];
-  total: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface CartItemInput {

@@ -18,7 +18,7 @@ import {
 } from "@/components/ui";
 // import { getCart } from "@/lib/cart";
 import { getCurrentUser } from "@/services/auth.service";
-// import { createRemoteItems } from "@/services/cart.service";
+import { createRemoteItems } from "@/services/cart.service";
 import { commitSession, getSession } from "@/session.server";
 
 import AuthNav from "./components/auth-nav";
@@ -43,26 +43,26 @@ export async function action({ request }: Route.ActionArgs) {
 
 export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSession(request.headers.get("Cookie"));
-  // const cartSessionId = session.get("cartSessionId");
+  const sessionCartId = session.get("sessionCartId");
   const totalItems = 0;
 
   // Obtenemos el usuario actual (autenticado o no)
   const user = await getCurrentUser(request);
 
-  // if (!user) {
-  //   // Si no hay cartSessionId, crea un carrito de invitado
-  //   if (!cartSessionId) {
-  //     try {
-  //       const cart = await createRemoteItems(request, []);
-  //       const cartId = cart.sessionCartId;
-  //       if (cartId) {
-  //         session.set("cartSessionId", cartId);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error al crear carrito de invitado:", error);
-  //     }
-  //   }
-  // }
+  if (!user) {
+    // Si no hay sessionCartId, crea un carrito de invitado
+    if (!sessionCartId) {
+      try {
+        const cart = await createRemoteItems(undefined, undefined, []);
+        const cartId = cart.sessionCartId;
+        if (cartId) {
+          session.set("sessionCartId", cartId);
+        }
+      } catch (error) {
+        console.error("Error al crear carrito de invitado:", error);
+      }
+    }
+  }
 
   // Obtener el carrito actualizado para contar los items
   // try {

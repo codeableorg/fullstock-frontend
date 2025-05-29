@@ -40,7 +40,7 @@ export async function action({ request }: Route.ActionArgs) {
   const password = formData.get("password") as string;
 
   const session = await getSession(request.headers.get("Cookie"));
-  // const cartSessionId = session.get("cartSessionId");
+  // const sessionCartId = session.get("sessionCartId");
 
   try {
     // Nuevo flujo:
@@ -73,12 +73,12 @@ export async function action({ request }: Route.ActionArgs) {
     //   method: "GET",
     // });
 
-    // if (cartSessionId) {
+    // if (sessionCartId) {
     //   try {
     //     const linkedCart = await linkCartToUser(authenticatedRequest);
 
     //     if (linkedCart) {
-    //       session.unset("cartSessionId");
+    //       session.unset("sessionCartId");
     //     }
     //     // }
     //   } catch (cartError) {

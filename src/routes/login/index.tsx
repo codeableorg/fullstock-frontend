@@ -23,7 +23,7 @@ const LoginSchema = z.object({
 
 export async function action({ request }: Route.ActionArgs) {
   const session = await getSession(request.headers.get("Cookie"));
-  // const cartSessionId = session.get("cartSessionId");
+  // const sessionCartId = session.get("sessionCartId");
 
   const formData = await request.formData();
   const email = formData.get("email") as string;
@@ -56,9 +56,9 @@ export async function action({ request }: Route.ActionArgs) {
     //   method: "GET",
     // });
 
-    // if (cartSessionId) {
+    // if (sessionCartId) {
     //   try {
-    //     // Verificar si el usuario ya tiene un carrito usando getRemoteCart sin cartSessionId
+    //     // Verificar si el usuario ya tiene un carrito usando getRemoteCart sin sessionCartId
     //     const existingUserCart = await getRemoteCart(authenticatedRequest);
 
     //     if (existingUserCart) {
@@ -67,14 +67,14 @@ export async function action({ request }: Route.ActionArgs) {
     //       );
 
     //       if (mergedCart) {
-    //         session.unset("cartSessionId");
+    //         session.unset("sessionCartId");
     //       }
     //     } else {
     //       // Si el usuario no tiene carrito, vinculamos el carrito de invitado
     //       const linkedCart = await linkCartToUser(authenticatedRequest);
 
     //       if (linkedCart) {
-    //         session.unset("cartSessionId");
+    //         session.unset("sessionCartId");
     //       }
     //     }
     //   } catch (cartError) {
