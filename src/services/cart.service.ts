@@ -64,13 +64,34 @@ export async function createRemoteItems(
 }
 
 export async function alterQuantityCartItem(
-  request: Request,
+  userId: User["id"] | undefined,
+  sessionCartId: string | undefined,
   productId: number,
   quantity: number = 1
 ): Promise<Cart> {
-  return serverClient<Cart>("/cart/add-item", request, {
-    body: { productId, quantity },
-  });
+  const cart = await getOrCreateCart(userId, sessionCartId);
+
+  const existingItem = cart.items.find((item) => item.product.id === productId);
+
+  if (existingItem) {
+    const newQuantity = existingItem.quantity + quantity;
+    if (newQuantity <= 0)
+      throw new Error("Cannot set item quantity to 0 or less");
+
+    await cartRepository.updateCartItem(cart.id, existingItem.id, newQuantity);
+  } else {
+    await cartRepository.addCartItem(cart.id, productId, quantity);
+  }
+
+  const updatedCart = await cartRepository.getCart(
+    userId,
+    cart.sessionCartId,
+    cart.id
+  );
+
+  if (!updatedCart) throw new Error("Cart not found after update");
+
+  return updatedCart;
 }
 
 export async function deleteRemoteCartItem(

@@ -5,7 +5,6 @@ import {
   deleteRemoteCartItem,
   getOrCreateCart,
 } from "@/services/cart.service";
-import { getProductById } from "@/services/product.service";
 
 export async function getCart(userId?: number, sessionCartId?: string) {
   try {
@@ -17,15 +16,16 @@ export async function getCart(userId?: number, sessionCartId?: string) {
 }
 
 export async function addToCart(
-  request: Request,
+  userId: number | undefined,
+  sessionCartId: string | undefined,
   productId: Product["id"],
   quantity: number = 1
 ) {
   try {
-    const product = await getProductById(request, productId);
     const updatedCart = await alterQuantityCartItem(
-      request,
-      product.id,
+      userId,
+      sessionCartId,
+      productId,
       quantity
     );
     return updatedCart;
