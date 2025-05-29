@@ -2,6 +2,7 @@ import { serverClient } from "@/lib/client.server";
 import { type Cart, type CartItem } from "@/models/cart.model";
 import type { User } from "@/models/user.model";
 import * as cartRepository from "@/repositories/cart.repository";
+import { getSession } from "@/session.server";
 
 export async function getRemoteCart(request: Request): Promise<Cart | null> {
   return serverClient<Cart>("/cart", request);
@@ -114,9 +115,18 @@ export async function deleteRemoteCartItem(
 }
 
 export async function deleteRemoteCart(request: Request): Promise<void> {
-  return serverClient("/cart", request, {
-    method: "DELETE",
-  });
+  const session = await getSession(request.headers.get("Cookie"));
+  const sessionCartId = session.get("sessionCartId");
+  const userId = session.get("userId");
+
+  let cart: Cart | null = null;
+
+  if (userId || sessionCartId) {
+    cart = await cartRepository.getCart(userId, sessionCartId);
+  }
+
+  if (!cart) throw new Error("Cart not found");
+  await cartRepository.clearCart(cart.id);
 }
 
 export async function linkCartToUser(request: Request): Promise<Cart | null> {

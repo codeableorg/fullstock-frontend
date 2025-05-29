@@ -1,4 +1,4 @@
-import type { CartItem } from "@/models/cart.model";
+import type { Cart, CartItem } from "@/models/cart.model";
 import { type Product } from "@/models/product.model";
 import {
   alterQuantityCartItem,
@@ -52,4 +52,11 @@ export async function removeFromCart(
     console.error(error);
     return null;
   }
+}
+
+export function calculateTotal(cart: Cart) {
+  return cart.items.reduce(
+    (total, item) => total + item.product.price * item.quantity,
+    0
+  );
 }

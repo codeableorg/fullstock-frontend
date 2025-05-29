@@ -2,7 +2,7 @@ import { Minus, Plus, Trash2 } from "lucide-react";
 import { Form, Link } from "react-router";
 
 import { Button, Container, Section } from "@/components/ui";
-import { getCart } from "@/lib/cart";
+import { calculateTotal, getCart } from "@/lib/cart";
 import { type Cart } from "@/models/cart.model";
 import { getSession } from "@/session.server";
 
@@ -15,11 +15,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   const cart = await getCart(userId, sessionCartId);
 
-  const total =
-    cart?.items.reduce(
-      (acc, item) => acc + item.product.price * item.quantity,
-      0
-    ) || 0;
+  const total = cart ? calculateTotal(cart) : 0;
 
   return { cart, total };
 }
