@@ -1,12 +1,26 @@
-import { serverClient } from "@/lib/client.server";
 import { type Category } from "@/models/category.model";
 import { type Product } from "@/models/product.model";
+import * as productRepository from "@/repositories/product.repository";
 
-export async function getProductsByCategorySlug(request: Request, categorySlug: Category["slug"]): Promise<Product[]> {
-  const category = await serverClient<Category>(`/categories/${categorySlug}`, request);
-  return serverClient<Product[]>(`/products?categoryId=${category.id}`, request);
+import { getCategoryBySlug } from "./category.service";
+
+export async function getProductsByCategorySlug(
+  categorySlug: Category["slug"]
+): Promise<Product[]> {
+  const category = await getCategoryBySlug(categorySlug);
+  const products = await productRepository.getProductsByCategory(
+    Number(category.id)
+  );
+
+  return products;
 }
 
-export async function getProductById(request: Request, id: number): Promise<Product> {
-  return serverClient<Product>(`/products/${id}`, request);
+export async function getProductById(id: number): Promise<Product> {
+  const product = await productRepository.getProductById(id);
+
+  if (!product) {
+    throw new Error("Product not found");
+  }
+
+  return product;
 }

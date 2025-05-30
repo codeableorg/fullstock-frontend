@@ -12,7 +12,11 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   try {
     const orders = await getOrdersByUser(request);
-    orders.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+
+    orders.sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
     return { orders };
   } catch {
     return {};
@@ -21,11 +25,17 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 export default function Orders({ loaderData }: Route.ComponentProps) {
   const { orders } = loaderData;
+
+  const mappedOrders = orders?.map((order) => ({
+    ...order,
+    createdAt: new Date(order.createdAt),
+  }));
+
   return (
     <div>
-      {orders!.length > 0 ? (
+      {mappedOrders!.length > 0 ? (
         <div className="flex flex-col gap-4">
-          {orders!.map((order) => (
+          {mappedOrders!.map((order) => (
             <div key={order.id}>
               <div className="rounded-lg bg-muted py-4 px-6">
                 <dl className="flex flex-col gap-4 w-full sm:flex-row">

@@ -24,8 +24,8 @@ export async function loader({ params, request }: Route.LoaderArgs) {
 
   try {
     const [category, products] = await Promise.all([
-      getCategoryBySlug(categorySlug, request),
-      getProductsByCategorySlug(request, categorySlug),
+      getCategoryBySlug(categorySlug),
+      getProductsByCategorySlug(categorySlug),
     ]);
 
     const filterProductsByPrice = (
