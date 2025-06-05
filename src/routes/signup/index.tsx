@@ -4,10 +4,13 @@ import { Link, redirect, useNavigation, useSubmit } from "react-router";
 import { z } from "zod";
 
 import { Button, Container, InputField, Section } from "@/components/ui";
+import { hashPassword } from "@/lib/security";
 import { debounceAsync } from "@/lib/utils";
-import { redirectIfAuthenticated, signup } from "@/services/auth.service";
+import type { CreateUserDTO } from "@/models/user.model";
+import { createUser, getUserByEmail } from "@/repositories/user.repository";
+import { redirectIfAuthenticated } from "@/services/auth.service";
 import { linkCartToUser } from "@/services/cart.service";
-import { findEmail } from "@/services/user.service";
+import { findEmail } from "@/services/user.client-service";
 import { commitSession, getSession } from "@/session.server";
 
 import type { Route } from "./+types";
@@ -36,33 +39,38 @@ export async function action({ request }: Route.ActionArgs) {
   const password = formData.get("password") as string;
 
   const session = await getSession(request.headers.get("Cookie"));
-  const cartSessionId = session.get("cartSessionId");
+  const sessionCartId = session.get("sessionCartId");
 
   try {
-    const { token } = await signup(request, email, password);
-    session.set("token", token);
+    const existingUser = await getUserByEmail(email);
+    if (existingUser) {
+      return { error: "El correo electrónico ya existe" };
+    }
 
-    const cookie = await commitSession(session);
-    const authenticatedRequest = new Request(request.url, {
-      headers: {
-        Cookie: cookie,
-      },
-      method: "GET",
-    });
+    const hashedPassword = await hashPassword(password);
 
-    if (cartSessionId) {
+    const newUser: CreateUserDTO = {
+      email,
+      password: hashedPassword,
+      isGuest: false,
+      name: null,
+    };
+
+    const user = await createUser(newUser);
+    session.set("userId", user.id);
+
+    if (sessionCartId) {
       try {
-        const linkedCart = await linkCartToUser(authenticatedRequest);
+        const linkedCart = await linkCartToUser(user.id, sessionCartId);
 
         if (linkedCart) {
-          session.unset("cartSessionId");
+          session.unset("sessionCartId");
         }
-        // }
       } catch (cartError) {
         console.error("Error al gestionar el carrito en signup:", cartError);
       }
     } else {
-      console.log("No hay carrito de invitado para vincular en el registro");
+      console.error("No hay carrito de invitado para vincular en el registro");
     }
 
     return redirect("/", {

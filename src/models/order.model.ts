@@ -21,6 +21,8 @@ export interface OrderItem {
   title: string;
   price: number;
   imgSrc: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Order {
@@ -29,5 +31,18 @@ export interface Order {
   items: OrderItem[];
   totalAmount: number;
   details: OrderDetails;
-  createdAt: Date;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface OrderItemInput {
+  productId: number;
+  quantity: number;
+  title: string;
+  price: number;
+  imgSrc: string;
+}
+
+export interface OrderResponse {
+  id: number;
 }

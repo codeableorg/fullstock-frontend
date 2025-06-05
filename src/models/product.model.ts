@@ -1,4 +1,4 @@
-import { type Category } from "./category.model";
+// import { type Category } from "./category.model";
 
 export interface Product {
   id: number;
@@ -7,7 +7,10 @@ export interface Product {
   alt: string | null;
   price: number;
   description: string | null;
-  categorySlug: Category["slug"];
+  categoryId: number;
+  // categorySlug: Category["slug"];
   isOnSale: boolean;
   features: string[];
+  createdAt: string;
+  updatedAt: string;
 }

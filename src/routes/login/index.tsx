@@ -4,7 +4,9 @@ import { Link, redirect, useNavigation, useSubmit } from "react-router";
 import { z } from "zod";
 
 import { Button, Container, InputField, Section } from "@/components/ui";
-import { login, redirectIfAuthenticated } from "@/services/auth.service";
+import { comparePasswords } from "@/lib/security";
+import { getUserByEmail } from "@/repositories/user.repository";
+import { redirectIfAuthenticated } from "@/services/auth.service";
 import {
   getRemoteCart,
   linkCartToUser,
@@ -21,44 +23,47 @@ const LoginSchema = z.object({
 
 export async function action({ request }: Route.ActionArgs) {
   const session = await getSession(request.headers.get("Cookie"));
-  const cartSessionId = session.get("cartSessionId");
+  const sessionCartId = session.get("sessionCartId");
 
   const formData = await request.formData();
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
   try {
-    const { token } = await login(request, email, password);
-    session.set("token", token);
+    // Proceso de login nuevo
+    const user = await getUserByEmail(email);
+    if (!user) {
+      return { error: "Correo electrónico o contraseña inválidos" };
+    }
 
-    // Crear una solicitud autenticada con el token
-    const cookie = await commitSession(session);
-    const authenticatedRequest = new Request(request.url, {
-      headers: {
-        Cookie: cookie,
-      },
-      method: "GET",
-    });
+    const isPasswordValid = await comparePasswords(password, user.password!);
 
-    if (cartSessionId) {
+    if (!isPasswordValid) {
+      return { error: "Correo electrónico o contraseña inválidos" };
+    }
+
+    session.set("userId", user.id);
+
+    if (sessionCartId) {
       try {
-        // Verificar si el usuario ya tiene un carrito usando getRemoteCart sin cartSessionId
-        const existingUserCart = await getRemoteCart(authenticatedRequest);
+        // Verificar si el usuario ya tiene un carrito usando getRemoteCart sin sessionCartId
+        const existingUserCart = await getRemoteCart(user.id);
 
         if (existingUserCart) {
           const mergedCart = await mergeGuestCartWithUserCart(
-            authenticatedRequest
+            user.id,
+            sessionCartId
           );
 
           if (mergedCart) {
-            session.unset("cartSessionId");
+            session.unset("sessionCartId");
           }
         } else {
           // Si el usuario no tiene carrito, vinculamos el carrito de invitado
-          const linkedCart = await linkCartToUser(authenticatedRequest);
+          const linkedCart = await linkCartToUser(user.id, sessionCartId);
 
           if (linkedCart) {
-            session.unset("cartSessionId");
+            session.unset("sessionCartId");
           }
         }
       } catch (cartError) {

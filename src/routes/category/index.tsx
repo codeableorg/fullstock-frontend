@@ -4,7 +4,7 @@ import { Container } from "@/components/ui";
 import { isValidCategorySlug, type Category } from "@/models/category.model";
 import { type Product } from "@/models/product.model";
 import { getCategoryBySlug } from "@/services/category.service";
-import { getProductsByCategorySlug } from "@/services/product.server";
+import { getProductsByCategorySlug } from "@/services/product.service";
 
 import { PriceFilter } from "./components/price-filter";
 import { ProductCard } from "./components/product-card";
@@ -24,8 +24,8 @@ export async function loader({ params, request }: Route.LoaderArgs) {
 
   try {
     const [category, products] = await Promise.all([
-      getCategoryBySlug(categorySlug, request),
-      getProductsByCategorySlug(request, categorySlug),
+      getCategoryBySlug(categorySlug),
+      getProductsByCategorySlug(categorySlug),
     ]);
 
     const filterProductsByPrice = (

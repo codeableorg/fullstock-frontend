@@ -10,9 +10,9 @@ import { Categories } from "./components/categories";
 
 import type { Route } from "./+types";
 
-export async function loader({ request }: Route.LoaderArgs) {
+export async function loader() {
   try {
-    const categories: Category[] = await getAllCategories(request);
+    const categories = await getAllCategories();
     return { categories };
   } catch (error) {
     console.error("Error fetching categories:", error);

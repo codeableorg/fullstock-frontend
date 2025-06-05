@@ -12,11 +12,12 @@ import {
   Separator,
   SelectField,
 } from "@/components/ui";
-import { getCart } from "@/lib/cart";
+import { calculateTotal, getCart } from "@/lib/cart";
 import { type CartItem } from "@/models/cart.model";
 import { getCurrentUser } from "@/services/auth.service";
 import { deleteRemoteCart } from "@/services/cart.service";
 import { createOrder } from "@/services/order.service";
+import { commitSession, getSession } from "@/session.server";
 
 import type { Route } from "./+types";
 
@@ -76,28 +77,40 @@ export async function action({ request }: Route.ActionArgs) {
     imgSrc: item.product.imgSrc,
   }));
 
-  const { orderId } = await createOrder(request, items, shippingDetails);
+  const { id: orderId } = await createOrder(items, shippingDetails);
 
   await deleteRemoteCart(request);
+  const session = await getSession(request.headers.get("Cookie"));
+  session.unset("sessionCartId");
 
-  return redirect(`/order-confirmation/${orderId}`);
+  return redirect(`/order-confirmation/${orderId}`, {
+    headers: {
+      "Set-Cookie": await commitSession(session),
+    },
+  });
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
+  const session = await getSession(request.headers.get("Cookie"));
+  const sessionCartId = session.get("sessionCartId");
+  const userId = session.get("userId");
+
   const [user, cart] = await Promise.all([
     getCurrentUser(request),
-    getCart(request),
+    getCart(userId, sessionCartId),
   ]);
 
   if (!cart) {
     return redirect("/");
   }
 
-  return user ? { user, cart } : { cart };
+  const total = cart ? calculateTotal(cart.items) : 0;
+
+  return user ? { user, cart, total } : { cart, total };
 }
 
 export default function Checkout({ loaderData }: Route.ComponentProps) {
-  const { user, cart } = loaderData;
+  const { user, cart, total } = loaderData;
   const navigation = useNavigation();
   const submit = useSubmit();
   const loading = navigation.state === "submitting";
@@ -164,7 +177,7 @@ export default function Checkout({ loaderData }: Route.ComponentProps) {
               ))}
               <div className="flex justify-between p-6 text-base font-medium">
                 <p>Total</p>
-                <p>${(cart?.total || 0).toFixed(2)}</p>
+                <p>${total.toFixed(2)}</p>
               </div>
             </div>
           </div>

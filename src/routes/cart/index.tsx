@@ -2,19 +2,26 @@ import { Minus, Plus, Trash2 } from "lucide-react";
 import { Form, Link } from "react-router";
 
 import { Button, Container, Section } from "@/components/ui";
-import { getCart } from "@/lib/cart";
+import { calculateTotal, getCart } from "@/lib/cart";
 import { type Cart } from "@/models/cart.model";
+import { getSession } from "@/session.server";
 
 import type { Route } from "./+types";
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const cart = await getCart(request);
+  const session = await getSession(request.headers.get("Cookie"));
+  const sessionCartId = session.get("sessionCartId");
+  const userId = session.get("userId");
 
-  return { cart };
+  const cart = await getCart(userId, sessionCartId);
+
+  const total = cart ? calculateTotal(cart.items) : 0;
+
+  return { cart, total };
 }
 
 export default function Cart({ loaderData }: Route.ComponentProps) {
-  const { cart } = loaderData;
+  const { cart, total } = loaderData;
 
   return (
     <Section>
@@ -83,7 +90,7 @@ export default function Cart({ loaderData }: Route.ComponentProps) {
           ))}
           <div className="flex justify-between p-6 text-base font-medium border-b">
             <p>Total</p>
-            <p>${(cart?.total || 0).toFixed(2)}</p>
+            <p>${total.toFixed(2)}</p>
           </div>
           <div className="p-6">
             <Button size="lg" className="w-full" asChild>
