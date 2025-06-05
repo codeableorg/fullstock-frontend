@@ -7,11 +7,11 @@ import { Button, Container, InputField, Section } from "@/components/ui";
 import { comparePasswords } from "@/lib/security";
 import { getUserByEmail } from "@/repositories/user.repository";
 import { redirectIfAuthenticated } from "@/services/auth.service";
-// import {
-//   getRemoteCart,
-//   linkCartToUser,
-//   mergeGuestCartWithUserCart,
-// } from "@/services/cart.service";
+import {
+  getRemoteCart,
+  linkCartToUser,
+  mergeGuestCartWithUserCart,
+} from "@/services/cart.service";
 import { commitSession, getSession } from "@/session.server";
 
 import type { Route } from "./+types";
@@ -23,7 +23,7 @@ const LoginSchema = z.object({
 
 export async function action({ request }: Route.ActionArgs) {
   const session = await getSession(request.headers.get("Cookie"));
-  // const cartSessionId = session.get("cartSessionId");
+  const sessionCartId = session.get("sessionCartId");
 
   const formData = await request.formData();
   const email = formData.get("email") as string;
@@ -44,43 +44,32 @@ export async function action({ request }: Route.ActionArgs) {
 
     session.set("userId", user.id);
 
-    // const { token } = await login(request, email, password);
-    // session.set("token", token);
+    if (sessionCartId) {
+      try {
+        // Verificar si el usuario ya tiene un carrito usando getRemoteCart sin sessionCartId
+        const existingUserCart = await getRemoteCart(user.id);
 
-    // Crear una solicitud autenticada con el token
-    // const cookie = await commitSession(session);
-    // const authenticatedRequest = new Request(request.url, {
-    //   headers: {
-    //     Cookie: cookie,
-    //   },
-    //   method: "GET",
-    // });
+        if (existingUserCart) {
+          const mergedCart = await mergeGuestCartWithUserCart(
+            user.id,
+            sessionCartId
+          );
 
-    // if (cartSessionId) {
-    //   try {
-    //     // Verificar si el usuario ya tiene un carrito usando getRemoteCart sin cartSessionId
-    //     const existingUserCart = await getRemoteCart(authenticatedRequest);
+          if (mergedCart) {
+            session.unset("sessionCartId");
+          }
+        } else {
+          // Si el usuario no tiene carrito, vinculamos el carrito de invitado
+          const linkedCart = await linkCartToUser(user.id, sessionCartId);
 
-    //     if (existingUserCart) {
-    //       const mergedCart = await mergeGuestCartWithUserCart(
-    //         authenticatedRequest
-    //       );
-
-    //       if (mergedCart) {
-    //         session.unset("cartSessionId");
-    //       }
-    //     } else {
-    //       // Si el usuario no tiene carrito, vinculamos el carrito de invitado
-    //       const linkedCart = await linkCartToUser(authenticatedRequest);
-
-    //       if (linkedCart) {
-    //         session.unset("cartSessionId");
-    //       }
-    //     }
-    //   } catch (cartError) {
-    //     console.error("Error al gestionar el carrito:", cartError);
-    //   }
-    // }
+          if (linkedCart) {
+            session.unset("sessionCartId");
+          }
+        }
+      } catch (cartError) {
+        console.error("Error al gestionar el carrito:", cartError);
+      }
+    }
 
     return redirect("/", {
       headers: { "Set-Cookie": await commitSession(session) },

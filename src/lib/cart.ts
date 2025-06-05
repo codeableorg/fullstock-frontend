@@ -1,29 +1,14 @@
-import type { CartItem } from "@/models/cart.model";
+import type { Cart, CartItem } from "@/models/cart.model";
 import { type Product } from "@/models/product.model";
 import {
   alterQuantityCartItem,
   deleteRemoteCartItem,
-  getRemoteCart,
+  getOrCreateCart,
 } from "@/services/cart.service";
-import { getProductById } from "@/services/product.service";
 
-export async function getCart(request: Request) {
+export async function getCart(userId?: number, sessionCartId?: string) {
   try {
-    const remoteCart = await getRemoteCart(request);
-
-    // Si ya existe un carrito (con ítems o vacío), lo devolvemos
-    if (remoteCart) {
-      // Si no existe la propiedad total, calcúlala sumando las cantidades de cada ítem
-      if (remoteCart.total === undefined) {
-        remoteCart.total =
-          remoteCart.items?.reduce((total, item) => total + item.quantity, 0) ||
-          0;
-      }
-      return remoteCart;
-    }
-
-    // No se encontró carrito
-    return null;
+    return getOrCreateCart(userId, sessionCartId);
   } catch (error) {
     console.error(error);
     return null;
@@ -31,15 +16,16 @@ export async function getCart(request: Request) {
 }
 
 export async function addToCart(
-  request: Request,
+  userId: number | undefined,
+  sessionCartId: string | undefined,
   productId: Product["id"],
   quantity: number = 1
 ) {
   try {
-    const product = await getProductById(request, productId);
     const updatedCart = await alterQuantityCartItem(
-      request,
-      product.id,
+      userId,
+      sessionCartId,
+      productId,
       quantity
     );
     return updatedCart;
@@ -49,13 +35,28 @@ export async function addToCart(
   }
 }
 
-export async function removeFromCart(request: Request, itemId: CartItem["id"]) {
+export async function removeFromCart(
+  userId: number | undefined,
+  sessionCartId: string | undefined,
+  itemId: CartItem["id"]
+) {
   try {
     // El backend determinará si es un usuario autenticado o invitado
-    const updatedCart = await deleteRemoteCartItem(request, itemId);
+    const updatedCart = await deleteRemoteCartItem(
+      userId,
+      sessionCartId,
+      itemId
+    );
     return updatedCart;
   } catch (error) {
     console.error(error);
     return null;
   }
+}
+
+export function calculateTotal(cart: Cart) {
+  return cart.items.reduce(
+    (total, item) => total + item.product.price * item.quantity,
+    0
+  );
 }

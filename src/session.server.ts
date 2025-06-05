@@ -2,7 +2,7 @@ import { createCookieSessionStorage } from "react-router";
 
 type SessionData = {
   token?: string;
-  cartSessionId?: string;
+  sessionCartId?: string;
   userId?: number;
 };
 
