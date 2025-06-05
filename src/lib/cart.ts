@@ -1,4 +1,4 @@
-import type { Cart, CartItem } from "@/models/cart.model";
+import type { CartItem, CartItemInput } from "@/models/cart.model";
 import { type Product } from "@/models/product.model";
 import {
   alterQuantityCartItem,
@@ -54,9 +54,18 @@ export async function removeFromCart(
   }
 }
 
-export function calculateTotal(cart: Cart) {
-  return cart.items.reduce(
-    (total, item) => total + item.product.price * item.quantity,
-    0
-  );
+export function calculateTotal(items: CartItem[]): number;
+export function calculateTotal(items: CartItemInput[]): number;
+
+export function calculateTotal(items: CartItem[] | CartItemInput[]): number {
+  return items.reduce((total, item) => {
+    // Type guard to determine which type we're working with
+    if ("product" in item) {
+      // CartItem - has a product property
+      return total + item.product.price * item.quantity;
+    } else {
+      // CartItemInput - has price directly
+      return total + item.price * item.quantity;
+    }
+  }, 0);
 }

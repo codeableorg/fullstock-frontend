@@ -15,7 +15,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   const cart = await getCart(userId, sessionCartId);
 
-  const total = cart ? calculateTotal(cart) : 0;
+  const total = cart ? calculateTotal(cart.items) : 0;
 
   return { cart, total };
 }

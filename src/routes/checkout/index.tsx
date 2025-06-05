@@ -77,7 +77,7 @@ export async function action({ request }: Route.ActionArgs) {
     imgSrc: item.product.imgSrc,
   }));
 
-  const { orderId } = await createOrder(request, items, shippingDetails);
+  const { id: orderId } = await createOrder(items, shippingDetails);
 
   await deleteRemoteCart(request);
   const session = await getSession(request.headers.get("Cookie"));
@@ -104,7 +104,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     return redirect("/");
   }
 
-  const total = cart ? calculateTotal(cart) : 0;
+  const total = cart ? calculateTotal(cart.items) : 0;
 
   return user ? { user, cart, total } : { cart, total };
 }
