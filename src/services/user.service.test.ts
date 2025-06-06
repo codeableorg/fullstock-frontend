@@ -21,9 +21,9 @@ type SessionFlashData = {
 
 // Test helpers
 /**
- * Crea una sesión mock con los datos proporcionados
- * @param data Datos opcionales de la sesión
- * @returns Sesión mock con todos los métodos necesarios
+ * Creates a mock session with the provided data
+ * @param data Optional session data
+ * @returns Mock session with all necessary methods
  */
 function createMockSession(data: Partial<SessionData> = {}) {
   return {
@@ -40,8 +40,8 @@ function createMockSession(data: Partial<SessionData> = {}) {
 }
 
 /**
- * Crea un request mock con una cookie específica
- * @param cookie Valor de la cookie
+ * Creates a mock request with a specific cookie
+ * @param cookie Cookie value
  */
 function createMockRequest(cookie = "mock-cookie"): Request {
   return {
@@ -50,12 +50,23 @@ function createMockRequest(cookie = "mock-cookie"): Request {
 }
 
 /**
- * Crea una sesión mock autenticada
- * @param userId ID del usuario
+ * Creates a mock authenticated session
+ * @param userId User ID
  */
 function createMockAuthenticatedSession(userId: number = 1) {
   return createMockSession({ userId });
 }
+
+// Mock user data
+const mockUser: User = {
+  id: 1,
+  email: "test@example.com",
+  name: "Test User",
+  password: "hashed-password",
+  isGuest: false,
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+};
 
 /**
  * Crea un usuario mock de tipo invitado
@@ -70,17 +81,6 @@ function createMockGuestUser(baseUser: User = mockUser): User {
     name: null,
   };
 }
-
-// Mock user data
-const mockUser: User = {
-  id: 1,
-  email: "test@example.com",
-  name: "Test User",
-  password: "hashed-password",
-  isGuest: false,
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-};
 
 describe("User Service", () => {
   beforeEach(() => {
