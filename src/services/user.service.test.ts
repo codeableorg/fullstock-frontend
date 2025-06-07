@@ -6,10 +6,12 @@ import { getSession } from "@/session.server";
 
 import * as userService from "./user.service";
 
+import { hashPassword } from "@/lib/security";
 import type { Session } from "react-router";
 
 vi.mock("@/session.server");
 vi.mock("@/repositories/user.repository");
+vi.mock("@/lib/security");
 
 describe("user service", () => {
   describe("updateUser", () => {
@@ -53,6 +55,43 @@ describe("user service", () => {
 
     it("should hash password if provided", async () => {
       // Test implementation for hashing password
+      // Creando mocks
+
+      const passwordBeforeHashing = "testing123";
+
+      const updatedUser: Partial<User> = {
+        id: 6,
+        password: passwordBeforeHashing,
+      };
+
+      const request = new Request("http://localhost/test", {
+        headers: {
+          Cookie: "session=mock-session-id",
+        },
+      });
+
+      const mockSession: Session = {
+        id: "mock-session-id",
+        data: {},
+        has: vi.fn(),
+        get: vi.fn().mockReturnValue(updatedUser.id), // Simulate userId in session
+        set: vi.fn(),
+        flash: vi.fn(),
+        unset: vi.fn(),
+      };
+
+      // Mockeando las funciones que serán llamadas
+      // vi.mocked(hashPassword).mockResolvedValue(mockHashPassword);
+      vi.mocked(getSession).mockResolvedValue(mockSession);
+      // vi.mocked(userRepository.updateUser).mockResolvedValue({
+      //   ...updatedUser,
+      //   password: mockHashPassword,
+      // });
+
+      // Llamando al servicio y verificando el resultado
+      await userService.updateUser(updatedUser, request);
+      expect(hashPassword).toHaveBeenCalledWith(passwordBeforeHashing);
+      expect(updatedUser.password).not.toBe(passwordBeforeHashing);
     });
 
     it("should throw error if user is not authenticated", async () => {
@@ -78,9 +117,9 @@ describe("user service", () => {
       vi.mocked(getSession).mockResolvedValue(mockSession);
 
       // Verificando el resultado
-      expect(userService.updateUser(updatedUser, request)).rejects.toThrow(
-        "User not authenticated"
-      );
+      await expect(
+        userService.updateUser(updatedUser, request)
+      ).rejects.toThrow("User not authenticated");
       expect(getSession).toHaveBeenCalledWith("session=mock-session-id");
     });
   });
