@@ -1,12 +1,12 @@
 import { describe, expect, it, vi } from "vitest";
 
+import { hashPassword } from "@/lib/security";
 import type { User } from "@/models/user.model";
 import * as userRepository from "@/repositories/user.repository";
 import { getSession } from "@/session.server";
 
 import * as userService from "./user.service";
 
-import { hashPassword } from "@/lib/security";
 import type { Session } from "react-router";
 
 // Helper functions for creating commonly used test objects
@@ -71,16 +71,19 @@ describe("user service", () => {
 
       // Mockeando las funciones que serán llamadas
       vi.mocked(getSession).mockResolvedValue(mockSession);
+      vi.mocked(hashPassword).mockResolvedValue("hashed-password");
 
       // Llamando al servicio y verificando el resultado
       await userService.updateUser(updatedUser, request);
+
       expect(hashPassword).toHaveBeenCalledWith(passwordBeforeHashing); // Verifica que se haya llamado a hashPassword con la contraseña original
       expect(updatedUser.password).not.toBe(passwordBeforeHashing); // Verifica que la contraseña se haya actualizado
+      expect(updatedUser.password).toBe("hashed-password"); // Verifica que la contraseña se haya actualizado
     });
 
     it("should throw error if user is not authenticated", async () => {
       // Setup - Create mocks (test data)
-      const updatedUser = createTestUser({}); // No user ID provided
+      const updatedUser = createTestUser(); // No user ID provided
       const request = createTestRequest();
       const mockSession = createMockSession(null); // Simulate no user ID in session
 
@@ -91,6 +94,7 @@ describe("user service", () => {
       await expect(
         userService.updateUser(updatedUser, request)
       ).rejects.toThrow("User not authenticated");
+
       expect(getSession).toHaveBeenCalledWith("session=mock-session-id");
     });
   });
