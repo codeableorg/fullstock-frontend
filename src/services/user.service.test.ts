@@ -16,8 +16,8 @@ const createTestUser = (overrides?: Partial<User>): User => ({
   name: null,
   password: null,
   isGuest: false,
-  createdAt: "",
-  updatedAt: "",
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
   ...overrides,
 });
 
@@ -98,4 +98,53 @@ describe("user service", () => {
       expect(getSession).toHaveBeenCalledWith("session=mock-session-id");
     });
   });
+
+  describe("getOrCreateUser", () => {
+    it("should return existing user when email is found", async () => {
+      // Setup - Create mock data
+      const email = "test@example.com";
+      const existingUser = createTestUser({
+        email,
+        id: 10,
+      });
+
+      // Mock repository function to return existing user
+      vi.mocked(userRepository.getUserByEmail).mockResolvedValue(existingUser);
+
+      // Call service function
+      const result = await userService.getOrCreateUser(email);
+
+      // Verify results
+      expect(result).toEqual(existingUser);
+      expect(userRepository.getUserByEmail).toHaveBeenCalledWith(email);
+      expect(userRepository.createUser).not.toHaveBeenCalled();
+    });
+
+    it("should create a new guest user when email is not found", async () => {
+      // Setup - Create mock data
+      const email = "test@example.com";
+      const newUser = createTestUser({
+        email,
+        id: 20,
+        isGuest: true,
+      });
+      const createUserDTO = {
+        email,
+        password: null,
+        isGuest: true,
+        name: null,
+      };
+      // Mock repository functions
+      vi.mocked(userRepository.getUserByEmail).mockResolvedValue(null);
+      vi.mocked(userRepository.createUser).mockResolvedValue(newUser);
+      // Call service function
+      const result = await userService.getOrCreateUser(email);
+      // Verify results
+      expect(result).toEqual(newUser);
+      console.log("result", result);
+      expect(userRepository.getUserByEmail).toHaveBeenCalledWith(email);
+      expect(userRepository.createUser).toHaveBeenCalledWith(createUserDTO);
+    });
+  });
 });
+
