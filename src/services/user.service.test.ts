@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { hashPassword } from "@/lib/security";
 import type { User } from "@/models/user.model";
@@ -42,6 +42,10 @@ vi.mock("@/repositories/user.repository");
 vi.mock("@/lib/security");
 
 describe("user service", () => {
+  beforeEach(() => { 
+    vi.clearAllMocks();
+  });
+  
   describe("updateUser", () => {
     it("should update user details", async () => {
       // Setup - Create mocks (test data)
