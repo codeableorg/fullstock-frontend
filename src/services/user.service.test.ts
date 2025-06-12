@@ -1,40 +1,16 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { hashPassword } from "@/lib/security";
-import type { User } from "@/models/user.model";
 import * as userRepository from "@/repositories/user.repository";
 import { getSession } from "@/session.server";
 
 import * as userService from "./user.service";
 
-import type { Session } from "react-router";
-
-// Helper functions for creating commonly used test objects
-const createTestUser = (overrides?: Partial<User>): User => ({
-  id: 1,
-  email: "",
-  name: null,
-  password: null,
-  isGuest: false,
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-  ...overrides,
-});
-
-const createTestRequest = () =>
-  new Request("http://localhost/test", {
-    headers: { Cookie: "session=mock-session-id" },
-  });
-
-const createMockSession = (userId: number | null): Session => ({
-  id: "mock-session-id",
-  data: {},
-  has: vi.fn(),
-  get: vi.fn().mockReturnValue(userId), // Default userId in session
-  set: vi.fn(),
-  flash: vi.fn(),
-  unset: vi.fn(),
-});
+import {
+  createMockSession,
+  createTestRequest,
+  createTestUser,
+} from "@/lib/utils.tests";
 
 // Mocking dependencies for unit tests
 vi.mock("@/session.server");
@@ -42,10 +18,10 @@ vi.mock("@/repositories/user.repository");
 vi.mock("@/lib/security");
 
 describe("user service", () => {
-  beforeEach(() => { 
+  beforeEach(() => {
     vi.clearAllMocks();
   });
-  
+
   describe("updateUser", () => {
     it("should update user details", async () => {
       // Setup - Create mocks (test data)
@@ -151,4 +127,3 @@ describe("user service", () => {
     });
   });
 });
-
