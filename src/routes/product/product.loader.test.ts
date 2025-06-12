@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import type { Product } from "@/models/product.model";
+import { createTestProduct } from "@/lib/utils.tests";
 import * as productService from "@/services/product.service";
 
 import { loader } from ".";
@@ -20,19 +20,7 @@ describe("Product loader", () => {
   });
 
   it("returns a product when it exists", async () => {
-    const mockProduct: Product = {
-      id: 1,
-      title: "Test Product",
-      price: 99.99,
-      description: "Test description",
-      imgSrc: "/test-image.jpg",
-      features: ["Feature 1", "Feature 2"],
-      alt: "",
-      categoryId: 1,
-      isOnSale: false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+    const mockProduct = createTestProduct();
 
     mockGetProductById.mockResolvedValue(mockProduct);
 
