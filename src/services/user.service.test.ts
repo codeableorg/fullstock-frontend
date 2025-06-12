@@ -1,16 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { hashPassword } from "@/lib/security";
-import * as userRepository from "@/repositories/user.repository";
-import { getSession } from "@/session.server";
-
-import * as userService from "./user.service";
-
 import {
   createMockSession,
   createTestRequest,
   createTestUser,
 } from "@/lib/utils.tests";
+import * as userRepository from "@/repositories/user.repository";
+import { getSession } from "@/session.server";
+
+import * as userService from "./user.service";
 
 // Mocking dependencies for unit tests
 vi.mock("@/session.server");
@@ -121,7 +120,6 @@ describe("user service", () => {
       const result = await userService.getOrCreateUser(email);
       // Verify results
       expect(result).toEqual(newUser);
-      console.log("result", result);
       expect(userRepository.getUserByEmail).toHaveBeenCalledWith(email);
       expect(userRepository.createUser).toHaveBeenCalledWith(createUserDTO);
     });
