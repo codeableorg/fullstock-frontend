@@ -1,6 +1,8 @@
-import type { User } from "@/models/user.model";
-import type { Session } from "react-router";
 import { vi } from "vitest";
+
+import type { User } from "@/models/user.model";
+
+import type { Session } from "react-router";
 
 type TestRequestConfig = {
   url?: string;
