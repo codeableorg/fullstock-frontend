@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { createTestCategory, createTestProduct } from "@/lib/utils.tests";
 import type { Category } from "@/models/category.model";
 import type { Product } from "@/models/product.model";
 import * as productRepository from "@/repositories/product.repository";
@@ -11,20 +12,6 @@ import { getProductById, getProductsByCategorySlug } from "./product.service";
 vi.mock("@/repositories/product.repository");
 vi.mock("./category.service");
 
-// Test data setup
-const mockCategory: Partial<Category> = {
-  id: 1,
-  slug: "polos",
-};
-
-const mockProduct: Partial<Product> = {
-  id: 1,
-  title: "Test Product",
-  price: 100,
-  categoryId: mockCategory.id,
-  description: "Test description",
-};
-
 describe("Product Service", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -33,24 +20,29 @@ describe("Product Service", () => {
   describe("getProductsByCategorySlug", () => {
     it("should return products for a valid category slug", async () => {
       // Step 1: Setup - Create test data with valid category and products
+      const testCategory = createTestCategory();
       const mockedProducts = [
-        { ...mockProduct, id: 1 },
-        { ...mockProduct, id: 2, title: "Test Product 2" },
+        createTestProduct({ id: 1, categoryId: testCategory.id }),
+        createTestProduct({
+          id: 2,
+          title: "Test Product 2",
+          categoryId: testCategory.id,
+        }),
       ];
 
       // Step 2: Mock - Configure repository responses
-      vi.mocked(getCategoryBySlug).mockResolvedValue(mockCategory as Category);
+      vi.mocked(getCategoryBySlug).mockResolvedValue(testCategory);
       vi.mocked(productRepository.getProductsByCategory).mockResolvedValue(
         mockedProducts as Product[]
       );
 
       // Step 3: Call service function
-      const products = await getProductsByCategorySlug(mockCategory.slug!);
+      const products = await getProductsByCategorySlug(testCategory.slug);
 
       // Step 4: Verify expected behavior
-      expect(getCategoryBySlug).toHaveBeenCalledWith(mockCategory.slug);
+      expect(getCategoryBySlug).toHaveBeenCalledWith(testCategory.slug);
       expect(productRepository.getProductsByCategory).toHaveBeenCalledWith(
-        mockCategory.id
+        testCategory.id
       );
       expect(products).toEqual(mockedProducts);
     });
@@ -80,19 +72,21 @@ describe("Product Service", () => {
   describe("getProductById", () => {
     it("should return product for valid ID", async () => {
       // Step 1: Setup - Create test data for existing product
-      const productId = mockProduct.id!;
+      const testProduct = createTestProduct();
 
       // Step 2: Mock - Configure repository response
       vi.mocked(productRepository.getProductById).mockResolvedValue(
-        mockProduct as Product
+        testProduct
       );
 
       // Step 3: Call service function
-      const result = await getProductById(productId);
+      const result = await getProductById(testProduct.id);
 
       // Step 4: Verify expected behavior
-      expect(productRepository.getProductById).toHaveBeenCalledWith(productId);
-      expect(result).toEqual(mockProduct);
+      expect(productRepository.getProductById).toHaveBeenCalledWith(
+        testProduct.id
+      );
+      expect(result).toEqual(testProduct);
     });
 
     it("should throw error when product does not exist", async () => {
