@@ -1,9 +1,9 @@
 import { vi } from "vitest";
 
-import type { User } from "@/models/user.model";
-
 import type { Category } from "@/models/category.model";
 import type { Product } from "@/models/product.model";
+import type { User } from "@/models/user.model";
+
 import type { Session } from "react-router";
 
 type TestRequestConfig = {

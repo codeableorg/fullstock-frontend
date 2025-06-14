@@ -8,9 +8,9 @@ import { getOrCreateUser } from "./user.service";
 
 export async function createOrder(
   items: CartItemInput[],
-  formData: Record<string, unknown>
+  formData: OrderDetails
 ): Promise<Order> {
-  const shippingDetails = formData as unknown as OrderDetails;
+  const shippingDetails = formData;
 
   const user = await getOrCreateUser(shippingDetails.email);
   const totalAmount = calculateTotal(items);
