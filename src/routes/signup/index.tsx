@@ -87,8 +87,7 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const redirect = await redirectIfAuthenticated(request);
-  return redirect;
+  await redirectIfAuthenticated(request);
 }
 
 export default function Signup({ actionData }: Route.ComponentProps) {
