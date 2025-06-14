@@ -1,6 +1,10 @@
-import type { User } from "@/models/user.model";
-import type { Session } from "react-router";
 import { vi } from "vitest";
+
+import type { User } from "@/models/user.model";
+
+import type { Category } from "@/models/category.model";
+import type { Product } from "@/models/product.model";
+import type { Session } from "react-router";
 
 type TestRequestConfig = {
   url?: string;
@@ -39,4 +43,33 @@ export const createMockSession = (userId: number | null): Session => ({
   set: vi.fn(),
   flash: vi.fn(),
   unset: vi.fn(),
+});
+
+export const createTestProduct = (overrides?: Partial<Product>): Product => ({
+  id: 1,
+  title: "Test Product",
+  imgSrc: "/test-image.jpg",
+  alt: "Test alt text",
+  price: 100,
+  description: "Test description",
+  categoryId: 1,
+  isOnSale: false,
+  features: ["Feature 1", "Feature 2"],
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+  ...overrides,
+});
+
+export const createTestCategory = (
+  overrides?: Partial<Category>
+): Category => ({
+  id: 1,
+  title: "Polos",
+  slug: "polos",
+  imgSrc: "/images/polos.jpg",
+  alt: "Colección de polos para programadores",
+  description: "Explora nuestra colección de polos para programadores",
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+  ...overrides,
 });

@@ -1,11 +1,12 @@
-import { describe, it, vi, beforeEach, expect } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { createTestCategory, createTestProduct } from "@/lib/utils.tests";
 import type { Category } from "@/models/category.model";
 import type { Product } from "@/models/product.model";
 import * as productRepository from "@/repositories/product.repository";
 
 import { getCategoryBySlug } from "./category.service";
-import { getProductsByCategorySlug } from "./product.service";
+import { getProductById, getProductsByCategorySlug } from "./product.service";
 
 // Mock dependencies
 vi.mock("@/repositories/product.repository");
@@ -18,69 +19,88 @@ describe("Product Service", () => {
 
   describe("getProductsByCategorySlug", () => {
     it("should return products for a valid category slug", async () => {
-      // 1. Mock getCategoryBySlug to return a valid category with id
-      const mockCategory = {
-        id: 1,
-        slug: "polos",
-      } as Category;
-
-      vi.mocked(getCategoryBySlug).mockResolvedValue(mockCategory);
-
-      // 2. Mock productRepository.getProductsByCategory to return array of products
+      // Step 1: Setup - Create test data with valid category and products
+      const testCategory = createTestCategory();
       const mockedProducts = [
-        { id: 1, title: "Product 1", price: 10, categoryId: 1 } as Product,
-        { id: 2, title: "Product 2", price: 20, categoryId: 1 } as Product,
+        createTestProduct({ id: 1, categoryId: testCategory.id }),
+        createTestProduct({
+          id: 2,
+          title: "Test Product 2",
+          categoryId: testCategory.id,
+        }),
       ];
 
+      // Step 2: Mock - Configure repository responses
+      vi.mocked(getCategoryBySlug).mockResolvedValue(testCategory);
       vi.mocked(productRepository.getProductsByCategory).mockResolvedValue(
-        mockedProducts
+        mockedProducts as Product[]
       );
 
-      // 3. Call getProductsByCategorySlug with valid slug (e.g., "polos")
-      const products = await getProductsByCategorySlug(mockCategory.slug);
-      // 4. Assert that getCategoryBySlug was called with correct slug
-      expect(getCategoryBySlug).toHaveBeenCalledWith(mockCategory.slug);
-      // 5. Assert that getProductsByCategory was called with category.id
+      // Step 3: Call service function
+      const products = await getProductsByCategorySlug(testCategory.slug);
+
+      // Step 4: Verify expected behavior
+      expect(getCategoryBySlug).toHaveBeenCalledWith(testCategory.slug);
       expect(productRepository.getProductsByCategory).toHaveBeenCalledWith(
-        mockCategory.id
+        testCategory.id
       );
-      // 6. Assert that returned products match the mocked products array
       expect(products).toEqual(mockedProducts);
     });
 
     it("should throw error when category slug does not exist", async () => {
-      // 1. Mock getCategoryBySlug to throw "Category not found" error
-      // 2. Call getProductsByCategorySlug with invalid slug
-      // 3. Assert that the function throws the expected error
-      // 4. Assert that getProductsByCategory was NOT called
-    });
+      // Step 1: Setup - Create test data for non-existent category
+      const invalidSlug = "invalid-slug";
 
-    it("should handle repository errors gracefully", async () => {
-      // 1. Mock getCategoryBySlug to return valid category
-      // 2. Mock productRepository.getProductsByCategory to throw database error
-      // 3. Call getProductsByCategorySlug with valid slug
-      // 4. Assert that the function throws/propagates the repository error
+      // Step 2: Mock - Configure error response
+      vi.mocked(getCategoryBySlug).mockRejectedValue(
+        new Error(`Category with slug "${invalidSlug}" not found`)
+      );
+
+      // Step 3: Call service function
+      const getProducts = getProductsByCategorySlug(
+        invalidSlug as Category["slug"]
+      );
+
+      // Step 4: Verify expected behavior
+      await expect(getProducts).rejects.toThrow(
+        `Category with slug "${invalidSlug}" not found`
+      );
+      expect(productRepository.getProductsByCategory).not.toHaveBeenCalled();
     });
   });
 
   describe("getProductById", () => {
-    it("should return product for valid existing ID", async () => {
-      // 1. Mock productRepository.getProductById to return a product object
-      // 2. Call getProductById with valid ID (e.g., 1)
-      // 3. Assert that getProductById was called with correct ID
-      // 4. Assert that returned product matches the mocked product
+    it("should return product for valid ID", async () => {
+      // Step 1: Setup - Create test data for existing product
+      const testProduct = createTestProduct();
+
+      // Step 2: Mock - Configure repository response
+      vi.mocked(productRepository.getProductById).mockResolvedValue(
+        testProduct
+      );
+
+      // Step 3: Call service function
+      const result = await getProductById(testProduct.id);
+
+      // Step 4: Verify expected behavior
+      expect(productRepository.getProductById).toHaveBeenCalledWith(
+        testProduct.id
+      );
+      expect(result).toEqual(testProduct);
     });
 
-    it("should throw error when product ID does not exist", async () => {
-      // 1. Mock productRepository.getProductById to return null
-      // 2. Call getProductById with non-existent ID
-      // 3. Assert that function throws "Product not found" error
-    });
+    it("should throw error when product does not exist", async () => {
+      // Step 1: Setup - Configure ID for non-existent product
+      const nonExistentId = 999;
 
-    it("should handle repository errors gracefully", async () => {
-      // 1. Mock productRepository.getProductById to throw database error
-      // 2. Call getProductById with any ID
-      // 3. Assert that the function throws/propagates the repository error
+      // Step 2: Mock - Configure null response from repository
+      vi.mocked(productRepository.getProductById).mockResolvedValue(null);
+
+      // Step 3: Call service function
+      const getProduct = getProductById(nonExistentId);
+
+      // Step 4: Verify expected behavior
+      await expect(getProduct).rejects.toThrow("Product not found");
     });
   });
 });
