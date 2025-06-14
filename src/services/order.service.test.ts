@@ -1,16 +1,18 @@
 import { describe, expect, it, vi } from "vitest";
 
 import { calculateTotal } from "@/lib/cart";
+import {
+  createMockSession,
+  createTestRequest,
+  createTestUser,
+} from "@/lib/utils.tests";
 import type { CartItemInput } from "@/models/cart.model";
-import type { Order, OrderDetails, OrderItem } from "@/models/order.model";
-import type { User } from "@/models/user.model";
+import type { Order, OrderDetails } from "@/models/order.model";
 import * as orderRepository from "@/repositories/order.repository";
 import { getSession } from "@/session.server";
 
 import { createOrder, getOrdersByUser } from "./order.service";
 import { getOrCreateUser } from "./user.service";
-
-import type { Session } from "react-router";
 
 vi.mock("./user.service");
 vi.mock("@/lib/cart");
@@ -48,15 +50,7 @@ describe("Order Service", () => {
     phone: "",
   };
 
-  const mockedUser: User = {
-    createdAt: "",
-    email: "",
-    id: 1,
-    isGuest: false,
-    name: "",
-    updatedAt: "",
-    password: "",
-  };
+  const mockedUser = createTestUser();
 
   const mockedOrder: Order = {
     createdAt: "",
@@ -65,7 +59,7 @@ describe("Order Service", () => {
       {
         ...mockedItems[0],
         id: 2,
-        orderId: 2,
+        orderId: 1,
         createdAt: "",
         updatedAt: "",
       },
@@ -85,19 +79,7 @@ describe("Order Service", () => {
 
   const mockedTotalAmount = 200;
 
-  const mockedRequest = new Request("http://localhost/test", {
-    headers: { Cookie: "session=mock-session-id" },
-  });
-
-  const createMockSession = (userId: number | null): Session => ({
-    id: "mock-session-id",
-    data: {},
-    has: vi.fn(),
-    get: vi.fn().mockReturnValue(userId), // Default userId in session
-    set: vi.fn(),
-    flash: vi.fn(),
-    unset: vi.fn(),
-  });
+  const mockedRequest = createTestRequest();
 
   it("should create an order", async () => {
     vi.mocked(getOrCreateUser).mockResolvedValue(mockedUser);
