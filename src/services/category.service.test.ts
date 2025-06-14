@@ -1,4 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+import { createTestCategory } from "@/lib/utils.tests";
 import * as categoriesRepository from "@/repositories/category.repository";
 import {
   getAllCategories,
@@ -16,29 +18,18 @@ describe("Category Service", () => {
   describe("getAllCategories", () => {
     it("should return all categories", async () => {
       const mockCategories = [
-        {
-          id: 1,
-          name: "Category 1",
-          slug: "polos" as "polos",
-          title: "Category 1 Title",
-          imgSrc: "/img/category-1.jpg",
-          alt: "Category 1 image",
-          description: "Description for Category 1",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-        {
+        createTestCategory(),
+        createTestCategory({
           id: 2,
-          name: "Category 2",
-          slug: "stickers" as "stickers",
-          title: "Category 2 Title",
-          imgSrc: "/img/category-2.jpg",
-          alt: "Category 2 image",
-          description: "Description for Category 2",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
+          slug: "stickers",
+          title: "Stickers",
+          imgSrc: "/img/stickers.jpg",
+          alt: "Colección de stickers para programadores",
+          description:
+            "Explora nuestra colección de stickers para programadores",
+        }),
       ];
+
       vi.mocked(categoriesRepository.getAllCategories).mockResolvedValue(
         mockCategories
       );
@@ -61,17 +52,7 @@ describe("Category Service", () => {
 
   describe("getCategoryBySlug", () => {
     it("should return category when found", async () => {
-      const mockCategory = {
-        id: 1,
-        name: "Category 1",
-        slug: "polos" as "polos",
-        title: "Category 1 Title",
-        imgSrc: "/img/category-1.jpg",
-        alt: "Category 1 image",
-        description: "Description for Category 1",
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
+      const mockCategory = createTestCategory();
 
       vi.mocked(categoriesRepository.getCategoryBySlug).mockResolvedValue(
         mockCategory
