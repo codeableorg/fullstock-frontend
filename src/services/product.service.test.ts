@@ -21,7 +21,7 @@ describe("Product Service", () => {
     it("should return products for a valid category slug", async () => {
       // Step 1: Setup - Create test data with valid category and products
       const testCategory = createTestCategory();
-      const mockedProducts = [
+      const mockedProducts: Product[] = [
         createTestProduct({ id: 1, categoryId: testCategory.id }),
         createTestProduct({
           id: 2,
@@ -33,7 +33,7 @@ describe("Product Service", () => {
       // Step 2: Mock - Configure repository responses
       vi.mocked(getCategoryBySlug).mockResolvedValue(testCategory);
       vi.mocked(productRepository.getProductsByCategory).mockResolvedValue(
-        mockedProducts as Product[]
+        mockedProducts
       );
 
       // Step 3: Call service function
@@ -52,9 +52,8 @@ describe("Product Service", () => {
       const invalidSlug = "invalid-slug";
 
       // Step 2: Mock - Configure error response
-      vi.mocked(getCategoryBySlug).mockRejectedValue(
-        new Error(`Category with slug "${invalidSlug}" not found`)
-      );
+      const errorMessage = `Category with slug "${invalidSlug}" not found`;
+      vi.mocked(getCategoryBySlug).mockRejectedValue(new Error(errorMessage));
 
       // Step 3: Call service function
       const getProducts = getProductsByCategorySlug(
@@ -62,9 +61,7 @@ describe("Product Service", () => {
       );
 
       // Step 4: Verify expected behavior
-      await expect(getProducts).rejects.toThrow(
-        `Category with slug "${invalidSlug}" not found`
-      );
+      await expect(getProducts).rejects.toThrow(errorMessage);
       expect(productRepository.getProductsByCategory).not.toHaveBeenCalled();
     });
   });
@@ -97,10 +94,10 @@ describe("Product Service", () => {
       vi.mocked(productRepository.getProductById).mockResolvedValue(null);
 
       // Step 3: Call service function
-      const getProduct = getProductById(nonExistentId);
+      const productPromise = getProductById(nonExistentId);
 
       // Step 4: Verify expected behavior
-      await expect(getProduct).rejects.toThrow("Product not found");
+      await expect(productPromise).rejects.toThrow("Product not found");
     });
   });
 });

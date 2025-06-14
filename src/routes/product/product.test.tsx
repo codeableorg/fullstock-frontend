@@ -1,25 +1,13 @@
+import { render, screen } from "@testing-library/react";
+import { useNavigation } from "react-router";
 import { describe, expect, it, vi } from "vitest";
 
 import { createTestProduct } from "@/lib/utils.tests";
 import type { Product as ProductType } from "@/models/product.model";
-import { render, screen } from "@testing-library/react";
 
-import { useNavigation } from "react-router";
 import Product from ".";
-import type { Route } from "./+types";
 
-// Mock Container component since we just want to verify it's used correctly
-vi.mock("@/components/ui", () => ({
-  Container: vi.fn(({ children }) => (
-    <div data-testid="mock-container">{children}</div>
-  )),
-  Button: vi.fn(({ children, ...props }) => (
-    <button data-testid="mock-button" {...props}>
-      {children}
-    </button>
-  )),
-  Separator: vi.fn(() => <hr data-testid="mock-separator" />),
-}));
+import type { Route } from "./+types";
 
 // Helper function to create a test navigation object
 const createTestNavigation = (overrides = {}) => ({
@@ -38,6 +26,7 @@ const createTestNavigation = (overrides = {}) => ({
 vi.mock("react-router", () => ({
   Form: vi.fn(({ children }) => <form>{children}</form>),
   useNavigation: vi.fn(() => createTestNavigation()),
+  Link: vi.fn(({ children, ...props }) => <a {...props}>{children}</a>),
 }));
 
 const createTestProps = (
@@ -68,7 +57,7 @@ describe("Product Component", () => {
       // Step 3: Call - Render component
       render(<Product {...props} />);
       // Step 4: Verify - Check price is rendered correctly
-      expect(screen.getByText("$150.99")).toBeInTheDocument();
+      expect(screen.queryByText("$150.99")).toBeInTheDocument();
     });
 
     it("should render product description", () => {
@@ -80,7 +69,7 @@ describe("Product Component", () => {
       // Step 3: Call - Render component
       render(<Product {...props} />);
       // Step 4: Verify - Check description is rendered
-      expect(screen.getByText("Amazing product")).toBeInTheDocument();
+      expect(screen.queryByText("Amazing product")).toBeInTheDocument();
     });
 
     it("should render product image with correct src and alt attributes", () => {
@@ -107,7 +96,7 @@ describe("Product Component", () => {
       render(<Product {...props} />);
       // Step 4: Verify - Check features are rendered
       features.forEach((feature) => {
-        expect(screen.getByText(feature)).toBeInTheDocument();
+        expect(screen.queryByText(feature)).toBeInTheDocument();
       });
     });
 
@@ -119,7 +108,7 @@ describe("Product Component", () => {
       render(<Product {...props} />);
       // Step 4: Verify - Check button is present
       expect(
-        screen.getByRole("button", { name: "Agregar al Carrito" })
+        screen.queryByRole("button", { name: "Agregar al Carrito" })
       ).toBeInTheDocument();
     });
   });
@@ -133,7 +122,9 @@ describe("Product Component", () => {
       // Step 3: Call
       render(<Product {...props} />);
       // Step 4: Verify
-      const redirectInput = screen.getByDisplayValue(`/products/${productId}`);
+      const redirectInput = screen.queryByDisplayValue(
+        `/products/${productId}`
+      );
       expect(redirectInput).toBeInTheDocument();
     });
 
@@ -159,9 +150,9 @@ describe("Product Component", () => {
       props.loaderData.product = undefined;
 
       // Step 2: Mock - Mock NotFound component
-      vi.mock("../not-found", () => ({
-        default: () => <div data-testid="not-found">Not Found Page</div>,
-      }));
+      // vi.mock("../not-found", () => ({
+      //   default: () => <div data-testid="not-found">Not Found Page</div>,
+      // }));
       // Step 3: Call
       render(<Product {...props} />);
       // Step 4: Verify
