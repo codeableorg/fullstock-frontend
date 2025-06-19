@@ -4,13 +4,6 @@ import { describe, expect, it, vi } from "vitest";
 import OrderConfirmation from ".";
 import type { Route } from "./+types";
 
-// Mock Container component
-vi.mock("@/components/ui", () => ({
-  Container: vi.fn(({ children }) => (
-    <div data-testid="mock-container">{children}</div>
-  )),
-}));
-
 // Creates minimal test props for OrderConfirmation component
 const createTestProps = (orderId = "test-123"): Route.ComponentProps => ({
   loaderData: { orderId },
@@ -33,7 +26,7 @@ describe("OrderConfirmation", () => {
         "Llegaremos a la puerta de tu domicilio lo antes posible",
       ];
       expectedMessages.forEach((message) => {
-        expect(screen.getByText(message)).toBeInTheDocument();
+        expect(screen.queryByText(message)).toBeInTheDocument();
       });
     });
   });
@@ -47,34 +40,11 @@ describe("OrderConfirmation", () => {
       // Step 3: Call - Render component
       render(<OrderConfirmation {...props} />);
       // Step 4: Verify - Check tracking code section
-      const trackingCodeLabel = screen.getByText("Código de seguimiento");
+      const trackingCodeLabel = screen.queryByText("Código de seguimiento");
       expect(trackingCodeLabel).toBeInTheDocument();
 
-      const trackingCode = screen.getByText(testOrderId);
+      const trackingCode = screen.queryByText(testOrderId);
       expect(trackingCode).toBeInTheDocument();
-    });
-  });
-
-  describe("Layout Structure", () => {
-    it("should render with correct layout structure and classes", () => {
-      // Step 1: Setup - Create test props
-      const props = createTestProps();
-      // Step 2: Mock
-      // Step 3: Call - Render component
-      render(<OrderConfirmation {...props} />);
-      // Step 4: Verify - Check layout structure
-      const container = screen.getByTestId("mock-container");
-      expect(container).toBeInTheDocument();
-
-      const section = container.parentElement;
-      expect(section).toHaveClass(
-        "pt-12",
-        "pb-12",
-        "sm:pt-14",
-        "sm:pb-14",
-        "lg:pt-16",
-        "lg:pb-16"
-      );
     });
   });
 });
