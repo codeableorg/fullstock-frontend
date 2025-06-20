@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-test.describe("Visitor", () => {
+test.describe("Visitante inicio sesion", () => {
   test("test", async ({ page }) => {
     await page.goto("http://localhost:5173/");
     await page.getByTestId("login").click();
@@ -13,6 +13,7 @@ test.describe("Visitor", () => {
       .press("Tab");
     await page.getByRole("textbox", { name: "Contraseña" }).fill("letmein");
     await page.getByRole("button", { name: "Iniciar sesión" }).click();
-    await page.getByRole("link", { name: "FullStock inicio" }).click();
+
+    await expect(page.getByText("Bienvenido diego@codeable.com")).toBeVisible();
   });
 });
