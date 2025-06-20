@@ -25,7 +25,12 @@ export default function OrderConfirmation({
           Llegaremos a la puerta de tu domicilio lo antes posible
         </p>
         <p className="text-sm font-medium mb-2">Código de seguimiento</p>
-        <p className="text-sm font-medium text-accent-foreground">{orderId}</p>
+        <p
+          data-testid="orderId"
+          className="text-sm font-medium text-accent-foreground"
+        >
+          {orderId}
+        </p>
       </Container>
     </section>
   );
