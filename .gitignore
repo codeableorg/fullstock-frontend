@@ -27,6 +27,7 @@ dist-ssr
 .react-router/
 
 .build/
+.env
 
 # Playwright
 /test-results/
