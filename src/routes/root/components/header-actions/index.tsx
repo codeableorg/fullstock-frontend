@@ -37,7 +37,10 @@ export default function HeaderActions({
         <Link to="/cart">
           <ShoppingCart />
           {totalItems > 0 && (
-            <span className="absolute -bottom-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
+            <span
+              data-testid="cart-count"
+              className="absolute -bottom-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center"
+            >
               {totalItems}
             </span>
           )}

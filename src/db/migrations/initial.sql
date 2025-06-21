@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS products (
 CREATE TABLE IF NOT EXISTS carts (
     id SERIAL PRIMARY KEY,
     session_cart_id UUID UNIQUE DEFAULT gen_random_uuid(),
-    user_id INTEGER REFERENCES users(id),
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS cart_items (
 
 CREATE TABLE IF NOT EXISTS orders (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id),
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     total_amount NUMERIC(10,2) NOT NULL,
     
     -- Customer and shipping details

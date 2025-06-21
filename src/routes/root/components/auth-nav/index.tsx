@@ -26,6 +26,7 @@ export default function AuthNav({ user }: { user?: Omit<User, "password"> }) {
                   <Link
                     to="/login"
                     className="hover:underline hover:decoration-white hover:underline-offset-2"
+                    data-testid="login"
                   >
                     Iniciar sesión
                   </Link>
