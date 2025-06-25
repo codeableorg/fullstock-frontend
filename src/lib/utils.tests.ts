@@ -1,7 +1,7 @@
+import { Decimal } from "@prisma/client/runtime/library";
+import { type Category, type Product } from "generated/prisma/client.js";
 import { vi } from "vitest";
 
-import type { Category } from "@/models/category.model";
-import type { Product } from "@/models/product.model";
 import type { User } from "@/models/user.model";
 
 import type { Session } from "react-router";
@@ -50,13 +50,13 @@ export const createTestProduct = (overrides?: Partial<Product>): Product => ({
   title: "Test Product",
   imgSrc: "/test-image.jpg",
   alt: "Test alt text",
-  price: 100,
+  price: new Decimal("100"),
   description: "Test description",
   categoryId: 1,
   isOnSale: false,
   features: ["Feature 1", "Feature 2"],
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
+  createdAt: new Date(),
+  updatedAt: new Date(),
   ...overrides,
 });
 
@@ -69,7 +69,7 @@ export const createTestCategory = (
   imgSrc: "/images/polos.jpg",
   alt: "Colección de polos para programadores",
   description: "Explora nuestra colección de polos para programadores",
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
+  createdAt: new Date(),
+  updatedAt: new Date(),
   ...overrides,
 });
