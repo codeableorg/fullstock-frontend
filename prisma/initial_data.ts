@@ -1,7 +1,9 @@
+import type { CategorySlug } from "generated/prisma";
+
 export const categories = [
   {
     title: "Polos",
-    slug: "polos",
+    slug: "polos" as CategorySlug,
     imgSrc: "/images/polos.jpg",
     alt: "Hombre luciendo polo azul",
     description:
@@ -9,7 +11,7 @@ export const categories = [
   },
   {
     title: "Tazas",
-    slug: "tazas",
+    slug: "tazas" as CategorySlug,
     imgSrc: "/images/tazas.jpg",
     alt: "Tazas con diseño de código",
     description:
@@ -17,7 +19,7 @@ export const categories = [
   },
   {
     title: "Stickers",
-    slug: "stickers",
+    slug: "stickers" as CategorySlug,
     imgSrc: "/images/stickers.jpg",
     alt: "Stickers de desarrollo web",
     description:
@@ -29,198 +31,212 @@ export const products = [
   {
     title: "Polo React",
     imgSrc: "/images/polos/polo-react.png",
-    price: 20.00,
-    description: "Viste tu pasión por React con estilo y comodidad en cada línea de código.",
+    price: 20.0,
+    description:
+      "Viste tu pasión por React con estilo y comodidad en cada línea de código.",
     categoryId: 1,
     isOnSale: false,
     features: [
       "Estampado resistente que mantiene sus colores vibrantes lavado tras lavado.",
       "Hecho de algodón suave que asegura comodidad y frescura.",
       "Costuras reforzadas para una mayor durabilidad.",
-      "Corte moderno que se adapta perfectamente al cuerpo."
-    ]
+      "Corte moderno que se adapta perfectamente al cuerpo.",
+    ],
   },
   {
     title: "Polo JavaScript",
     imgSrc: "/images/polos/polo-js.png",
-    price: 20.00,
-    description: "Deja que tu amor por JavaScript hable a través de cada hilo de este polo.",
+    price: 20.0,
+    description:
+      "Deja que tu amor por JavaScript hable a través de cada hilo de este polo.",
     categoryId: 1,
     isOnSale: false,
     features: [
       "Logo de JavaScript bordado con precisión y detalle.",
       "Tela premium de algodón peinado.",
       "Disponible en varios colores.",
-      "Acabado profesional con doble costura."
-    ]
+      "Acabado profesional con doble costura.",
+    ],
   },
   {
     title: "Polo Node.js",
     imgSrc: "/images/polos/polo-node.png",
-    price: 20.00,
-    description: "Conéctate al estilo con este polo de Node.js, tan robusto como tu código.",
+    price: 20.0,
+    description:
+      "Conéctate al estilo con este polo de Node.js, tan robusto como tu código.",
     categoryId: 1,
     isOnSale: false,
     features: [
       "Diseño minimalista con el logo de Node.js.",
       "Material transpirable ideal para largas sesiones de código.",
       "Tejido resistente a múltiples lavados.",
-      "Etiqueta sin costuras para mayor comodidad."
-    ]
+      "Etiqueta sin costuras para mayor comodidad.",
+    ],
   },
   {
     title: "Polo TypeScript",
     imgSrc: "/images/polos/polo-ts.png",
-    price: 20.00,
-    description: "Tipa tu estilo con precisión: lleva tu pasión por TypeScript en cada hilo.",
+    price: 20.0,
+    description:
+      "Tipa tu estilo con precisión: lleva tu pasión por TypeScript en cada hilo.",
     categoryId: 1,
     isOnSale: false,
     features: [
       "Logo de TypeScript estampado en alta calidad.",
       "Tejido antimanchas y duradero.",
       "Cuello reforzado que mantiene su forma.",
-      "100% algodón hipoalergénico."
-    ]
+      "100% algodón hipoalergénico.",
+    ],
   },
   {
     title: "Polo Backend Developer",
     imgSrc: "/images/polos/polo-backend.png",
-    price: 25.00,
-    description: "Domina el servidor con estilo: viste con orgullo tu título de Backend Developer.",
+    price: 25.0,
+    description:
+      "Domina el servidor con estilo: viste con orgullo tu título de Backend Developer.",
     categoryId: 1,
     isOnSale: false,
     features: [
       "Diseño exclusivo para desarrolladores backend.",
       "Material premium que mantiene su forma.",
       "Costuras reforzadas en puntos de tensión.",
-      "Estampado de alta durabilidad."
-    ]
+      "Estampado de alta durabilidad.",
+    ],
   },
   {
     title: "Polo Frontend Developer",
     imgSrc: "/images/polos/polo-frontend.png",
-    price: 25.00,
-    description: "Construye experiencias con estilo: luce con orgullo tu polo de Frontend Developer.",
+    price: 25.0,
+    description:
+      "Construye experiencias con estilo: luce con orgullo tu polo de Frontend Developer.",
     categoryId: 1,
     isOnSale: false,
     features: [
       "Diseño inspirado en elementos de UI/UX.",
       "Tela suave y ligera perfecta para el día a día.",
       "Estampado flexible que no se agrieta.",
-      "Acabado profesional en cada detalle."
-    ]
+      "Acabado profesional en cada detalle.",
+    ],
   },
   {
     title: "Polo Full-Stack Developer",
     imgSrc: "/images/polos/polo-fullstack.png",
-    price: 25.00,
-    description: "Domina ambos mundos con estilo: lleva tu título de FullStack Developer en cada línea de tu look.",
+    price: 25.0,
+    description:
+      "Domina ambos mundos con estilo: lleva tu título de FullStack Developer en cada línea de tu look.",
     categoryId: 1,
     isOnSale: false,
     features: [
       "Diseño que representa ambos mundos del desarrollo.",
       "Material premium de larga duración.",
       "Proceso de estampado ecológico.",
-      "Corte moderno y cómodo."
-    ]
+      "Corte moderno y cómodo.",
+    ],
   },
   {
     title: "Polo It's A Feature",
     imgSrc: "/images/polos/polo-feature.png",
-    price: 15.00,
-    description: "Cuando el bug se convierte en arte: lleva con orgullo tu polo 'It's a feature'.",
+    price: 15.0,
+    description:
+      "Cuando el bug se convierte en arte: lleva con orgullo tu polo 'It's a feature'.",
     categoryId: 1,
     isOnSale: true,
     features: [
       "Estampado humorístico de alta calidad.",
       "Algodón orgánico certificado.",
       "Diseño exclusivo de la comunidad dev.",
-      "Disponible en múltiples colores."
-    ]
+      "Disponible en múltiples colores.",
+    ],
   },
   {
     title: "Polo It Works On My Machine",
     imgSrc: "/images/polos/polo-works.png",
-    price: 15.00,
-    description: "El clásico del desarrollador: presume tu confianza con 'It works on my machine'.",
+    price: 15.0,
+    description:
+      "El clásico del desarrollador: presume tu confianza con 'It works on my machine'.",
     categoryId: 1,
     isOnSale: true,
     features: [
       "Frase icónica del mundo del desarrollo.",
       "Material durable y cómodo.",
       "Estampado que no se desvanece.",
-      "Ideal para regalo entre desarrolladores."
-    ]
+      "Ideal para regalo entre desarrolladores.",
+    ],
   },
   {
     title: "Sticker JavaScript",
     imgSrc: "/images/stickers/sticker-js.png",
     price: 2.99,
-    description: "Muestra tu amor por JavaScript con este elegante sticker clásico.",
+    description:
+      "Muestra tu amor por JavaScript con este elegante sticker clásico.",
     categoryId: 3,
     isOnSale: false,
     features: [
       "Vinilo de alta calidad resistente al agua",
       "Adhesivo duradero que no deja residuos",
       "Colores vibrantes que no se desvanecen",
-      "Tamaño perfecto para laptops y dispositivos"
-    ]
+      "Tamaño perfecto para laptops y dispositivos",
+    ],
   },
   {
     title: "Sticker React",
     imgSrc: "/images/stickers/sticker-react.png",
     price: 2.49,
-    description: "Decora tus dispositivos con el icónico átomo giratorio de React.",
+    description:
+      "Decora tus dispositivos con el icónico átomo giratorio de React.",
     categoryId: 3,
     isOnSale: false,
     features: [
       "Vinilo de alta calidad resistente al agua",
       "Adhesivo duradero que no deja residuos",
       "Colores vibrantes que no se desvanecen",
-      "Tamaño perfecto para laptops y dispositivos"
-    ]
+      "Tamaño perfecto para laptops y dispositivos",
+    ],
   },
   {
     title: "Sticker Git",
     imgSrc: "/images/stickers/sticker-git.png",
     price: 3.99,
-    description: "Visualiza el poder del control de versiones con este sticker de Git.",
+    description:
+      "Visualiza el poder del control de versiones con este sticker de Git.",
     categoryId: 3,
     isOnSale: false,
     features: [
       "Vinilo de alta calidad resistente al agua",
       "Adhesivo duradero que no deja residuos",
       "Colores vibrantes que no se desvanecen",
-      "Tamaño perfecto para laptops y dispositivos"
-    ]
+      "Tamaño perfecto para laptops y dispositivos",
+    ],
   },
   {
     title: "Sticker Docker",
     imgSrc: "/images/stickers/sticker-docker.png",
     price: 2.99,
-    description: "La adorable ballena de Docker llevando contenedores en un sticker único.",
+    description:
+      "La adorable ballena de Docker llevando contenedores en un sticker único.",
     categoryId: 3,
     isOnSale: false,
     features: [
       "Vinilo de alta calidad resistente al agua",
       "Adhesivo duradero que no deja residuos",
       "Colores vibrantes que no se desvanecen",
-      "Tamaño perfecto para laptops y dispositivos"
-    ]
+      "Tamaño perfecto para laptops y dispositivos",
+    ],
   },
   {
     title: "Sticker Linux",
     imgSrc: "/images/stickers/sticker-linux.png",
     price: 2.49,
-    description: "El querido pingüino Tux, mascota oficial de Linux, en formato sticker.",
+    description:
+      "El querido pingüino Tux, mascota oficial de Linux, en formato sticker.",
     categoryId: 3,
     isOnSale: false,
     features: [
       "Vinilo de alta calidad resistente al agua",
       "Adhesivo duradero que no deja residuos",
       "Colores vibrantes que no se desvanecen",
-      "Tamaño perfecto para laptops y dispositivos"
-    ]
+      "Tamaño perfecto para laptops y dispositivos",
+    ],
   },
   {
     title: "Sticker VS Code",
@@ -233,64 +249,68 @@ export const products = [
       "Vinilo de alta calidad resistente al agua",
       "Adhesivo duradero que no deja residuos",
       "Colores vibrantes que no se desvanecen",
-      "Tamaño perfecto para laptops y dispositivos"
-    ]
+      "Tamaño perfecto para laptops y dispositivos",
+    ],
   },
   {
     title: "Sticker GitHub",
     imgSrc: "/images/stickers/sticker-github.png",
     price: 2.99,
-    description: "El alojamiento de repositorios más popular en un sticker de alta calidad.",
+    description:
+      "El alojamiento de repositorios más popular en un sticker de alta calidad.",
     categoryId: 3,
     isOnSale: false,
     features: [
       "Vinilo de alta calidad resistente al agua",
       "Adhesivo duradero que no deja residuos",
       "Colores vibrantes que no se desvanecen",
-      "Tamaño perfecto para laptops y dispositivos"
-    ]
+      "Tamaño perfecto para laptops y dispositivos",
+    ],
   },
   {
     title: "Sticker HTML",
     imgSrc: "/images/stickers/sticker-html.png",
     price: 2.99,
-    description: "El escudo naranja de HTML5, el lenguaje que estructura la web.",
+    description:
+      "El escudo naranja de HTML5, el lenguaje que estructura la web.",
     categoryId: 3,
     isOnSale: false,
     features: [
       "Vinilo de alta calidad resistente al agua",
       "Adhesivo duradero que no deja residuos",
       "Colores vibrantes que no se desvanecen",
-      "Tamaño perfecto para laptops y dispositivos"
-    ]
+      "Tamaño perfecto para laptops y dispositivos",
+    ],
   },
   {
     title: "Taza JavaScript",
     imgSrc: "/images/tazas/taza-js.png",
     price: 14.99,
-    description: "Disfruta tu café mientras programas con el logo de JavaScript.",
+    description:
+      "Disfruta tu café mientras programas con el logo de JavaScript.",
     categoryId: 2,
     isOnSale: false,
     features: [
       "Cerámica de alta calidad",
       "Apta para microondas y lavavajillas",
       "Capacidad de 325ml",
-      "Diseño que no pierde color con el uso"
-    ]
+      "Diseño que no pierde color con el uso",
+    ],
   },
   {
     title: "Taza React",
     imgSrc: "/images/tazas/taza-react.png",
     price: 13.99,
-    description: "Una taza que hace render de tu bebida favorita con estilo React.",
+    description:
+      "Una taza que hace render de tu bebida favorita con estilo React.",
     categoryId: 2,
     isOnSale: false,
     features: [
       "Cerámica de alta calidad",
       "Apta para microondas y lavavajillas",
       "Capacidad de 325ml",
-      "Diseño que no pierde color con el uso"
-    ]
+      "Diseño que no pierde color con el uso",
+    ],
   },
   {
     title: "Taza Git",
@@ -303,8 +323,8 @@ export const products = [
       "Cerámica de alta calidad",
       "Apta para microondas y lavavajillas",
       "Capacidad de 325ml",
-      "Diseño que no pierde color con el uso"
-    ]
+      "Diseño que no pierde color con el uso",
+    ],
   },
   {
     title: "Taza SQL",
@@ -317,8 +337,8 @@ export const products = [
       "Cerámica de alta calidad",
       "Apta para microondas y lavavajillas",
       "Capacidad de 325ml",
-      "Diseño que no pierde color con el uso"
-    ]
+      "Diseño que no pierde color con el uso",
+    ],
   },
   {
     title: "Taza Linux",
@@ -331,8 +351,8 @@ export const products = [
       "Cerámica de alta calidad",
       "Apta para microondas y lavavajillas",
       "Capacidad de 325ml",
-      "Diseño que no pierde color con el uso"
-    ]
+      "Diseño que no pierde color con el uso",
+    ],
   },
   {
     title: "Taza GitHub",
@@ -345,7 +365,7 @@ export const products = [
       "Cerámica de alta calidad",
       "Apta para microondas y lavavajillas",
       "Capacidad de 325ml",
-      "Diseño que no pierde color con el uso"
-    ]
-  }
+      "Diseño que no pierde color con el uso",
+    ],
+  },
 ];

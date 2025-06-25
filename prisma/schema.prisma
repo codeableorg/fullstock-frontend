@@ -22,83 +22,89 @@ model User {
   isGuest   Boolean  @default(true) @map("is_guest")
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamp(0)
-  
+
   carts  Cart[]
   orders Order[]
 
   @@map("users")
 }
 
+enum CategorySlug {
+  polos
+  tazas
+  stickers
+}
+
 model Category {
-  id          Int       @id @default(autoincrement())
+  id          Int          @id @default(autoincrement())
   title       String
-  slug        String    @unique
-  imgSrc      String?   @map("img_src")
+  slug        CategorySlug @unique
+  imgSrc      String?      @map("img_src")
   alt         String?
   description String?
-  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
-  updatedAt   DateTime  @default(now()) @map("updated_at") @db.Timestamp(0)
-  
-  products    Product[]
+  createdAt   DateTime     @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt   DateTime     @default(now()) @map("updated_at") @db.Timestamp(0)
+
+  products Product[]
 
   @@map("categories")
 }
 
 model Product {
-  id          Int       @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   title       String
-  imgSrc      String    @map("img_src")
+  imgSrc      String   @map("img_src")
   alt         String?
-  price       Decimal   @db.Decimal(10, 2)
+  price       Decimal  @db.Decimal(10, 2)
   description String?
-  categoryId  Int?      @map("category_id")
-  isOnSale    Boolean   @default(false) @map("is_on_sale")
+  categoryId  Int?     @map("category_id")
+  isOnSale    Boolean  @default(false) @map("is_on_sale")
   features    String[]
-  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
-  updatedAt   DateTime  @default(now()) @map("updated_at") @db.Timestamp(0)
-  
-  category    Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  cartItems   CartItem[]
-  orderItems  OrderItem[]
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt   DateTime @default(now()) @map("updated_at") @db.Timestamp(0)
+
+  category   Category?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  cartItems  CartItem[]
+  orderItems OrderItem[]
 
   @@map("products")
 }
 
 model Cart {
-  id            Int       @id @default(autoincrement())
-  sessionCartId String    @unique @default(dbgenerated("gen_random_uuid()")) @map("session_cart_id") @db.Uuid
-  userId        Int?      @map("user_id")
-  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
-  updatedAt     DateTime  @default(now()) @map("updated_at") @db.Timestamp(0)
-  
-  user          User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  items         CartItem[]
+  id            Int      @id @default(autoincrement())
+  sessionCartId String   @unique @default(dbgenerated("gen_random_uuid()")) @map("session_cart_id") @db.Uuid
+  userId        Int?     @map("user_id")
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt     DateTime @default(now()) @map("updated_at") @db.Timestamp(0)
+
+  user  User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items CartItem[]
 
   @@map("carts")
 }
 
 model CartItem {
-  id        Int       @id @default(autoincrement())
-  cartId    Int       @map("cart_id")
-  productId Int       @map("product_id")
+  id        Int      @id @default(autoincrement())
+  cartId    Int      @map("cart_id")
+  productId Int      @map("product_id")
   quantity  Int
-  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
-  updatedAt DateTime  @default(now()) @map("updated_at") @db.Timestamp(0)
-  
-  cart      Cart      @relation(fields: [cartId], references: [id], onDelete: Cascade)
-  product   Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamp(0)
+
+  cart    Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@unique([cartId, productId], name: "unique_cart_item")
   @@map("cart_items")
 }
 
 model Order {
-  id          Int       @id @default(autoincrement())
-  userId      Int       @map("user_id")
-  totalAmount Decimal   @map("total_amount") @db.Decimal(10, 2)
+  id          Int      @id @default(autoincrement())
+  userId      Int      @map("user_id")
+  totalAmount Decimal  @map("total_amount") @db.Decimal(10, 2)
   email       String
-  firstName   String    @map("first_name")
-  lastName    String    @map("last_name")
+  firstName   String   @map("first_name")
+  lastName    String   @map("last_name")
   company     String?
   address     String
   city        String
@@ -106,28 +112,28 @@ model Order {
   region      String
   zip         String
   phone       String
-  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
-  updatedAt   DateTime  @default(now()) @map("updated_at") @db.Timestamp(0)
-  
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  items       OrderItem[]
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt   DateTime @default(now()) @map("updated_at") @db.Timestamp(0)
+
+  user  User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items OrderItem[]
 
   @@map("orders")
 }
 
 model OrderItem {
-  id        Int       @id @default(autoincrement())
-  orderId   Int       @map("order_id")
-  productId Int?      @map("product_id")
+  id        Int      @id @default(autoincrement())
+  orderId   Int      @map("order_id")
+  productId Int?     @map("product_id")
   quantity  Int
   title     String
-  price     Decimal   @db.Decimal(10, 2)
-  imgSrc    String?   @map("img_src")
-  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
-  updatedAt DateTime  @default(now()) @map("updated_at") @db.Timestamp(0)
-  
-  order     Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product   Product?  @relation(fields: [productId], references: [id], onDelete: SetNull)
+  price     Decimal  @db.Decimal(10, 2)
+  imgSrc    String?  @map("img_src")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamp(0)
+
+  order   Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
 
   @@map("order_items")
 }
