@@ -1,4 +1,4 @@
-import { type Category, type CategorySlug } from "generated/prisma";
+import { type Category, type CategorySlug } from "generated/prisma/client.js";
 
 import { prisma } from "@/db/prisma";
 
