@@ -1,5 +1,5 @@
 import { categories, products } from "./initial_data";
-import { PrismaClient } from "../generated/prisma";
+import { PrismaClient } from "../generated/prisma/client.js";
 
 const prisma = new PrismaClient();
 
@@ -23,4 +23,3 @@ seedDb()
     console.log("--- Database seeded successfully. ---");
     await prisma.$disconnect();
   });
-
