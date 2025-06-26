@@ -1,6 +1,30 @@
-import { type User } from "./user.model";
+import type {
+  Order as PrismaOrder,
+  OrderItem as PrismaOrderItem,
+} from "generated/prisma/client";
 
-export interface OrderDetails {
+export type OrderDetails = Pick<
+  PrismaOrder,
+  | "email"
+  | "firstName"
+  | "lastName"
+  | "company"
+  | "address"
+  | "city"
+  | "country"
+  | "region"
+  | "zip"
+  | "phone"
+>;
+
+export type OrderItem = Omit<PrismaOrderItem, "price"> & {
+  price: number;
+};
+
+export type Order = Omit<PrismaOrder, "totalAmount"> & {
+  items: OrderItem[];
+  totalAmount: number;
+  details: OrderDetails;
   email: string;
   firstName: string;
   lastName: string;
@@ -11,29 +35,7 @@ export interface OrderDetails {
   region: string;
   zip: string;
   phone: string;
-}
-
-export interface OrderItem {
-  id: number;
-  orderId: number;
-  productId: number;
-  quantity: number;
-  title: string;
-  price: number;
-  imgSrc: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface Order {
-  id: number;
-  userId: User["id"];
-  items: OrderItem[];
-  totalAmount: number;
-  details: OrderDetails;
-  createdAt: string;
-  updatedAt: string;
-}
+};
 
 export interface OrderItemInput {
   productId: number;
