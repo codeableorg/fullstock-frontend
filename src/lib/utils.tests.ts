@@ -1,8 +1,10 @@
 import { Decimal } from "@prisma/client/runtime/library";
-import { type Category, type Product } from "generated/prisma/client.js";
+import {
+  type Category,
+  type Product,
+  type User,
+} from "generated/prisma/client.js";
 import { vi } from "vitest";
-
-import type { User } from "@/models/user.model";
 
 import type { Session } from "react-router";
 
@@ -18,8 +20,8 @@ export const createTestUser = (overrides?: Partial<User>): User => ({
   name: null,
   password: null,
   isGuest: false,
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
+  createdAt: new Date(),
+  updatedAt: new Date(),
   ...overrides,
 });
 
