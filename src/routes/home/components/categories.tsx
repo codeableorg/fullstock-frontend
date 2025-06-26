@@ -15,7 +15,7 @@ export function Categories({ categories }: CategoriesProps) {
     >
       <div className="rounded-xl overflow-hidden mb-4">
         <img
-          src={category.imgSrc}
+          src={category.imgSrc || undefined}
           alt={category.alt || `${category.title}`}
           className="w-full aspect-[3/2] md:aspect-[4/5] object-cover"
         />
