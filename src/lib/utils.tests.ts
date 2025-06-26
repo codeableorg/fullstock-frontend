@@ -1,6 +1,7 @@
 import { vi } from "vitest";
 
 import type { Category } from "@/models/category.model";
+import type { Order, OrderDetails, OrderItem } from "@/models/order.model";
 import type { Product } from "@/models/product.model";
 import type { User } from "@/models/user.model";
 
@@ -73,3 +74,58 @@ export const createTestCategory = (
   updatedAt: new Date(),
   ...overrides,
 });
+
+export const createTestOrderDetails = (
+  overrides?: Partial<OrderDetails>
+): OrderDetails => ({
+  email: "test@test.com",
+  firstName: "Test",
+  lastName: "User",
+  company: null,
+  address: "Test Address",
+  city: "Test City",
+  country: "Test Country",
+  region: "Test Region",
+  zip: "12345",
+  phone: "123456789",
+  ...overrides,
+});
+
+export const createTestOrderItem = (
+  overrides?: Partial<OrderItem>
+): OrderItem => ({
+  id: 1,
+  orderId: 1,
+  productId: 1,
+  quantity: 1,
+  title: "Test Product",
+  price: 100,
+  imgSrc: "test-image.jpg",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  ...overrides,
+});
+
+export const createTestOrder = (overrides?: Partial<Order>): Order => {
+  const details = createTestOrderDetails();
+  return {
+    id: 1,
+    userId: 1,
+    totalAmount: 100,
+    items: [createTestOrderItem()],
+    details,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    email: details.email,
+    firstName: details.firstName,
+    lastName: details.lastName,
+    company: details.company,
+    address: details.address,
+    city: details.city,
+    country: details.country,
+    region: details.region,
+    zip: details.zip,
+    phone: details.phone,
+    ...overrides,
+  };
+};
