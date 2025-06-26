@@ -19,8 +19,8 @@ export const createTestUser = (overrides?: Partial<User>): User => ({
   name: null,
   password: null,
   isGuest: false,
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
+  createdAt: new Date(),
+  updatedAt: new Date(),
   ...overrides,
 });
 
