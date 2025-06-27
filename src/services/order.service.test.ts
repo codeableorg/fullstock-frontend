@@ -52,7 +52,6 @@ describe("Order Service", () => {
 
   const mockedFormData = createTestOrderDetails();
   const mockedUser = createTestUser();
-  const mockedOrder = createTestOrder();
   const mockedTotalAmount = 200;
   const mockedRequest = createTestRequest();
 
@@ -61,13 +60,10 @@ describe("Order Service", () => {
       ...createTestOrder(),
       items: [createTestOrderItem()],
     };
-
     vi.mocked(getOrCreateUser).mockResolvedValue(mockedUser);
     vi.mocked(calculateTotal).mockReturnValue(mockedTotalAmount);
     mockPrisma.order.create.mockResolvedValue(prismaOrder);
-
     const order = await createOrder(mockedItems, mockedFormData);
-
     expect(mockPrisma.order.create).toHaveBeenCalledWith({
       data: {
         userId: mockedUser.id,
@@ -96,7 +92,6 @@ describe("Order Service", () => {
         items: true,
       },
     });
-
     expect(order).toEqual({
       ...prismaOrder,
       totalAmount: Number(prismaOrder.totalAmount),
@@ -134,18 +129,14 @@ describe("Order Service", () => {
       },
     ];
     const mockedSession = createMockSession(mockedUser.id);
-
     vi.mocked(getSession).mockResolvedValue(mockedSession);
     mockPrisma.order.findMany.mockResolvedValue(prismaOrders);
-
     const orders = await getOrdersByUser(mockedRequest);
-
     expect(mockPrisma.order.findMany).toHaveBeenCalledWith({
       where: { userId: mockedUser.id },
       include: { items: true },
       orderBy: { createdAt: "desc" },
     });
-
     expect(orders).toEqual(
       prismaOrders.map((order) => ({
         ...order,

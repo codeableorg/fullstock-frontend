@@ -76,7 +76,7 @@ export const createTestCategory = (
 });
 
 export const createTestOrderDetails = (
-  overrides?: Partial<OrderDetails>
+  overrides: Partial<OrderDetails> = {}
 ): OrderDetails => ({
   email: "test@test.com",
   firstName: "Test",
@@ -92,22 +92,23 @@ export const createTestOrderDetails = (
 });
 
 export const createTestOrderItem = (
-  overrides?: Partial<OrderItem>
-): OrderItem => ({
-  id: 1,
-  orderId: 1,
-  productId: 1,
-  quantity: 1,
-  title: "Test Product",
-  price: 100,
-  imgSrc: "test-image.jpg",
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  ...overrides,
-});
+  overrides: Partial<OrderItem> = {}
+): OrderItem =>
+  ({
+    id: 1,
+    orderId: 1,
+    productId: 1,
+    quantity: 1,
+    title: "Test Product",
+    price: 100,
+    imgSrc: "test-image.jpg",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    ...overrides,
+  } satisfies OrderItem);
 
-export const createTestOrder = (overrides?: Partial<Order>): Order => {
-  const details = createTestOrderDetails();
+export const createTestOrder = (overrides: Partial<Order> = {}): Order => {
+  const details = overrides.details ?? createTestOrderDetails();
   return {
     id: 1,
     userId: 1,
@@ -116,16 +117,7 @@ export const createTestOrder = (overrides?: Partial<Order>): Order => {
     details,
     createdAt: new Date(),
     updatedAt: new Date(),
-    email: details.email,
-    firstName: details.firstName,
-    lastName: details.lastName,
-    company: details.company,
-    address: details.address,
-    city: details.city,
-    country: details.country,
-    region: details.region,
-    zip: details.zip,
-    phone: details.phone,
+    ...details, // Expande todos los campos de contacto sin undefined
     ...overrides,
-  };
+  } satisfies Order;
 };
