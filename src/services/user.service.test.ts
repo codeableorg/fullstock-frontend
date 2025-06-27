@@ -8,8 +8,6 @@ import {
 } from "@/lib/utils.tests";
 import { getSession } from "@/session.server";
 import { prisma } from "@/db/prisma";
-import type { User } from "generated/prisma/client";
-
 import * as userService from "./user.service";
 
 // Mocking dependencies for unit tests
