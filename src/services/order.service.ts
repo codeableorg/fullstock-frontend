@@ -11,24 +11,13 @@ export async function createOrder(
   formData: OrderDetails
 ): Promise<Order> {
   const shippingDetails = formData;
-
   const user = await getOrCreateUser(shippingDetails.email);
   const totalAmount = calculateTotal(items);
-
   const order = await prisma.order.create({
     data: {
       userId: user.id,
       totalAmount: totalAmount,
-      email: shippingDetails.email,
-      firstName: shippingDetails.firstName,
-      lastName: shippingDetails.lastName,
-      company: shippingDetails.company,
-      address: shippingDetails.address,
-      city: shippingDetails.city,
-      country: shippingDetails.country,
-      region: shippingDetails.region,
-      zip: shippingDetails.zip,
-      phone: shippingDetails.phone,
+      ...shippingDetails,
       items: {
         create: items.map((item) => ({
           productId: item.productId,
@@ -43,34 +32,8 @@ export async function createOrder(
       items: true,
     },
   });
-
   if (!order) throw new Error("Failed to create order");
-
-  return {
-    ...order,
-    totalAmount: Number(order.totalAmount),
-    items: order.items.map((item) => ({
-      ...item,
-      price: Number(item.price),
-      imgSrc: item.imgSrc ?? "",
-      productId: item.productId ?? 0,
-      createdAt: item.createdAt,
-      updatedAt: item.updatedAt,
-    })),
-    createdAt: order.createdAt,
-    updatedAt: order.updatedAt,
-    details: {
-      email: order.email,
-      firstName: order.firstName,
-      lastName: order.lastName,
-      company: order.company,
-      address: order.address,
-      city: order.city,
-      country: order.country,
-      region: order.region,
-      zip: order.zip,
-      phone: order.phone,
-    },
+  const details = {
     email: order.email,
     firstName: order.firstName,
     lastName: order.lastName,
@@ -81,17 +44,31 @@ export async function createOrder(
     region: order.region,
     zip: order.zip,
     phone: order.phone,
-  } as Order;
+  };
+  return {
+    ...order,
+    totalAmount: Number(order.totalAmount),
+    items: order.items.map((item) => ({
+      ...item,
+      price: Number(item.price),
+      imgSrc: item.imgSrc,
+      productId: item.productId,
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt,
+    })),
+    createdAt: order.createdAt,
+    updatedAt: order.updatedAt,
+    details,
+    ...details,
+  };
 }
 
 export async function getOrdersByUser(request: Request): Promise<Order[]> {
   const session = await getSession(request.headers.get("Cookie"));
   const userId = session.get("userId");
-
   if (!userId) {
     throw new Error("User not authenticated");
   }
-
   const orders = await prisma.order.findMany({
     where: { userId },
     include: {
@@ -101,21 +78,8 @@ export async function getOrdersByUser(request: Request): Promise<Order[]> {
       createdAt: "desc",
     },
   });
-
-  return orders.map((order) => ({
-    ...order,
-    totalAmount: Number(order.totalAmount),
-    items: order.items.map((item) => ({
-      ...item,
-      price: Number(item.price),
-      imgSrc: item.imgSrc ?? "",
-      productId: item.productId ?? 0,
-      createdAt: item.createdAt,
-      updatedAt: item.updatedAt,
-    })),
-    createdAt: order.createdAt,
-    updatedAt: order.updatedAt,
-    details: {
+  return orders.map((order) => {
+    const details = {
       email: order.email,
       firstName: order.firstName,
       lastName: order.lastName,
@@ -126,16 +90,20 @@ export async function getOrdersByUser(request: Request): Promise<Order[]> {
       region: order.region,
       zip: order.zip,
       phone: order.phone,
-    },
-    email: order.email,
-    firstName: order.firstName,
-    lastName: order.lastName,
-    company: order.company,
-    address: order.address,
-    city: order.city,
-    country: order.country,
-    region: order.region,
-    zip: order.zip,
-    phone: order.phone,
-  })) as Order[];
+    };
+    return {
+      ...order,
+      totalAmount: Number(order.totalAmount),
+      items: order.items.map((item) => ({
+        ...item,
+        price: Number(item.price),
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt,
+      })),
+      createdAt: order.createdAt,
+      updatedAt: order.updatedAt,
+      details,
+      ...details,
+    };
+  });
 }
