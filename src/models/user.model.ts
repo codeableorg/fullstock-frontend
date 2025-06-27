@@ -1,17 +1,8 @@
-export interface User {
-  id: number;
-  email: string;
-  name: string | null;
-  password: string | null;
-  isGuest: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
+import type { User as PrismaUser } from "generated/prisma/client";
+
+export type User = PrismaUser;
 
 export interface AuthResponse {
-  user: Omit<User, "password">;
+  user: User;
   token: string;
 }
-
-// For creating new users (no id, timestamps)
-export type CreateUserDTO = Omit<User, "id" | "createdAt" | "updatedAt">;

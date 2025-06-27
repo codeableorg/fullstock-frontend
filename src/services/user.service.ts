@@ -1,12 +1,12 @@
 import { hashPassword } from "@/lib/security";
-import type { Prisma, User } from "generated/prisma/client";
+import type { User, AuthResponse } from "@/models/user.model";
 import { prisma } from "@/db/prisma";
 import { getSession } from "@/session.server";
 
 export async function updateUser(
   updatedUser: Partial<User>,
   request: Request
-): Promise<User> {
+): Promise<AuthResponse["user"]> {
   const session = await getSession(request.headers.get("Cookie"));
   const id = session.get("userId");
 
@@ -14,7 +14,7 @@ export async function updateUser(
     throw new Error("User not authenticated");
   }
 
-  const data: Prisma.UserUpdateInput = { ...updatedUser };
+  const data = { ...updatedUser } as any;
 
   if (updatedUser.password) {
     const hashedPassword = await hashPassword(updatedUser.password);
