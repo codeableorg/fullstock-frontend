@@ -1,7 +1,8 @@
-import { type Category, type Product } from "generated/prisma/client.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { createTestCategory, createTestProduct } from "@/lib/utils.tests";
+import type { Category } from "@/models/category.model";
+import type { Product } from "@/models/product.model";
 
 import { getCategoryBySlug } from "./category.service";
 import { getProductById, getProductsByCategorySlug } from "./product.service";
