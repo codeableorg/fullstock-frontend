@@ -1,14 +1,22 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { createTestCategory } from "@/lib/utils.tests";
-import * as categoriesRepository from "@/repositories/category.repository";
 import {
   getAllCategories,
   getCategoryBySlug,
 } from "@/services/category.service";
 
-// Mock the repository
-vi.mock("@/repositories/category.repository");
+// Mock Prisma client
+const mockPrisma = {
+  category: {
+    findMany: vi.fn(),
+    findUnique: vi.fn(),
+  },
+};
+
+vi.mock("@/db/prisma", () => ({
+  prisma: mockPrisma,
+}));
 
 describe("Category Service", () => {
   beforeEach(() => {
@@ -30,23 +38,21 @@ describe("Category Service", () => {
         }),
       ];
 
-      vi.mocked(categoriesRepository.getAllCategories).mockResolvedValue(
-        mockCategories
-      );
+      mockPrisma.category.findMany.mockResolvedValue(mockCategories);
 
       const result = await getAllCategories();
 
       expect(result).toEqual(mockCategories);
-      expect(categoriesRepository.getAllCategories).toHaveBeenCalledTimes(1);
+      expect(mockPrisma.category.findMany).toHaveBeenCalledTimes(1);
     });
 
     it("should handle empty categories", async () => {
-      vi.mocked(categoriesRepository.getAllCategories).mockResolvedValue([]);
+      mockPrisma.category.findMany.mockResolvedValue([]);
 
       const result = await getAllCategories();
 
       expect(result).toEqual([]);
-      expect(categoriesRepository.getAllCategories).toHaveBeenCalledTimes(1);
+      expect(mockPrisma.category.findMany).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -54,23 +60,21 @@ describe("Category Service", () => {
     it("should return category when found", async () => {
       const mockCategory = createTestCategory();
 
-      vi.mocked(categoriesRepository.getCategoryBySlug).mockResolvedValue(
-        mockCategory
-      );
+      mockPrisma.category.findUnique.mockResolvedValue(mockCategory);
 
       const result = await getCategoryBySlug("polos");
 
       expect(result).toEqual(mockCategory);
-      expect(categoriesRepository.getCategoryBySlug).toHaveBeenCalledWith(
-        "polos"
-      );
+      expect(mockPrisma.category.findUnique).toHaveBeenCalledWith({
+        where: { slug: "polos" },
+      });
     });
 
     it("should throw error when category not found", async () => {
-      vi.mocked(categoriesRepository.getCategoryBySlug).mockResolvedValue(null);
+      mockPrisma.category.findUnique.mockResolvedValue(null);
 
-      await expect(getCategoryBySlug("non-existent")).rejects.toThrow(
-        'Category with slug "non-existent" not found'
+      await expect(getCategoryBySlug("polos")).rejects.toThrow(
+        'Category with slug "polos" not found'
       );
     });
   });

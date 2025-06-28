@@ -4,10 +4,10 @@ import { Link, redirect, useNavigation, useSubmit } from "react-router";
 import { z } from "zod";
 
 import { Button, Container, InputField, Section } from "@/components/ui";
+import { prisma } from "@/db/prisma";
 import { hashPassword } from "@/lib/security";
 import { debounceAsync } from "@/lib/utils";
 import type { CreateUserDTO } from "@/models/user.model";
-import { createUser, getUserByEmail } from "@/repositories/user.repository";
 import { redirectIfAuthenticated } from "@/services/auth.service";
 import { linkCartToUser } from "@/services/cart.service";
 import { findEmail } from "@/services/user.client-service";
@@ -42,7 +42,9 @@ export async function action({ request }: Route.ActionArgs) {
   const sessionCartId = session.get("sessionCartId");
 
   try {
-    const existingUser = await getUserByEmail(email);
+    const existingUser = await prisma.user.findUnique({
+      where: { email: email },
+    });
     if (existingUser) {
       return { error: "El correo electrónico ya existe" };
     }
@@ -56,7 +58,9 @@ export async function action({ request }: Route.ActionArgs) {
       name: null,
     };
 
-    const user = await createUser(newUser);
+    const user = await prisma.user.create({
+      data: newUser,
+    });
     session.set("userId", user.id);
 
     if (sessionCartId) {

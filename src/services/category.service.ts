@@ -1,12 +1,16 @@
-import { type Category } from "@/models/category.model";
-import * as categoriesRepository from "@/repositories/category.repository";
+import { type Category, type CategorySlug } from "generated/prisma/client.js";
+
+import { prisma } from "@/db/prisma";
 
 export async function getAllCategories(): Promise<Category[]> {
-  return categoriesRepository.getAllCategories();
+  const categories = await prisma.category.findMany();
+  return categories;
 }
 
-export async function getCategoryBySlug(slug: string): Promise<Category> {
-  const category = await categoriesRepository.getCategoryBySlug(slug);
+export async function getCategoryBySlug(slug: CategorySlug): Promise<Category> {
+  const category = await prisma.category.findUnique({
+    where: { slug },
+  });
 
   if (!category) {
     throw new Error(`Category with slug "${slug}" not found`);

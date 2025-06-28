@@ -1,20 +1,28 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { prisma } from "@/db/prisma";
 import { hashPassword } from "@/lib/security";
 import {
   createMockSession,
   createTestRequest,
   createTestUser,
 } from "@/lib/utils.tests";
-import * as userRepository from "@/repositories/user.repository";
 import { getSession } from "@/session.server";
 
 import * as userService from "./user.service";
 
 // Mocking dependencies for unit tests
 vi.mock("@/session.server");
-vi.mock("@/repositories/user.repository");
 vi.mock("@/lib/security");
+vi.mock("@/db/prisma", () => ({
+  prisma: {
+    user: {
+      update: vi.fn(),
+      findUnique: vi.fn(),
+      create: vi.fn(),
+    },
+  },
+}));
 
 describe("user service", () => {
   beforeEach(() => {
@@ -29,7 +37,7 @@ describe("user service", () => {
       const mockSession = createMockSession(updatedUser.id); // Simulate updated user ID in session
 
       // Mockeando las funciones que serán llamadas
-      vi.mocked(userRepository.updateUser).mockResolvedValue(updatedUser);
+      vi.mocked(prisma.user.update).mockResolvedValue(updatedUser);
       vi.mocked(getSession).mockResolvedValue(mockSession);
 
       // Llamando al servicio y verificando el resultado
@@ -51,6 +59,10 @@ describe("user service", () => {
       // Mockeando las funciones que serán llamadas
       vi.mocked(getSession).mockResolvedValue(mockSession);
       vi.mocked(hashPassword).mockResolvedValue("hashed-password");
+      vi.mocked(prisma.user.update).mockResolvedValue({
+        ...updatedUser,
+        password: "hashed-password",
+      });
 
       // Llamando al servicio y verificando el resultado
       await userService.updateUser(updatedUser, request);
@@ -87,16 +99,15 @@ describe("user service", () => {
         id: 10,
       });
 
-      // Mock repository function to return existing user
-      vi.mocked(userRepository.getUserByEmail).mockResolvedValue(existingUser);
+      vi.mocked(prisma.user.findUnique).mockResolvedValue(existingUser);
 
       // Call service function
       const result = await userService.getOrCreateUser(email);
 
       // Verify results
       expect(result).toEqual(existingUser);
-      expect(userRepository.getUserByEmail).toHaveBeenCalledWith(email);
-      expect(userRepository.createUser).not.toHaveBeenCalled();
+      expect(prisma.user.findUnique).toHaveBeenCalledWith({ where: { email } });
+      expect(prisma.user.create).not.toHaveBeenCalled();
     });
 
     it("should create a new guest user when email is not found", async () => {
@@ -107,21 +118,22 @@ describe("user service", () => {
         id: 20,
         isGuest: true,
       });
-      const createUserDTO = {
-        email,
-        password: null,
-        isGuest: true,
-        name: null,
-      };
-      // Mock repository functions
-      vi.mocked(userRepository.getUserByEmail).mockResolvedValue(null);
-      vi.mocked(userRepository.createUser).mockResolvedValue(newUser);
+
+      vi.mocked(prisma.user.findUnique).mockResolvedValue(null);
+      vi.mocked(prisma.user.create).mockResolvedValue(newUser);
       // Call service function
       const result = await userService.getOrCreateUser(email);
       // Verify results
       expect(result).toEqual(newUser);
-      expect(userRepository.getUserByEmail).toHaveBeenCalledWith(email);
-      expect(userRepository.createUser).toHaveBeenCalledWith(createUserDTO);
+      expect(prisma.user.findUnique).toHaveBeenCalledWith({ where: { email } });
+      expect(prisma.user.create).toHaveBeenCalledWith({
+        data: {
+          email,
+          password: null,
+          isGuest: true,
+          name: null,
+        },
+      });
     });
   });
 });

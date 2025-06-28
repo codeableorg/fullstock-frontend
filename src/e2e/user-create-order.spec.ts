@@ -1,12 +1,8 @@
 import { test, expect } from "@playwright/test";
 
+import { prisma } from "@/db/prisma";
 import { hashPassword } from "@/lib/security";
 import type { CreateUserDTO } from "@/models/user.model";
-import {
-  createUser,
-  deleteUser,
-  getUserByEmail,
-} from "@/repositories/user.repository";
 
 test.describe("User", () => {
   let testUserId: number;
@@ -19,18 +15,26 @@ test.describe("User", () => {
       isGuest: false,
     };
 
-    const existingUser = await getUserByEmail(testUser.email);
+    const existingUser = await prisma.user.findUnique({
+      where: { email: testUser.email },
+    });
 
     if (existingUser) {
-      await deleteUser(existingUser.id);
+      await prisma.user.delete({
+        where: { id: existingUser.id },
+      });
     }
 
-    const user = await createUser(testUser);
+    const user = await prisma.user.create({
+      data: testUser,
+    });
     testUserId = user.id;
   });
 
   test.afterAll(async () => {
-    await deleteUser(testUserId);
+    await prisma.user.delete({
+      where: { id: testUserId },
+    });
   });
 
   test("User can create an order", async ({ page }) => {

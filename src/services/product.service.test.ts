@@ -3,13 +3,23 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createTestCategory, createTestProduct } from "@/lib/utils.tests";
 import type { Category } from "@/models/category.model";
 import type { Product } from "@/models/product.model";
-import * as productRepository from "@/repositories/product.repository";
 
 import { getCategoryBySlug } from "./category.service";
 import { getProductById, getProductsByCategorySlug } from "./product.service";
 
-// Mock dependencies
-vi.mock("@/repositories/product.repository");
+// Mock Prisma client
+const mockPrisma = {
+  product: {
+    findMany: vi.fn(),
+    findUnique: vi.fn(),
+  },
+};
+
+vi.mock("@/db/prisma", () => ({
+  prisma: mockPrisma,
+}));
+
+// Mock category service
 vi.mock("./category.service");
 
 describe("Product Service", () => {
@@ -30,20 +40,18 @@ describe("Product Service", () => {
         }),
       ];
 
-      // Step 2: Mock - Configure repository responses
+      // Step 2: Mock - Configure responses
       vi.mocked(getCategoryBySlug).mockResolvedValue(testCategory);
-      vi.mocked(productRepository.getProductsByCategory).mockResolvedValue(
-        mockedProducts
-      );
+      mockPrisma.product.findMany.mockResolvedValue(mockedProducts);
 
       // Step 3: Call service function
       const products = await getProductsByCategorySlug(testCategory.slug);
 
       // Step 4: Verify expected behavior
       expect(getCategoryBySlug).toHaveBeenCalledWith(testCategory.slug);
-      expect(productRepository.getProductsByCategory).toHaveBeenCalledWith(
-        testCategory.id
-      );
+      expect(mockPrisma.product.findMany).toHaveBeenCalledWith({
+        where: { categoryId: testCategory.id },
+      });
       expect(products).toEqual(mockedProducts);
     });
 
@@ -62,7 +70,7 @@ describe("Product Service", () => {
 
       // Step 4: Verify expected behavior
       await expect(getProducts).rejects.toThrow(errorMessage);
-      expect(productRepository.getProductsByCategory).not.toHaveBeenCalled();
+      expect(mockPrisma.product.findMany).not.toHaveBeenCalled();
     });
   });
 
@@ -71,18 +79,16 @@ describe("Product Service", () => {
       // Step 1: Setup - Create test data for existing product
       const testProduct = createTestProduct();
 
-      // Step 2: Mock - Configure repository response
-      vi.mocked(productRepository.getProductById).mockResolvedValue(
-        testProduct
-      );
+      // Step 2: Mock - Configure Prisma response
+      mockPrisma.product.findUnique.mockResolvedValue(testProduct);
 
       // Step 3: Call service function
       const result = await getProductById(testProduct.id);
 
       // Step 4: Verify expected behavior
-      expect(productRepository.getProductById).toHaveBeenCalledWith(
-        testProduct.id
-      );
+      expect(mockPrisma.product.findUnique).toHaveBeenCalledWith({
+        where: { id: testProduct.id },
+      });
       expect(result).toEqual(testProduct);
     });
 
@@ -90,14 +96,17 @@ describe("Product Service", () => {
       // Step 1: Setup - Configure ID for non-existent product
       const nonExistentId = 999;
 
-      // Step 2: Mock - Configure null response from repository
-      vi.mocked(productRepository.getProductById).mockResolvedValue(null);
+      // Step 2: Mock - Configure null response from Prisma
+      mockPrisma.product.findUnique.mockResolvedValue(null);
 
       // Step 3: Call service function
       const productPromise = getProductById(nonExistentId);
 
       // Step 4: Verify expected behavior
       await expect(productPromise).rejects.toThrow("Product not found");
+      expect(mockPrisma.product.findUnique).toHaveBeenCalledWith({
+        where: { id: nonExistentId },
+      });
     });
   });
 });

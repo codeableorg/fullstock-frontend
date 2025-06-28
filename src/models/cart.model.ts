@@ -1,25 +1,18 @@
 import { type Product } from "./product.model";
-import { type User } from "./user.model";
 
-export interface CartItem {
-  id: number;
+import type {
+  Cart as PrismaCart,
+  CartItem as PrismaCartItem,
+} from "generated/prisma/client";
+
+export type CartItem = PrismaCartItem & {
   product: Pick<
     Product,
     "id" | "title" | "imgSrc" | "alt" | "price" | "isOnSale"
   >;
-  quantity: number;
-  createdAt: string;
-  updatedAt: string;
-}
+};
 
-export interface Cart {
-  id: number;
-  userId: User["id"] | null;
-  sessionCartId: string;
-  items: CartItem[];
-  createdAt: string;
-  updatedAt: string;
-}
+export type Cart = PrismaCart;
 
 export interface CartItemInput {
   productId: Product["id"];
@@ -28,3 +21,21 @@ export interface CartItemInput {
   price: Product["price"];
   imgSrc: Product["imgSrc"];
 }
+
+// Tipo para representar un producto simplificado en el carrito
+
+export type CartProductInfo = Pick<
+  Product,
+  "id" | "title" | "imgSrc" | "alt" | "price" | "isOnSale"
+>;
+
+// Tipo para representar un item de carrito con su producto
+export type CartItemWithProduct = {
+  product: CartProductInfo;
+  quantity: number;
+};
+
+// Tipo para el carrito con items y productos incluidos
+export type CartWithItems = Cart & {
+  items: CartItem[];
+};

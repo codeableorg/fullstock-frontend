@@ -13,10 +13,8 @@ export async function loader({ request }: Route.LoaderArgs) {
   try {
     const orders = await getOrdersByUser(request);
 
-    orders.sort(
-      (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
+    orders.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+
     return { orders };
   } catch {
     return {};
@@ -26,16 +24,11 @@ export async function loader({ request }: Route.LoaderArgs) {
 export default function Orders({ loaderData }: Route.ComponentProps) {
   const { orders } = loaderData;
 
-  const mappedOrders = orders?.map((order) => ({
-    ...order,
-    createdAt: new Date(order.createdAt),
-  }));
-
   return (
     <div>
-      {mappedOrders!.length > 0 ? (
+      {orders!.length > 0 ? (
         <div className="flex flex-col gap-4">
-          {mappedOrders!.map((order) => (
+          {orders!.map((order) => (
             <div key={order.id}>
               <div className="rounded-lg bg-muted py-4 px-6">
                 <dl className="flex flex-col gap-4 w-full sm:flex-row">
@@ -99,7 +92,10 @@ export default function Orders({ loaderData }: Route.ComponentProps) {
                       <td className="py-6 pl-6">
                         <div className="flex items-center gap-2">
                           <div className="w-16 rounded-xl bg-muted">
-                            <img src={item.imgSrc} alt={item.title} />
+                            <img
+                              src={item.imgSrc || undefined}
+                              alt={item.title}
+                            />
                           </div>
                           <div>
                             <div className="font-medium text-foreground">
