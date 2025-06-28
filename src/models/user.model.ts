@@ -6,3 +6,8 @@ export interface AuthResponse {
   user: Omit<User, "password">;
   token: string;
 }
+
+export type CreateUserDTO = Pick<
+  User,
+  "email" | "password" | "isGuest" | "name"
+>;

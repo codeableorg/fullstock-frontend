@@ -4,8 +4,8 @@ import { Link, redirect, useNavigation, useSubmit } from "react-router";
 import { z } from "zod";
 
 import { Button, Container, InputField, Section } from "@/components/ui";
+import { prisma } from "@/db/prisma";
 import { comparePasswords } from "@/lib/security";
-import { getUserByEmail } from "@/repositories/user.repository";
 import { redirectIfAuthenticated } from "@/services/auth.service";
 import {
   getRemoteCart,
@@ -31,7 +31,7 @@ export async function action({ request }: Route.ActionArgs) {
 
   try {
     // Proceso de login nuevo
-    const user = await getUserByEmail(email);
+    const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
       return { error: "Correo electrónico o contraseña inválidos" };
     }

@@ -39,8 +39,8 @@ describe("AuthNav Component", () => {
       email: "testino@mail.com",
       name: "Testino",
       isGuest: false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
 
     renderWithRouter(<AuthNav user={user} />);
@@ -57,8 +57,8 @@ describe("AuthNav Component", () => {
       email: "testino@mail.com",
       name: null,
       isGuest: false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
 
     renderWithRouter(<AuthNav user={user} />);

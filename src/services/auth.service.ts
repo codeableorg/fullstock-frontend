@@ -1,7 +1,7 @@
 import { redirect } from "react-router";
 
+import { prisma } from "@/db/prisma";
 import { type AuthResponse } from "@/models/user.model";
-import { getUserById } from "@/repositories/user.repository";
 import { getSession } from "@/session.server";
 
 export async function getCurrentUser(
@@ -14,7 +14,17 @@ export async function getCurrentUser(
   if (!userId) return null;
 
   try {
-    return await getUserById(userId);
+    return await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        isGuest: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
   } catch (error) {
     console.error("Error fetching current user:", error);
     return null;
