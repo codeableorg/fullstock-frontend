@@ -10,13 +10,6 @@
     "preview": "vite preview",
     "start": "react-router-serve ./build/server/index.js",
     "type-check": "react-router typegen && tsc",
-    "create-db:dev": "tsx src/db/scripts/create-db.ts",
-    "drop-db:dev": "tsx src/db/scripts/drop-db.ts",
-    "migrate": "node dist/db/scripts/migrate.js",
-    "migrate:dev": "tsx src/db/scripts/migrate.ts",
-    "reset-db:dev": "npm run drop-db:dev && npm run create-db:dev && npm run migrate:dev && npm run seed:dev",
-    "seed": "node dist/db/scripts/seed.js",
-    "seed:dev": "tsx src/db/scripts/seed.ts",
     "test": "vitest"
   },
   "prisma": {
