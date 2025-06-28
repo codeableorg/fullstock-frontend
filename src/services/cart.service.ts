@@ -1,32 +1,7 @@
-import { type Cart, type CartItem, type User } from "generated/prisma/client";
-
 import { prisma } from "@/db/prisma";
+import type { CartItemWithProduct, CartWithItems } from "@/models/cart.model";
+import type { User } from "@/models/user.model";
 import { getSession } from "@/session.server";
-
-import type { Decimal } from "@prisma/client/runtime/library";
-
-// Tipo para representar un producto simplificado en el carrito
-type CartProductInfo = {
-  id: number;
-  title: string;
-  imgSrc: string;
-  alt: string | null;
-  price: Decimal;
-  isOnSale: boolean;
-};
-
-// Tipo para representar un item de carrito con su producto
-type CartItemWithProduct = {
-  product: CartProductInfo;
-  quantity: number;
-};
-
-// Tipo para el carrito con items y productos incluidos
-type CartWithItems = Cart & {
-  items: Array<CartItem & {
-    product: CartProductInfo
-  }>
-};
 
 // Función para obtener un carrito con sus ítems
 async function getCart(
@@ -34,17 +9,17 @@ async function getCart(
   sessionCartId?: string,
   id?: number
 ): Promise<CartWithItems | null> {
-  const whereCondition = userId 
-    ? { userId } 
-    : sessionCartId 
-      ? { sessionCartId } 
-      : id 
-        ? { id } 
-        : undefined;
+  const whereCondition = userId
+    ? { userId }
+    : sessionCartId
+    ? { sessionCartId }
+    : id
+    ? { id }
+    : undefined;
 
   if (!whereCondition) return null;
 
-  return await prisma.cart.findFirst({
+  const data = await prisma.cart.findFirst({
     where: whereCondition,
     include: {
       items: {
@@ -66,9 +41,24 @@ async function getCart(
       },
     },
   });
+
+  if (!data) return null;
+
+  return {
+    ...data,
+    items: data.items.map((item) => ({
+      ...item,
+      product: {
+        ...item.product,
+        price: item.product.price.toNumber(),
+      },
+    })),
+  };
 }
 
-export async function getRemoteCart(userId: User["id"]): Promise<CartWithItems | null> {
+export async function getRemoteCart(
+  userId: User["id"]
+): Promise<CartWithItems | null> {
   return await getCart(userId);
 }
 
@@ -76,37 +66,49 @@ export async function getOrCreateCart(
   userId: User["id"] | undefined,
   sessionCartId: string | undefined
 ): Promise<CartWithItems> {
-  let cart = await getCart(userId, sessionCartId);
+  const cart = await getCart(userId, sessionCartId);
+
+  if (cart) {
+    return cart;
+  }
 
   // Si no se encontró un carrito creamos uno nuevo
-  if (!cart) {
-    // Creamos un carrito con userId si se proporciona
-    cart = await prisma.cart.create({
-      data: {
-        userId: userId || null,
-      },
-      include: {
-        items: {
-          include: {
-            product: {
-              select: {
-                id: true,
-                title: true,
-                imgSrc: true,
-                alt: true,
-                price: true,
-                isOnSale: true,
-              },
+
+  // Creamos un carrito con userId si se proporciona
+  const newCart = await prisma.cart.create({
+    data: {
+      userId: userId || null,
+    },
+    include: {
+      items: {
+        include: {
+          product: {
+            select: {
+              id: true,
+              title: true,
+              imgSrc: true,
+              alt: true,
+              price: true,
+              isOnSale: true,
             },
           },
         },
       },
-    });
-  }
+    },
+  });
 
-  if (!cart) throw new Error("Failed to create cart");
+  if (!newCart) throw new Error("Failed to create cart");
 
-  return cart;
+  return {
+    ...newCart,
+    items: newCart.items.map((item) => ({
+      ...item,
+      product: {
+        ...item.product,
+        price: item.product.price.toNumber(),
+      },
+    })),
+  };
 }
 
 export async function createRemoteItems(
@@ -126,10 +128,10 @@ export async function createRemoteItems(
   // Si hay elementos para agregar, agregarlos
   if (items.length > 0) {
     await prisma.cartItem.createMany({
-      data: items.map(item => ({
+      data: items.map((item) => ({
         cartId: cart.id,
         productId: item.product.id,
-        quantity: item.quantity
+        quantity: item.quantity,
       })),
     });
   }
@@ -174,11 +176,7 @@ export async function alterQuantityCartItem(
     });
   }
 
-  const updatedCart = await getCart(
-    userId,
-    cart.sessionCartId,
-    cart.id
-  );
+  const updatedCart = await getCart(userId, cart.sessionCartId, cart.id);
 
   if (!updatedCart) throw new Error("Cart not found after update");
 
@@ -213,12 +211,12 @@ export async function deleteRemoteCart(request: Request): Promise<void> {
   const cart = await getCart(userId, sessionCartId);
 
   if (!cart) throw new Error("Cart not found");
-  
+
   // Eliminar todos los items del carrito primero
-  await prisma.cartItem.deleteMany({
-    where: { cartId: cart.id },
-  });
-  
+  // await prisma.cartItem.deleteMany({
+  //   where: { cartId: cart.id },
+  // });
+
   // Luego eliminar el carrito
   await prisma.cart.delete({
     where: { id: cart.id },
@@ -255,7 +253,16 @@ export async function linkCartToUser(
 
   if (!updatedCart) throw new Error("Cart not found after linking");
 
-  return updatedCart;
+  return {
+    ...updatedCart,
+    items: updatedCart.items.map((item) => ({
+      ...item,
+      product: {
+        ...item.product,
+        price: item.product.price.toNumber(),
+      },
+    })),
+  };
 }
 
 export async function mergeGuestCartWithUserCart(
@@ -292,12 +299,21 @@ export async function mergeGuestCartWithUserCart(
         },
       },
     });
-    return updatedCart;
+    return {
+      ...updatedCart,
+      items: updatedCart.items.map((item) => ({
+        ...item,
+        product: {
+          ...item.product,
+          price: item.product.price.toNumber(),
+        },
+      })),
+    };
   }
 
   // Obtener productos duplicados para eliminarlos del carrito del usuario
-  const guestProductIds = guestCart.items.map(item => item.productId);
-  
+  const guestProductIds = guestCart.items.map((item) => item.productId);
+
   // Eliminar productos del carrito usuario que también existan en el carrito invitado
   await prisma.cartItem.deleteMany({
     where: {
@@ -309,17 +325,13 @@ export async function mergeGuestCartWithUserCart(
   });
 
   // Mover los items del carrito de invitado al carrito de usuario
-  await Promise.all(
-    guestCart.items.map(async (item) => {
-      return prisma.cartItem.create({
-        data: {
-          cartId: userCart.id,
-          productId: item.productId,
-          quantity: item.quantity,
-        },
-      });
-    })
-  );
+  await prisma.cartItem.createMany({
+    data: guestCart.items.map((item) => ({
+      cartId: userCart.id,
+      productId: item.productId,
+      quantity: item.quantity,
+    })),
+  });
 
   // Eliminar el carrito de invitado
   await prisma.cart.delete({

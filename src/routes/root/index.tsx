@@ -17,7 +17,7 @@ import {
   Separator,
 } from "@/components/ui";
 import { getCart } from "@/lib/cart";
-import type { Cart } from "@/models/cart.model";
+import type { CartWithItems } from "@/models/cart.model";
 import { getCurrentUser } from "@/services/auth.service";
 import { createRemoteItems } from "@/services/cart.service";
 import { commitSession, getSession } from "@/session.server";
@@ -45,7 +45,7 @@ export async function action({ request }: Route.ActionArgs) {
 export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSession(request.headers.get("Cookie"));
   const sessionCartId = session.get("sessionCartId");
-  let cart: Cart | null = null;
+  let cart: CartWithItems | null = null;
 
   // Obtenemos el usuario actual (autenticado o no)
   const user = await getCurrentUser(request);
