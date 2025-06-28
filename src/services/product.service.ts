@@ -31,7 +31,6 @@ export async function getProductById(id: number): Promise<Product> {
 }
 
 export async function getAllProducts(): Promise<Product[]> {
-  // No la utilizamos en repository.
   return (await prisma.product.findMany()).map((p) => ({
     ...p,
     price: p.price.toNumber(),

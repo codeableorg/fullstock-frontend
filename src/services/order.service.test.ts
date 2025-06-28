@@ -29,7 +29,6 @@ vi.mock("@/db/prisma", () => ({
 
 vi.mock("./user.service");
 vi.mock("@/lib/cart");
-vi.mock("@/repositories/order.repository");
 vi.mock("@/session.server");
 
 describe("Order Service", () => {

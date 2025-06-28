@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { prisma } from "@/db/prisma";
 import { hashPassword } from "@/lib/security";
 import {
   createMockSession,
@@ -7,7 +8,7 @@ import {
   createTestUser,
 } from "@/lib/utils.tests";
 import { getSession } from "@/session.server";
-import { prisma } from "@/db/prisma";
+
 import * as userService from "./user.service";
 
 // Mocking dependencies for unit tests
@@ -98,7 +99,6 @@ describe("user service", () => {
         id: 10,
       });
 
-      // Mock repository function to return existing user
       vi.mocked(prisma.user.findUnique).mockResolvedValue(existingUser);
 
       // Call service function
@@ -118,7 +118,7 @@ describe("user service", () => {
         id: 20,
         isGuest: true,
       });
-      // Mock repository functions
+
       vi.mocked(prisma.user.findUnique).mockResolvedValue(null);
       vi.mocked(prisma.user.create).mockResolvedValue(newUser);
       // Call service function

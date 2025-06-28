@@ -1,62 +1,142 @@
-import { type Cart, type CartItem } from "@/models/cart.model";
+import { prisma } from "@/db/prisma";
+import type { CartItemWithProduct, CartWithItems } from "@/models/cart.model";
 import type { User } from "@/models/user.model";
-import * as cartRepository from "@/repositories/cart.repository";
 import { getSession } from "@/session.server";
 
-export async function getRemoteCart(userId: User["id"]): Promise<Cart | null> {
-  const cart = await cartRepository.getCart(userId, undefined);
-  return cart;
+// Función para obtener un carrito con sus ítems
+async function getCart(
+  userId?: number,
+  sessionCartId?: string,
+  id?: number
+): Promise<CartWithItems | null> {
+  const whereCondition = userId
+    ? { userId }
+    : sessionCartId
+    ? { sessionCartId }
+    : id
+    ? { id }
+    : undefined;
+
+  if (!whereCondition) return null;
+
+  const data = await prisma.cart.findFirst({
+    where: whereCondition,
+    include: {
+      items: {
+        include: {
+          product: {
+            select: {
+              id: true,
+              title: true,
+              imgSrc: true,
+              alt: true,
+              price: true,
+              isOnSale: true,
+            },
+          },
+        },
+        orderBy: {
+          id: "asc",
+        },
+      },
+    },
+  });
+
+  if (!data) return null;
+
+  return {
+    ...data,
+    items: data.items.map((item) => ({
+      ...item,
+      product: {
+        ...item.product,
+        price: item.product.price.toNumber(),
+      },
+    })),
+  };
+}
+
+export async function getRemoteCart(
+  userId: User["id"]
+): Promise<CartWithItems | null> {
+  return await getCart(userId);
 }
 
 export async function getOrCreateCart(
   userId: User["id"] | undefined,
   sessionCartId: string | undefined
-) {
-  let cart: Cart | null = null;
+): Promise<CartWithItems> {
+  const cart = await getCart(userId, sessionCartId);
 
-  cart = await cartRepository.getCart(userId, sessionCartId);
-
-  // Si no se encontró un carrito creamos uno nuevo
-  if (!cart) {
-    // Creamos un carrito sin userId ni sessionCartId, dejando que la BD genere el UUID
-    cart = await cartRepository.createCart();
-    // Si se crea el carrito, lo vinculamos a un usuario si se proporciona un userId
-    if (cart && userId) {
-      await cartRepository.updateCartWithUserId(cart.id, userId);
-    }
+  if (cart) {
+    return cart;
   }
 
-  if (!cart) throw new Error("Failed to create cart");
+  // Si no se encontró un carrito creamos uno nuevo
 
-  return cart;
+  // Creamos un carrito con userId si se proporciona
+  const newCart = await prisma.cart.create({
+    data: {
+      userId: userId || null,
+    },
+    include: {
+      items: {
+        include: {
+          product: {
+            select: {
+              id: true,
+              title: true,
+              imgSrc: true,
+              alt: true,
+              price: true,
+              isOnSale: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!newCart) throw new Error("Failed to create cart");
+
+  return {
+    ...newCart,
+    items: newCart.items.map((item) => ({
+      ...item,
+      product: {
+        ...item.product,
+        price: item.product.price.toNumber(),
+      },
+    })),
+  };
 }
 
 export async function createRemoteItems(
   userId: User["id"] | undefined,
   sessionCartId: string | undefined,
-  items: CartItem[] = []
-): Promise<Cart> {
-  const mappedItems = items.map(({ product, quantity }) => ({
-    productId: product.id,
-    quantity,
-  }));
-
+  items: CartItemWithProduct[] = []
+): Promise<CartWithItems> {
   const cart = await getOrCreateCart(userId, sessionCartId);
 
+  // Eliminar todos los ítems existentes en el carrito
   if (cart.items.length > 0) {
-    await cartRepository.clearCart(cart.id);
+    await prisma.cartItem.deleteMany({
+      where: { cartId: cart.id },
+    });
   }
 
   // Si hay elementos para agregar, agregarlos
   if (items.length > 0) {
-    await cartRepository.addCartItems(cart.id, mappedItems);
+    await prisma.cartItem.createMany({
+      data: items.map((item) => ({
+        cartId: cart.id,
+        productId: item.product.id,
+        quantity: item.quantity,
+      })),
+    });
   }
 
-  const updatedCart = await cartRepository.getCart(
-    userId,
-    sessionCartId,
-    cart.id
-  );
+  const updatedCart = await getCart(userId, sessionCartId, cart.id);
 
   if (!updatedCart) throw new Error("Cart not found after creation");
 
@@ -68,7 +148,7 @@ export async function alterQuantityCartItem(
   sessionCartId: string | undefined,
   productId: number,
   quantity: number = 1
-): Promise<Cart> {
+): Promise<CartWithItems> {
   const cart = await getOrCreateCart(userId, sessionCartId);
 
   const existingItem = cart.items.find((item) => item.product.id === productId);
@@ -78,16 +158,25 @@ export async function alterQuantityCartItem(
     if (newQuantity <= 0)
       throw new Error("Cannot set item quantity to 0 or less");
 
-    await cartRepository.updateCartItem(cart.id, existingItem.id, newQuantity);
+    await prisma.cartItem.update({
+      where: {
+        id: existingItem.id,
+      },
+      data: {
+        quantity: newQuantity,
+      },
+    });
   } else {
-    await cartRepository.addCartItem(cart.id, productId, quantity);
+    await prisma.cartItem.create({
+      data: {
+        cartId: cart.id,
+        productId,
+        quantity,
+      },
+    });
   }
 
-  const updatedCart = await cartRepository.getCart(
-    userId,
-    cart.sessionCartId,
-    cart.id
-  );
+  const updatedCart = await getCart(userId, cart.sessionCartId, cart.id);
 
   if (!updatedCart) throw new Error("Cart not found after update");
 
@@ -97,17 +186,18 @@ export async function alterQuantityCartItem(
 export async function deleteRemoteCartItem(
   userId: User["id"] | undefined,
   sessionCartId: string | undefined,
-  itemId: CartItem["id"]
-): Promise<Cart> {
-  let cart: Cart | null = null;
-
-  if (userId || sessionCartId) {
-    cart = await cartRepository.getCart(userId, sessionCartId);
-  }
+  itemId: number
+): Promise<CartWithItems> {
+  const cart = await getCart(userId, sessionCartId);
 
   if (!cart) throw new Error("Cart not found");
 
-  await cartRepository.removeCartItem(cart.id, itemId);
+  await prisma.cartItem.delete({
+    where: {
+      id: itemId,
+      cartId: cart.id,
+    },
+  });
 
   const updatedCart = await getOrCreateCart(userId, sessionCartId);
   return updatedCart;
@@ -118,43 +208,136 @@ export async function deleteRemoteCart(request: Request): Promise<void> {
   const sessionCartId = session.get("sessionCartId");
   const userId = session.get("userId");
 
-  let cart: Cart | null = null;
-
-  if (userId || sessionCartId) {
-    cart = await cartRepository.getCart(userId, sessionCartId);
-  }
+  const cart = await getCart(userId, sessionCartId);
 
   if (!cart) throw new Error("Cart not found");
-  await cartRepository.clearCart(cart.id);
+
+  // Eliminar todos los items del carrito primero
+  // await prisma.cartItem.deleteMany({
+  //   where: { cartId: cart.id },
+  // });
+
+  // Luego eliminar el carrito
+  await prisma.cart.delete({
+    where: { id: cart.id },
+  });
 }
 
 export async function linkCartToUser(
   userId: User["id"],
   sessionCartId: string
-): Promise<Cart | null> {
+): Promise<CartWithItems> {
   if (!sessionCartId) throw new Error("Session cart ID not found");
   if (!userId) throw new Error("User ID not found");
 
-  const updatedCart = await cartRepository.updateCartBySessionId(
-    sessionCartId,
-    userId
-  );
+  const updatedCart = await prisma.cart.update({
+    where: { sessionCartId },
+    data: { userId },
+    include: {
+      items: {
+        include: {
+          product: {
+            select: {
+              id: true,
+              title: true,
+              imgSrc: true,
+              alt: true,
+              price: true,
+              isOnSale: true,
+            },
+          },
+        },
+      },
+    },
+  });
 
   if (!updatedCart) throw new Error("Cart not found after linking");
 
-  return updatedCart;
+  return {
+    ...updatedCart,
+    items: updatedCart.items.map((item) => ({
+      ...item,
+      product: {
+        ...item.product,
+        price: item.product.price.toNumber(),
+      },
+    })),
+  };
 }
 
 export async function mergeGuestCartWithUserCart(
   userId: User["id"],
   sessionCartId: string
-): Promise<Cart | null> {
-  const mergedCart = await cartRepository.mergeGuestCartWithUserCart(
-    userId,
-    sessionCartId
-  );
+): Promise<CartWithItems | null> {
+  // Obtener el carrito de usuario y el carrito de invitado
+  const userCart = await getCart(userId);
+  const guestCart = await getCart(undefined, sessionCartId);
 
-  if (!mergedCart) throw new Error("Cart not found after merging");
+  if (!guestCart) {
+    return userCart;
+  }
 
-  return mergedCart;
+  if (!userCart) {
+    // Si el usuario no tiene carrito, actualizamos el carrito de invitado con el ID del usuario
+    const updatedCart = await prisma.cart.update({
+      where: { sessionCartId },
+      data: { userId },
+      include: {
+        items: {
+          include: {
+            product: {
+              select: {
+                id: true,
+                title: true,
+                imgSrc: true,
+                alt: true,
+                price: true,
+                isOnSale: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    return {
+      ...updatedCart,
+      items: updatedCart.items.map((item) => ({
+        ...item,
+        product: {
+          ...item.product,
+          price: item.product.price.toNumber(),
+        },
+      })),
+    };
+  }
+
+  // Obtener productos duplicados para eliminarlos del carrito del usuario
+  const guestProductIds = guestCart.items.map((item) => item.productId);
+
+  // Eliminar productos del carrito usuario que también existan en el carrito invitado
+  await prisma.cartItem.deleteMany({
+    where: {
+      cartId: userCart.id,
+      productId: {
+        in: guestProductIds,
+      },
+    },
+  });
+
+  // Mover los items del carrito de invitado al carrito de usuario
+  await prisma.cartItem.createMany({
+    data: guestCart.items.map((item) => ({
+      cartId: userCart.id,
+      productId: item.productId,
+      quantity: item.quantity,
+    })),
+  });
+
+  // Eliminar el carrito de invitado
+  await prisma.cart.delete({
+    where: { id: guestCart.id },
+  });
+
+  // Devolver el carrito actualizado del usuario
+  return await getCart(userId);
 }
