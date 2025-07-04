@@ -1,14 +1,16 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import OrderConfirmation from ".";
+
 import type { Route } from "./+types";
 
 // Creates minimal test props for OrderConfirmation component
 const createTestProps = (orderId = "test-123"): Route.ComponentProps => ({
   loaderData: { orderId },
-  params: vi.fn() as any,
-  matches: vi.fn() as any,
+  params: { orderId },
+  // Hack to satisfy type requirements
+  matches: [] as unknown as Route.ComponentProps["matches"],
 });
 
 describe("OrderConfirmation", () => {

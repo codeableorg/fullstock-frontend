@@ -94,7 +94,7 @@ describe("Order Service", () => {
     expect(order).toEqual({
       ...prismaOrder,
       totalAmount: Number(prismaOrder.totalAmount),
-      items: prismaOrder.items.map((item: any) => ({
+      items: prismaOrder.items.map((item) => ({
         ...item,
         price: Number(item.price),
         imgSrc: item.imgSrc ?? "",
@@ -140,7 +140,7 @@ describe("Order Service", () => {
       prismaOrders.map((order) => ({
         ...order,
         totalAmount: Number(order.totalAmount),
-        items: order.items.map((item: any) => ({
+        items: order.items.map((item) => ({
           ...item,
           price: Number(item.price),
           imgSrc: item.imgSrc ?? "",
