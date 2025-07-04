@@ -1,4 +1,4 @@
-import type { CategorySlug } from "generated/prisma/client.js";
+import type { CategorySlug } from "@/../generated/prisma/client";
 
 export const categories = [
   {

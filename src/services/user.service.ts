@@ -1,6 +1,6 @@
+import { prisma } from "@/db/prisma";
 import { hashPassword } from "@/lib/security";
 import type { User, AuthResponse } from "@/models/user.model";
-import { prisma } from "@/db/prisma";
 import { getSession } from "@/session.server";
 
 export async function updateUser(
@@ -14,19 +14,20 @@ export async function updateUser(
     throw new Error("User not authenticated");
   }
 
-  const data = { ...updatedUser } as any;
+  const data = { ...updatedUser };
 
   if (updatedUser.password) {
     const hashedPassword = await hashPassword(updatedUser.password);
     data.password = hashedPassword;
   }
 
-  const userData = await prisma.user.update({
-    where: { id: typeof id === "number" ? id : Number(id) },
-    data,
-  });
+  const { password: _password, ...userWithoutPassword } =
+    await prisma.user.update({
+      where: { id: typeof id === "number" ? id : Number(id) },
+      data,
+    });
 
-  return userData;
+  return userWithoutPassword;
 }
 
 export async function getOrCreateUser(email: string): Promise<User> {

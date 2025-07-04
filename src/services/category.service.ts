@@ -1,6 +1,6 @@
-import { type Category, type CategorySlug } from "generated/prisma/client.js";
-
 import { prisma } from "@/db/prisma";
+
+import { type Category, type CategorySlug } from "@/../generated/prisma/client";
 
 export async function getAllCategories(): Promise<Category[]> {
   const categories = await prisma.category.findMany();

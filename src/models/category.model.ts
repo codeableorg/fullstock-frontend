@@ -1,4 +1,4 @@
-import type { Category as PrismaCategory } from "generated/prisma/client";
+import type { Category as PrismaCategory } from "@/../generated/prisma/client";
 
 export const VALID_SLUGS = ["polos", "stickers", "tazas"] as const;
 

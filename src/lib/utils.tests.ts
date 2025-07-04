@@ -5,7 +5,14 @@ import type { Order, OrderDetails, OrderItem } from "@/models/order.model";
 import type { Product } from "@/models/product.model";
 import type { User } from "@/models/user.model";
 
+import type {
+  OrderItem as PrismaOrderItem,
+  Order as PrismaOrder,
+  Product as PrismaProduct,
+} from "@/../generated/prisma/client";
 import type { Session } from "react-router";
+
+import { Decimal } from "@/../generated/prisma/internal/prismaNamespace";
 
 type TestRequestConfig = {
   url?: string;
@@ -61,6 +68,23 @@ export const createTestProduct = (overrides?: Partial<Product>): Product => ({
   ...overrides,
 });
 
+export const createTestDBProduct = (
+  overrides?: Partial<PrismaProduct>
+): PrismaProduct => ({
+  id: 1,
+  title: "Test Product",
+  imgSrc: "/test-image.jpg",
+  alt: "Test alt text",
+  price: new Decimal(100),
+  description: "Test description",
+  categoryId: 1,
+  isOnSale: false,
+  features: ["Feature 1", "Feature 2"],
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  ...overrides,
+});
+
 export const createTestCategory = (
   overrides?: Partial<Category>
 ): Category => ({
@@ -107,6 +131,22 @@ export const createTestOrderItem = (
     ...overrides,
   } satisfies OrderItem);
 
+export const createTestDBOrderItem = (
+  overrides: Partial<PrismaOrderItem> = {}
+): PrismaOrderItem =>
+  ({
+    id: 1,
+    orderId: 1,
+    productId: 1,
+    quantity: 1,
+    title: "Test Product",
+    price: new Decimal(100),
+    imgSrc: "test-image.jpg",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    ...overrides,
+  } satisfies PrismaOrderItem);
+
 export const createTestOrder = (overrides: Partial<Order> = {}): Order => {
   const details = overrides.details ?? createTestOrderDetails();
   return {
@@ -120,4 +160,27 @@ export const createTestOrder = (overrides: Partial<Order> = {}): Order => {
     ...details, // Expande todos los campos de contacto sin undefined
     ...overrides,
   } satisfies Order;
+};
+
+export const createTestDBOrder = (
+  overrides: Partial<PrismaOrder> = {}
+): PrismaOrder => {
+  return {
+    id: 1,
+    userId: 1,
+    email: "test@mail.com",
+    totalAmount: new Decimal(100),
+    firstName: "Test",
+    lastName: "User",
+    company: null,
+    address: "Test Address",
+    city: "Test City",
+    country: "Test Country",
+    region: "Test Region",
+    zip: "12345",
+    phone: "123456789",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    ...overrides,
+  } satisfies PrismaOrder;
 };

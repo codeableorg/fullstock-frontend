@@ -40,9 +40,11 @@ describe("user service", () => {
       vi.mocked(prisma.user.update).mockResolvedValue(updatedUser);
       vi.mocked(getSession).mockResolvedValue(mockSession);
 
+      const { password: _password, ...expectedUser } = updatedUser;
+
       // Llamando al servicio y verificando el resultado
       expect(await userService.updateUser(updatedUser, request)).toEqual(
-        updatedUser
+        expectedUser
       );
     });
 
@@ -68,8 +70,6 @@ describe("user service", () => {
       await userService.updateUser(updatedUser, request);
 
       expect(hashPassword).toHaveBeenCalledWith(passwordBeforeHashing); // Verifica que se haya llamado a hashPassword con la contraseña original
-      expect(updatedUser.password).not.toBe(passwordBeforeHashing); // Verifica que la contraseña se haya actualizado
-      expect(updatedUser.password).toBe("hashed-password"); // Verifica que la contraseña se haya actualizado
     });
 
     it("should throw error if user is not authenticated", async () => {

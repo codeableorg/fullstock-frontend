@@ -11,7 +11,7 @@ import type { Route } from "./+types";
 
 // Helper function to create a test navigation object
 const createTestNavigation = (overrides = {}) => ({
-  state: "idle",
+  state: "idle" as const,
   location: undefined,
   formMethod: undefined,
   formAction: undefined,
@@ -33,8 +33,9 @@ const createTestProps = (
   productData: Partial<ProductType> = {}
 ): Route.ComponentProps => ({
   loaderData: { product: createTestProduct(productData) },
-  params: vi.fn() as any,
-  matches: vi.fn() as any,
+  params: { id: "123" },
+  // Hack to satisfy type requirements
+  matches: [] as unknown as Route.ComponentProps["matches"],
 });
 
 describe("Product Component", () => {
@@ -133,7 +134,7 @@ describe("Product Component", () => {
       const props = createTestProps();
       const expectedNavigation = createTestNavigation({ state: "submitting" });
       // Step 2: Mock - Override navigation state to simulate loading
-      vi.mocked(useNavigation).mockReturnValue(expectedNavigation as any);
+      vi.mocked(useNavigation).mockReturnValue(expectedNavigation);
       // Step 3: Call
       render(<Product {...props} />);
       // Step 4: Verify

@@ -1,22 +1,21 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { createTestCategory, createTestProduct } from "@/lib/utils.tests";
+import { prisma as mockPrisma } from "@/db/prisma";
+import { createTestCategory, createTestDBProduct } from "@/lib/utils.tests";
 import type { Category } from "@/models/category.model";
-import type { Product } from "@/models/product.model";
 
 import { getCategoryBySlug } from "./category.service";
 import { getProductById, getProductsByCategorySlug } from "./product.service";
 
-// Mock Prisma client
-const mockPrisma = {
-  product: {
-    findMany: vi.fn(),
-    findUnique: vi.fn(),
-  },
-};
+import type { Product as PrismaProduct } from "@/../generated/prisma/client";
 
 vi.mock("@/db/prisma", () => ({
-  prisma: mockPrisma,
+  prisma: {
+    product: {
+      findMany: vi.fn(),
+      findUnique: vi.fn(),
+    },
+  },
 }));
 
 // Mock category service
@@ -31,9 +30,9 @@ describe("Product Service", () => {
     it("should return products for a valid category slug", async () => {
       // Step 1: Setup - Create test data with valid category and products
       const testCategory = createTestCategory();
-      const mockedProducts: Product[] = [
-        createTestProduct({ id: 1, categoryId: testCategory.id }),
-        createTestProduct({
+      const mockedProducts: PrismaProduct[] = [
+        createTestDBProduct({ id: 1, categoryId: testCategory.id }),
+        createTestDBProduct({
           id: 2,
           title: "Test Product 2",
           categoryId: testCategory.id,
@@ -42,7 +41,8 @@ describe("Product Service", () => {
 
       // Step 2: Mock - Configure responses
       vi.mocked(getCategoryBySlug).mockResolvedValue(testCategory);
-      mockPrisma.product.findMany.mockResolvedValue(mockedProducts);
+
+      vi.mocked(mockPrisma.product.findMany).mockResolvedValue(mockedProducts);
 
       // Step 3: Call service function
       const products = await getProductsByCategorySlug(testCategory.slug);
@@ -52,7 +52,12 @@ describe("Product Service", () => {
       expect(mockPrisma.product.findMany).toHaveBeenCalledWith({
         where: { categoryId: testCategory.id },
       });
-      expect(products).toEqual(mockedProducts);
+      expect(products).toEqual(
+        mockedProducts.map((product) => ({
+          ...product,
+          price: product.price.toNumber(),
+        }))
+      );
     });
 
     it("should throw error when category slug does not exist", async () => {
@@ -77,10 +82,10 @@ describe("Product Service", () => {
   describe("getProductById", () => {
     it("should return product for valid ID", async () => {
       // Step 1: Setup - Create test data for existing product
-      const testProduct = createTestProduct();
+      const testProduct = createTestDBProduct();
 
       // Step 2: Mock - Configure Prisma response
-      mockPrisma.product.findUnique.mockResolvedValue(testProduct);
+      vi.mocked(mockPrisma.product.findUnique).mockResolvedValue(testProduct);
 
       // Step 3: Call service function
       const result = await getProductById(testProduct.id);
@@ -89,7 +94,10 @@ describe("Product Service", () => {
       expect(mockPrisma.product.findUnique).toHaveBeenCalledWith({
         where: { id: testProduct.id },
       });
-      expect(result).toEqual(testProduct);
+      expect(result).toEqual({
+        ...testProduct,
+        price: testProduct.price.toNumber(),
+      });
     });
 
     it("should throw error when product does not exist", async () => {
@@ -97,7 +105,7 @@ describe("Product Service", () => {
       const nonExistentId = 999;
 
       // Step 2: Mock - Configure null response from Prisma
-      mockPrisma.product.findUnique.mockResolvedValue(null);
+      vi.mocked(mockPrisma.product.findUnique).mockResolvedValue(null);
 
       // Step 3: Call service function
       const productPromise = getProductById(nonExistentId);
