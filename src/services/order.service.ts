@@ -13,26 +13,33 @@ export async function createOrder(
   const shippingDetails = formData;
   const user = await getOrCreateUser(shippingDetails.email);
   const totalAmount = calculateTotal(items);
-  const order = await prisma.order.create({
-    data: {
-      userId: user.id,
-      totalAmount: totalAmount,
-      ...shippingDetails,
-      items: {
-        create: items.map((item) => ({
-          productId: item.productId,
-          quantity: item.quantity,
-          title: item.title,
-          price: item.price,
-          imgSrc: item.imgSrc,
-        })),
+
+  let order;
+
+  try {
+    order = await prisma.order.create({
+      data: {
+        userId: user.id,
+        totalAmount: totalAmount,
+        ...shippingDetails,
+        items: {
+          create: items.map((item) => ({
+            productId: item.productId,
+            quantity: item.quantity,
+            title: item.title,
+            price: item.price,
+            imgSrc: item.imgSrc,
+          })),
+        },
       },
-    },
-    include: {
-      items: true,
-    },
-  });
-  if (!order) throw new Error("Failed to create order");
+      include: {
+        items: true,
+      },
+    });
+  } catch (error) {
+    throw new Error("Failed to create order", { cause: error });
+  }
+
   const details = {
     email: order.email,
     firstName: order.firstName,

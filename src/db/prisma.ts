@@ -1,4 +1,4 @@
-import { PrismaClient } from "generated/prisma/client.js";
+import { PrismaClient } from "@/../generated/prisma/client";
 
 // Global variable to store the Prisma client instance
 declare global {

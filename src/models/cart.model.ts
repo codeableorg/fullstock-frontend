@@ -3,7 +3,7 @@ import { type Product } from "./product.model";
 import type {
   Cart as PrismaCart,
   CartItem as PrismaCartItem,
-} from "generated/prisma/client";
+} from "@/../generated/prisma/client";
 
 export type CartItem = PrismaCartItem & {
   product: Pick<

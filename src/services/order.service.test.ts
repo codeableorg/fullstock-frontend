@@ -1,9 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
 
+import { prisma as mockPrisma } from "@/db/prisma";
 import { calculateTotal } from "@/lib/cart";
 import {
   createMockSession,
-  createTestOrder,
+  createTestDBOrder,
+  createTestDBOrderItem,
   createTestOrderDetails,
   createTestOrderItem,
   createTestRequest,
@@ -15,16 +17,13 @@ import { getSession } from "@/session.server";
 import { createOrder, getOrdersByUser } from "./order.service";
 import { getOrCreateUser } from "./user.service";
 
-// Mock Prisma client
-const mockPrisma = {
-  order: {
-    create: vi.fn(),
-    findMany: vi.fn(),
-  },
-};
-
 vi.mock("@/db/prisma", () => ({
-  prisma: mockPrisma,
+  prisma: {
+    order: {
+      create: vi.fn(),
+      findMany: vi.fn(),
+    },
+  },
 }));
 
 vi.mock("./user.service");
@@ -56,12 +55,15 @@ describe("Order Service", () => {
 
   it("should create an order", async () => {
     const prismaOrder = {
-      ...createTestOrder(),
-      items: [createTestOrderItem()],
+      ...createTestDBOrder(),
+      items: [createTestDBOrderItem()],
     };
+
     vi.mocked(getOrCreateUser).mockResolvedValue(mockedUser);
     vi.mocked(calculateTotal).mockReturnValue(mockedTotalAmount);
-    mockPrisma.order.create.mockResolvedValue(prismaOrder);
+
+    vi.mocked(mockPrisma.order.create).mockResolvedValue(prismaOrder);
+
     const order = await createOrder(mockedItems, mockedFormData);
     expect(mockPrisma.order.create).toHaveBeenCalledWith({
       data: {
@@ -121,15 +123,15 @@ describe("Order Service", () => {
 
   it("should get orders by user", async () => {
     const prismaOrders = [
-      { ...createTestOrder(), items: [createTestOrderItem()] },
+      { ...createTestDBOrder(), items: [createTestOrderItem()] },
       {
-        ...createTestOrder({ id: 2 }),
+        ...createTestDBOrder({ id: 2 }),
         items: [createTestOrderItem({ id: 2 })],
       },
     ];
     const mockedSession = createMockSession(mockedUser.id);
     vi.mocked(getSession).mockResolvedValue(mockedSession);
-    mockPrisma.order.findMany.mockResolvedValue(prismaOrders);
+    vi.mocked(mockPrisma.order.findMany).mockResolvedValue(prismaOrders);
     const orders = await getOrdersByUser(mockedRequest);
     expect(mockPrisma.order.findMany).toHaveBeenCalledWith({
       where: { userId: mockedUser.id },
@@ -181,7 +183,9 @@ describe("Order Service", () => {
   it("should throw error if order creation fails", async () => {
     vi.mocked(getOrCreateUser).mockResolvedValue(mockedUser);
     vi.mocked(calculateTotal).mockReturnValue(mockedTotalAmount);
-    mockPrisma.order.create.mockResolvedValue(null);
+    vi.mocked(mockPrisma.order.create).mockRejectedValue(
+      new Error("Database error")
+    );
 
     await expect(createOrder(mockedItems, mockedFormData)).rejects.toThrow(
       "Failed to create order"

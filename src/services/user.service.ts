@@ -21,12 +21,13 @@ export async function updateUser(
     data.password = hashedPassword;
   }
 
-  const userData = await prisma.user.update({
-    where: { id: typeof id === "number" ? id : Number(id) },
-    data,
-  });
+  const { password: _password, ...userWithoutPassword } =
+    await prisma.user.update({
+      where: { id: typeof id === "number" ? id : Number(id) },
+      data,
+    });
 
-  return userData;
+  return userWithoutPassword;
 }
 
 export async function getOrCreateUser(email: string): Promise<User> {

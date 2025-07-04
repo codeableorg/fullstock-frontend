@@ -1,7 +1,7 @@
 import type {
   Order as PrismaOrder,
   OrderItem as PrismaOrderItem,
-} from "generated/prisma/client";
+} from "@/../generated/prisma/client";
 
 export type OrderDetails = Pick<
   PrismaOrder,

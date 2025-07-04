@@ -1,21 +1,19 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { prisma as mockPrisma } from "@/db/prisma";
 import { createTestCategory } from "@/lib/utils.tests";
 import {
   getAllCategories,
   getCategoryBySlug,
 } from "@/services/category.service";
 
-// Mock Prisma client
-const mockPrisma = {
-  category: {
-    findMany: vi.fn(),
-    findUnique: vi.fn(),
-  },
-};
-
 vi.mock("@/db/prisma", () => ({
-  prisma: mockPrisma,
+  prisma: {
+    category: {
+      findMany: vi.fn(),
+      findUnique: vi.fn(),
+    },
+  },
 }));
 
 describe("Category Service", () => {
@@ -38,7 +36,7 @@ describe("Category Service", () => {
         }),
       ];
 
-      mockPrisma.category.findMany.mockResolvedValue(mockCategories);
+      vi.mocked(mockPrisma.category.findMany).mockResolvedValue(mockCategories);
 
       const result = await getAllCategories();
 
@@ -47,7 +45,7 @@ describe("Category Service", () => {
     });
 
     it("should handle empty categories", async () => {
-      mockPrisma.category.findMany.mockResolvedValue([]);
+      vi.mocked(mockPrisma.category.findMany).mockResolvedValue([]);
 
       const result = await getAllCategories();
 
@@ -60,7 +58,7 @@ describe("Category Service", () => {
     it("should return category when found", async () => {
       const mockCategory = createTestCategory();
 
-      mockPrisma.category.findUnique.mockResolvedValue(mockCategory);
+      vi.mocked(mockPrisma.category.findUnique).mockResolvedValue(mockCategory);
 
       const result = await getCategoryBySlug("polos");
 
@@ -71,7 +69,7 @@ describe("Category Service", () => {
     });
 
     it("should throw error when category not found", async () => {
-      mockPrisma.category.findUnique.mockResolvedValue(null);
+      vi.mocked(mockPrisma.category.findUnique).mockResolvedValue(null);
 
       await expect(getCategoryBySlug("polos")).rejects.toThrow(
         'Category with slug "polos" not found'
