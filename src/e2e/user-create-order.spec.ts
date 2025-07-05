@@ -4,10 +4,14 @@ import { prisma } from "@/db/prisma";
 import { hashPassword } from "@/lib/security";
 import type { CreateUserDTO } from "@/models/user.model";
 
-test.describe("User", () => {
-  let testUserId: number;
+import { baseUrl, cleanDatabase } from "./utils-tests-e2e";
 
-  test.beforeAll(async () => {
+test.beforeEach(async () => {
+  await cleanDatabase();
+});
+
+test.describe("User", () => {
+  test.beforeEach(async () => {
     const testUser: CreateUserDTO = {
       email: "diego@codeable.com",
       name: null,
@@ -15,30 +19,13 @@ test.describe("User", () => {
       isGuest: false,
     };
 
-    const existingUser = await prisma.user.findUnique({
-      where: { email: testUser.email },
-    });
-
-    if (existingUser) {
-      await prisma.user.delete({
-        where: { id: existingUser.id },
-      });
-    }
-
-    const user = await prisma.user.create({
+    await prisma.user.create({
       data: testUser,
-    });
-    testUserId = user.id;
-  });
-
-  test.afterAll(async () => {
-    await prisma.user.delete({
-      where: { id: testUserId },
     });
   });
 
   test("User can create an order", async ({ page }) => {
-    await page.goto("http://localhost:5173/");
+    await page.goto(baseUrl);
 
     await page.getByRole("link", { name: "Iniciar sesión" }).click();
 

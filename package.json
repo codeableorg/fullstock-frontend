@@ -10,7 +10,17 @@
     "preview": "vite preview",
     "start": "react-router-serve ./build/server/index.js",
     "type-check": "react-router typegen && tsc",
-    "test": "vitest"
+    "test": "vitest",
+    "prisma": "prisma",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev --name init",
+    "prisma:migrate:deploy": "prisma migrate deploy",
+    "prisma:migrate:status": "prisma migrate status",
+    "prisma:studio": "prisma studio",
+    "prisma:seed": "prisma db seed",
+    "test:prisma:migrate:deploy": "dotenv -e .env.test -- prisma migrate deploy",
+    "test:e2e": "playwright test",
+    "test:prisma:seed": "dotenv -e .env.test prisma db seed"
   },
   "prisma": {
     "seed": "tsx ./prisma/seed.ts"
@@ -59,6 +69,7 @@
     "@typescript-eslint/parser": "^8.31.0",
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.21",
+    "dotenv-cli": "^8.0.0",
     "eslint": "^9.25.1",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-react-hooks": "^5.0.0",

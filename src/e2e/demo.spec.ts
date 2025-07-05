@@ -1,8 +1,14 @@
 import { test, expect } from "@playwright/test";
 
+import { baseUrl, cleanDatabase } from "./utils-tests-e2e";
+
+test.beforeEach(async () => {
+  await cleanDatabase();
+});
+
 test.describe("Visitor", () => {
   test("can add a product to the cart", async ({ page }) => {
-    await page.goto("http://localhost:5173/");
+    await page.goto(baseUrl);
 
     await expect(page).toHaveTitle(/inicio/i);
 

@@ -1,14 +1,18 @@
 // import { createOrderFormData } from "@/lib/utils.tests";
 import { expect, test } from "@playwright/test";
 
-import { createOrderFormData } from "./utils-tests-e2e";
+import { baseUrl, cleanDatabase, createOrderFormData } from "./utils-tests-e2e";
 
 export type OrderFormData = Record<string, string>;
+
+test.beforeEach(async () => {
+  await cleanDatabase();
+});
 
 test.describe("Guest", () => {
   test("Guest can create an order", async ({ page }) => {
     // Navegar a la tienda y agregar un producto
-    await page.goto("http://localhost:5173/");
+    await page.goto(baseUrl);
 
     await page.getByRole("menuitem", { name: "Polos" }).click();
     await page.getByTestId("product-item").first().click();
