@@ -1,6 +1,10 @@
 import { test, expect } from "@playwright/test";
 
-import { baseUrl } from "./utils-tests-e2e";
+import { baseUrl, cleanDatabase } from "./utils-tests-e2e";
+
+test.beforeEach(async () => {
+  await cleanDatabase();
+});
 
 test.describe("Visitor", () => {
   test("can add a product to the cart", async ({ page }) => {

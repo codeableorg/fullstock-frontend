@@ -6,10 +6,12 @@ import type { CreateUserDTO } from "@/models/user.model";
 
 import { baseUrl, cleanDatabase } from "./utils-tests-e2e";
 
+test.beforeEach(async () => {
+  await cleanDatabase();
+});
+
 test.describe("Visitante inicio sesion", () => {
   test.beforeEach(async () => {
-    await cleanDatabase();
-
     const testUser: CreateUserDTO = {
       email: "diego@codeable.com",
       name: null,
