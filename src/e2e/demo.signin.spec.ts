@@ -4,10 +4,12 @@ import { prisma } from "@/db/prisma";
 import { hashPassword } from "@/lib/security";
 import type { CreateUserDTO } from "@/models/user.model";
 
-test.describe("Visitante inicio sesion", () => {
-  let testUserId: number;
+import { baseUrl, cleanDatabase } from "./utils-tests-e2e";
 
-  test.beforeAll(async () => {
+test.describe("Visitante inicio sesion", () => {
+  test.beforeEach(async () => {
+    await cleanDatabase();
+
     const testUser: CreateUserDTO = {
       email: "diego@codeable.com",
       name: null,
@@ -15,38 +17,19 @@ test.describe("Visitante inicio sesion", () => {
       isGuest: false,
     };
 
-    const existingUser = await prisma.user.findUnique({
-      where: { email: testUser.email },
-    });
-
-    if (existingUser) {
-      await prisma.user.delete({
-        where: { id: existingUser.id },
-      });
-    }
-
-    const user = await prisma.user.create({
+    await prisma.user.create({
       data: testUser,
-    });
-    testUserId = user.id;
-  });
-
-  test.afterAll(async () => {
-    await prisma.user.delete({
-      where: { id: testUserId },
     });
   });
 
   test("test", async ({ page }) => {
-    await page.goto("http://localhost:5173/");
+    await page.goto(baseUrl);
     await page.getByTestId("login").click();
     await page.getByRole("textbox", { name: "Correo electrónico" }).click();
     await page
       .getByRole("textbox", { name: "Correo electrónico" })
       .fill("diego@codeable.com");
-    await page
-      .getByRole("textbox", { name: "Correo electrónico" })
-      .press("Tab");
+
     await page.getByRole("textbox", { name: "Contraseña" }).fill("letmein");
     await page.getByRole("button", { name: "Iniciar sesión" }).click();
 

@@ -18,7 +18,9 @@
     "prisma:migrate:status": "prisma migrate status",
     "prisma:studio": "prisma studio",
     "prisma:seed": "prisma db seed",
-    "test:prisma:migrate:deploy": "dotenv -e .env.test -- prisma migrate deploy"
+    "test:prisma:migrate:deploy": "dotenv -e .env.test -- prisma migrate deploy",
+    "test:e2e": "playwright test",
+    "test:prisma:seed": "dotenv -e .env.test prisma db seed"
   },
   "prisma": {
     "seed": "tsx ./prisma/seed.ts"
