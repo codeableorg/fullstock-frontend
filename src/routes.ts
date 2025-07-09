@@ -23,6 +23,7 @@ export default [
         route("orders", "./routes/account/orders/index.tsx"),
       ]),
       route("/not-found", "./routes/not-found/index.tsx"),
+      route("/verify-email", "./routes/verify-email/index.tsx"),
     ],
   },
 ] satisfies RouteConfig;
