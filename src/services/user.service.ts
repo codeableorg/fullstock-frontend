@@ -48,3 +48,11 @@ export async function getOrCreateUser(email: string): Promise<User> {
 
   return existingUser;
 }
+
+export async function verifyUniqueEmail(email: string): Promise<boolean> {
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  return user ? true : false;
+}
