@@ -1,6 +1,17 @@
-import { verifyUniqueEmail } from "./user.service";
-
-// Se mantiene para hacer la validación de correo electrónico en el registro del lado del cliente
 export async function findEmail(email: string): Promise<boolean> {
-  return verifyUniqueEmail(email);
+  try {
+    const response = await fetch(
+      `/verify-email?email=${encodeURIComponent(email)}`
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    console.error("Error verifying email:", error);
+    return false;
+  }
 }

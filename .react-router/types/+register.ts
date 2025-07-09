@@ -28,4 +28,5 @@ type Params = {
   "/account/profile": {};
   "/account/orders": {};
   "/not-found": {};
+  "/verify-email": {};
 };

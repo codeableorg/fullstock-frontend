@@ -54,5 +54,5 @@ export async function verifyUniqueEmail(email: string): Promise<boolean> {
     where: { email },
   });
 
-  return user ? true : false;
+  return user ? false : true;
 }
