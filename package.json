@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "react-router dev",
+    "dev": "react-router dev --host",
     "build": "react-router build",
     "lint": "eslint .",
     "preview": "vite preview",
@@ -20,7 +20,8 @@
     "prisma:seed": "prisma db seed",
     "test:prisma:migrate:deploy": "dotenv -e .env.test -- prisma migrate deploy",
     "test:e2e": "playwright test",
-    "test:prisma:seed": "dotenv -e .env.test prisma db seed"
+    "test:prisma:seed": "dotenv -e .env.test prisma db seed",
+    "docker-start": "npm run prisma:migrate:deploy && npm run prisma:seed && npm run start"
   },
   "prisma": {
     "seed": "tsx ./prisma/seed.ts"
