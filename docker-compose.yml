@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "80:3000"
     environment:
       DATABASE_URL: postgresql://postgres:letmein@db:5432/postgres?schema=public
     depends_on:
