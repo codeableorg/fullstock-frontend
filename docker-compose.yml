@@ -8,10 +8,11 @@ services:
     environment:
       DATABASE_URL: postgresql://postgres:letmein@db:5432/postgres?schema=public
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   db:
-    image: postgres:latest
+    image: postgres:alpine
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: letmein
@@ -20,6 +21,11 @@ services:
       - "5432:5432"
     volumes:
       - fs_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 volumes:
   fs_data:
