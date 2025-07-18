@@ -6,14 +6,14 @@ services:
     ports:
       - "3000:3000"
     environment:
-      DATABASE_URL: postgresql://postgres:letmein@localhost:5432/postgres?schema=public
+      DATABASE_URL: postgresql://postgres:letmein@db:5432/postgres?schema=public
     depends_on:
       - db
 
   db:
     image: postgres:latest
     environment:
-      # POSTGRES_USER: postgres
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: letmein
       POSTGRES_DB: postgres
     ports:
