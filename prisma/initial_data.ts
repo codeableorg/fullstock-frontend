@@ -1,6 +1,6 @@
-import { imagesBaseUrl } from "../src/config";
-
 import type { CategorySlug } from "../generated/prisma/client";
+
+const imagesBaseUrl = "https://fullstock-images.s3.us-east-2.amazonaws.com";
 
 export const categories = [
   {
