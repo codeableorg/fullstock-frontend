@@ -58,7 +58,10 @@ export default function Home({ loaderData }: Route.ComponentProps) {
   return (
     <>
       <section
-        className={`text-center bg-cover bg-no-repeat bg-center text-white bg-[linear-gradient(0deg,rgba(0,0,0,0.5)_0%,rgba(0,0,0,0.5)_100%),url('${heroSrc}')]`}
+        className="text-center bg-cover bg-no-repeat bg-center text-white"
+        style={{
+          backgroundImage: `linear-gradient(0deg,rgba(0,0,0,0.5) 0%,rgba(0,0,0,0.5) 100%),url('${heroSrc}')`,
+        }}
       >
         <Container className="pt-32 pb-32 max-w-3xl">
           <h2 className="text-4xl leading-10 font-bold mb-4">
