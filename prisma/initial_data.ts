@@ -1,6 +1,6 @@
-import { imagesBaseUrl } from "@/config";
+import { imagesBaseUrl } from "../src/config";
 
-import type { CategorySlug } from "@/../generated/prisma/client";
+import type { CategorySlug } from "../generated/prisma/client";
 
 export const categories = [
   {
