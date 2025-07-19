@@ -3,6 +3,7 @@ import { Link } from "react-router";
 
 import { Truck, Return, Ribbon, Idea } from "@/components/icons";
 import { Button, Container } from "@/components/ui";
+import { imagesBaseUrl } from "@/config";
 import type { Category } from "@/models/category.model";
 import { getAllCategories } from "@/services/category.service";
 
@@ -22,6 +23,7 @@ export async function loader() {
 
 export default function Home({ loaderData }: Route.ComponentProps) {
   const { categories } = loaderData;
+  const heroSrc = `${imagesBaseUrl}/hero.jpg`;
 
   const features = [
     {
@@ -55,7 +57,9 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 
   return (
     <>
-      <section className="text-center bg-cover bg-no-repeat bg-center text-white bg-[linear-gradient(0deg,rgba(0,0,0,0.5)_0%,rgba(0,0,0,0.5)_100%),url('/images/hero.jpg')]">
+      <section
+        className={`text-center bg-cover bg-no-repeat bg-center text-white bg-[linear-gradient(0deg,rgba(0,0,0,0.5)_0%,rgba(0,0,0,0.5)_100%),url('${heroSrc}')]`}
+      >
         <Container className="pt-32 pb-32 max-w-3xl">
           <h2 className="text-4xl leading-10 font-bold mb-4">
             Nuevos productos disponibles
