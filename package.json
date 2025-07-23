@@ -20,7 +20,8 @@
     "prisma:seed": "prisma db seed",
     "test:prisma:migrate:deploy": "dotenv -e .env.test -- prisma migrate deploy",
     "test:e2e": "playwright test",
-    "test:prisma:seed": "dotenv -e .env.test prisma db seed"
+    "test:prisma:seed": "dotenv -e .env.test prisma db seed",
+    "prisma:reset": "prisma migrate reset"
   },
   "prisma": {
     "seed": "tsx ./prisma/seed.ts"
