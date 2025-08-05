@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { redirect, useNavigation, useSubmit } from "react-router";
 import { z } from "zod";
@@ -21,6 +21,20 @@ import { createOrder } from "@/services/order.service";
 import { commitSession, getSession } from "@/session.server";
 
 import type { Route } from "./+types";
+
+interface CulqiInstance {
+  open: () => void;
+  close: () => void;
+  token?: { id: string };
+  error?: Error;
+  culqi?: () => void;
+}
+
+declare global {
+  interface Window {
+    CulqiCheckout: new (publicKey: string, config: object) => CulqiInstance;
+  }
+}
 
 const countryOptions = [
   { value: "AR", label: "Argentina" },
@@ -69,6 +83,30 @@ export async function action({ request }: Route.ActionArgs) {
   const cartItems = JSON.parse(
     formData.get("cartItemsJson") as string
   ) as CartItem[];
+  const token = formData.get("token") as string;
+
+  const body = {
+    amount: 2000,
+    currency_code: "PEN",
+    email: shippingDetails.email,
+    source_id: token,
+    capture: true,
+  };
+
+  const response = await fetch("https://api.culqi.com/v2/charges", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      Authorization: `Bearer sk_test_EC8oOLd3ZiCTKqjN`,
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    console.error("Error creating charge:", errorData);
+    throw new Error("Error processing payment");
+  }
 
   const items = cartItems.map((item) => ({
     productId: item.product.id,
@@ -117,12 +155,14 @@ export default function Checkout({ loaderData }: Route.ComponentProps) {
   const navigation = useNavigation();
   const submit = useSubmit();
   const loading = navigation.state === "submitting";
-  const [Culqui, setCulqui] = useState(null);
+  const [culqui, setCulqui] = useState<CulqiInstance | null>(null);
+  const scriptRef = useRef<HTMLScriptElement | null>(null);
 
   const {
     register,
     handleSubmit,
     formState: { errors, isValid },
+    getValues,
   } = useForm<CheckoutForm>({
     resolver: zodResolver(CheckoutFormSchema),
     defaultValues: {
@@ -141,93 +181,95 @@ export default function Checkout({ loaderData }: Route.ComponentProps) {
   });
 
   useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://js.culqi.com/checkout-js";
-    script.async = true;
-    script.onload = () => {
-      // Aqui ya existe window.CulqiCheckout
-      const settings = {
-        title: "FullStock",
-        currency: "USD",
-        amount: total * 100, // Este parámetro es requerido para realizar pagos yape(80.00)
-        // order: "ord_live_d1P0Tu1n7Od4nZdp", // Este parámetro es requerido para realizar pagos con pagoEfectivo, billeteras y Cuotéalo
-        // xculqirsaid: "Inserta aquí el id de tu llave pública RSA",
-        // rsapublickey: "Inserta aquí tu llave pública RSA",
-      };
+    // Function to load the Culqi script
+    const loadCulqiScript = (): Promise<Window["CulqiCheckout"]> => {
+      return new Promise<Window["CulqiCheckout"]>((resolve, reject) => {
+        if (window.CulqiCheckout) {
+          resolve(window.CulqiCheckout);
+          return;
+        }
 
-      const paymentMethods = {
-        // las opciones se ordenan según se configuren
-        tarjeta: true,
-        yape: false,
-        billetera: false,
-        bancaMovil: false,
-        agente: false,
-        cuotealo: false,
-      };
+        // Create script element
+        const script = document.createElement("script");
+        script.src = "https://js.culqi.com/checkout-js";
+        script.async = true;
 
-      const options = {
-        lang: "auto",
-        installments: true, // Habilitar o deshabilitar el campo de cuotas
-        modal: true,
-        // container: "#culqi-container", // Opcional - Div donde quieres cargar el checkout
-        paymentMethods: paymentMethods,
-        paymentMethodsSort: Object.keys(paymentMethods), // las opciones se ordenan según se configuren en paymentMethods
-      };
+        // Store reference for cleanup
+        scriptRef.current = script;
 
-      const appearance = {
-        theme: "default",
-        hiddenCulqiLogo: false,
-        hiddenBannerContent: false,
-        hiddenBanner: false,
-        hiddenToolBarAmount: false,
-        hiddenEmail: false,
-        menuType: "select", // sidebar / sliderTop / select
-        buttonCardPayText: "Pagar", //
-        logo: null, // 'http://www.childrensociety.ms/wp-content/uploads/2019/11/MCS-Logo-2019-no-text.jpg',
-        defaultStyle: {
-          bannerColor: "blue", // hexadecimal
-          buttonBackground: "yellow", // hexadecimal
-          menuColor: "pink", // hexadecimal
-          linksColor: "green", // hexadecimal
-          buttonTextColor: "blue", // hexadecimal
-          priceColor: "red",
-        },
-      };
+        script.onload = () => {
+          if (window.CulqiCheckout) {
+            resolve(window.CulqiCheckout);
+          } else {
+            reject(
+              new Error(
+                "Culqi script loaded but CulqiCheckout object not found"
+              )
+            );
+          }
+        };
 
-      const config = {
-        settings,
-        // client,
-        options,
-        appearance,
-      };
+        script.onerror = () => {
+          reject(new Error("Failed to load CulqiCheckout script"));
+        };
 
-      const publicKey = "pk_test_Ws4NXfH95QXlZgaz";
-      // @ts-ignore
-      const Culqi = new window.CulqiCheckout(publicKey, config);
-
-      setCulqui(Culqi);
-
-      console.log("Script loaded");
+        document.head.appendChild(script);
+      });
     };
 
-    document.body.appendChild(script);
+    loadCulqiScript()
+      .then((CulqiCheckout) => {
+        const config = {
+          settings: {
+            currency: "USD",
+            amount: total * 100,
+          },
+          client: {
+            email: user?.email,
+          },
+          options: {},
+          appearance: {},
+        };
 
-    // Cleanup function
+        const publicKey = "pk_test_Ws4NXfH95QXlZgaz";
+        const culqiInstance = new CulqiCheckout(publicKey, config);
+
+        const handleCulqiAction = () => {
+          if (culqiInstance.token) {
+            const token = culqiInstance.token.id;
+            culqiInstance.close();
+            const formData = getValues();
+            submit(
+              {
+                shippingDetailsJson: JSON.stringify(formData),
+                cartItemsJson: JSON.stringify(cart.items),
+                token,
+              },
+              { method: "POST" }
+            );
+          } else {
+            console.log("Error : ", culqiInstance.error);
+          }
+        };
+
+        culqiInstance.culqi = handleCulqiAction;
+
+        setCulqui(culqiInstance);
+      })
+      .catch((error) => {
+        console.error("Error loading Culqi script:", error);
+      });
+
     return () => {
-      document.body.removeChild(script);
+      if (scriptRef.current) {
+        scriptRef.current.remove();
+      }
     };
-  }, []);
+  }, [total, user, submit, getValues, cart.items]);
 
-  async function onSubmit(formData: CheckoutForm) {
-    // submit(
-    //   {
-    //     shippingDetailsJson: JSON.stringify(formData),
-    //     cartItemsJson: JSON.stringify(cart.items),
-    //   },
-    //   { method: "POST" }
-    // );
-    if (Culqui) {
-      Culqui.open();
+  async function onSubmit() {
+    if (culqui) {
+      culqui.open();
     }
   }
 
@@ -353,6 +395,7 @@ export default function Checkout({ loaderData }: Route.ComponentProps) {
             </Button>
           </form>
         </div>
+        <div id="culqi-container"></div>
       </Container>
     </Section>
   );
