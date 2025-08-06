@@ -90,7 +90,7 @@ export default function Cart({ loaderData }: Route.ComponentProps) {
           ))}
           <div className="flex justify-between p-6 text-base font-medium border-b">
             <p>Total</p>
-            <p>${total.toFixed(2)}</p>
+            <p>S/{total.toFixed(2)}</p>
           </div>
           <div className="p-6">
             <Button size="lg" className="w-full" asChild>

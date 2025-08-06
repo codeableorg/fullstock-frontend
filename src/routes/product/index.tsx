@@ -41,7 +41,7 @@ export default function Product({ loaderData }: Route.ComponentProps) {
             <h1 className="text-3xl leading-9 font-bold mb-3">
               {product.title}
             </h1>
-            <p className="text-3xl leading-9 mb-6">${product.price}</p>
+            <p className="text-3xl leading-9 mb-6">S/{product.price}</p>
             <p className="text-sm leading-5 text-muted-foreground mb-10">
               {product.description}
             </p>

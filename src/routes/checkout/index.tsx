@@ -86,7 +86,7 @@ export async function action({ request }: Route.ActionArgs) {
   const token = formData.get("token") as string;
 
   const body = {
-    amount: 2000,
+    amount: 2000, // TODO: Calculate total dynamically
     currency_code: "PEN",
     email: shippingDetails.email,
     source_id: token,
@@ -97,7 +97,7 @@ export async function action({ request }: Route.ActionArgs) {
     method: "POST",
     headers: {
       "content-type": "application/json",
-      Authorization: `Bearer sk_test_EC8oOLd3ZiCTKqjN`,
+      Authorization: `Bearer sk_test_EC8oOLd3ZiCTKqjN`, // TODO: Use environment variable
     },
     body: JSON.stringify(body),
   });
@@ -105,6 +105,7 @@ export async function action({ request }: Route.ActionArgs) {
   if (!response.ok) {
     const errorData = await response.json();
     console.error("Error creating charge:", errorData);
+    // TODO: Handle error appropriately
     throw new Error("Error processing payment");
   }
 
@@ -118,7 +119,7 @@ export async function action({ request }: Route.ActionArgs) {
 
   // TODO
   // @ts-expect-error Arreglar el tipo de shippingDetails
-  const { id: orderId } = await createOrder(items, shippingDetails);
+  const { id: orderId } = await createOrder(items, shippingDetails); // TODO: Add payment information to the order
 
   await deleteRemoteCart(request);
   const session = await getSession(request.headers.get("Cookie"));
@@ -155,6 +156,7 @@ export default function Checkout({ loaderData }: Route.ComponentProps) {
   const navigation = useNavigation();
   const submit = useSubmit();
   const loading = navigation.state === "submitting";
+
   const [culqui, setCulqui] = useState<CulqiInstance | null>(null);
   const scriptRef = useRef<HTMLScriptElement | null>(null);
 
@@ -221,13 +223,18 @@ export default function Checkout({ loaderData }: Route.ComponentProps) {
       .then((CulqiCheckout) => {
         const config = {
           settings: {
-            currency: "USD",
+            currency: "PEN",
             amount: total * 100,
           },
           client: {
             email: user?.email,
           },
-          options: {},
+          options: {
+            paymentMethods: {
+              tarjeta: true,
+              yape: false,
+            },
+          },
           appearance: {},
         };
 
@@ -297,14 +304,14 @@ export default function Checkout({ loaderData }: Route.ComponentProps) {
                     <div className="flex text-sm font-medium gap-4 items-center self-end">
                       <p>{quantity}</p>
                       <X className="w-4 h-4" />
-                      <p>${product.price.toFixed(2)}</p>
+                      <p>S/{product.price.toFixed(2)}</p>
                     </div>
                   </div>
                 </div>
               ))}
               <div className="flex justify-between p-6 text-base font-medium">
                 <p>Total</p>
-                <p>${total.toFixed(2)}</p>
+                <p>S/{total.toFixed(2)}</p>
               </div>
             </div>
           </div>
