@@ -103,6 +103,7 @@ model Order {
   userId      Int      @map("user_id")
   totalAmount Decimal  @map("total_amount") @db.Decimal(10, 2)
   email       String
+  paymentId   String?  @map("payment_id")
   firstName   String   @map("first_name")
   lastName    String   @map("last_name")
   company     String?
