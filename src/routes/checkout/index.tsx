@@ -10,8 +10,8 @@ import {
   Container,
   InputField,
   Section,
-  Separator,
   SelectField,
+  Separator,
 } from "@/components/ui";
 import { calculateTotal, getCart } from "@/lib/cart";
 import { type CartItem } from "@/models/cart.model";
@@ -86,7 +86,7 @@ export async function action({ request }: Route.ActionArgs) {
   const token = formData.get("token") as string;
 
   const body = {
-    amount: 2000, // TODO: Calculate total dynamically
+    amount: Math.round(calculateTotal(cartItems) * 100), //TODO: Calculate total dynamically
     currency_code: "PEN",
     email: shippingDetails.email,
     source_id: token,
@@ -97,7 +97,7 @@ export async function action({ request }: Route.ActionArgs) {
     method: "POST",
     headers: {
       "content-type": "application/json",
-      Authorization: `Bearer sk_test_EC8oOLd3ZiCTKqjN`, // TODO: Use environment variable
+      Authorization: `Bearer ${process.env.CULQUI_SECRET_KEY}`, // TODO: Use environment variable for security secret key
     },
     body: JSON.stringify(body),
   });
@@ -109,6 +109,9 @@ export async function action({ request }: Route.ActionArgs) {
     throw new Error("Error processing payment");
   }
 
+  // Obtener el charge de Culqi
+  const charge = await response.json();
+
   const items = cartItems.map((item) => ({
     productId: item.product.id,
     quantity: item.quantity,
@@ -119,7 +122,9 @@ export async function action({ request }: Route.ActionArgs) {
 
   // TODO
   // @ts-expect-error Arreglar el tipo de shippingDetails
-  const { id: orderId } = await createOrder(items, shippingDetails); // TODO: Add payment information to the order
+  const { id: orderId } = await createOrder(items, shippingDetails, {
+    culquiChargeId: charge.id,
+  }); // TODO: Add payment information to the order
 
   await deleteRemoteCart(request);
   const session = await getSession(request.headers.get("Cookie"));

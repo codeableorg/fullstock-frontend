@@ -3,7 +3,6 @@ import { Form, Link } from "react-router";
 
 import { Button, Container, Section } from "@/components/ui";
 import { calculateTotal, getCart } from "@/lib/cart";
-import { type Cart } from "@/models/cart.model";
 import { getSession } from "@/session.server";
 
 import type { Route } from "./+types";
@@ -55,7 +54,7 @@ export default function Cart({ loaderData }: Route.ComponentProps) {
                 </div>
                 <div className="flex flex-col gap-2 md:flex-row md:justify-between md:items-center">
                   <p className="text-sm font-medium">
-                    ${product.price.toFixed(2)}
+                    S/{product.price.toFixed(2)}
                   </p>
                   <div className="flex gap-4 items-center">
                     <Form method="post" action="/cart/add-item">
