@@ -1,6 +1,7 @@
+import { useCulqiScript } from "@/hooks/useCulqiScript";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { redirect, useNavigation, useSubmit } from "react-router";
 import { z } from "zod";
@@ -10,8 +11,8 @@ import {
   Container,
   InputField,
   Section,
-  Separator,
   SelectField,
+  Separator,
 } from "@/components/ui";
 import { calculateTotal, getCart } from "@/lib/cart";
 import { type CartItem } from "@/models/cart.model";
@@ -86,7 +87,7 @@ export async function action({ request }: Route.ActionArgs) {
   const token = formData.get("token") as string;
 
   const body = {
-    amount: 2000, // TODO: Calculate total dynamically
+    amount: Math.round(calculateTotal(cartItems) * 100), //TODO: Calculate total dynamically
     currency_code: "PEN",
     email: shippingDetails.email,
     source_id: token,
@@ -97,7 +98,7 @@ export async function action({ request }: Route.ActionArgs) {
     method: "POST",
     headers: {
       "content-type": "application/json",
-      Authorization: `Bearer sk_test_EC8oOLd3ZiCTKqjN`, // TODO: Use environment variable
+      Authorization: `Bearer ${process.env.CULQUI_SECRET_KEY}`, // TODO: Use environment variable for security secret key
     },
     body: JSON.stringify(body),
   });
@@ -109,6 +110,9 @@ export async function action({ request }: Route.ActionArgs) {
     throw new Error("Error processing payment");
   }
 
+  // Obtener el charge de Culqi
+  const charge = await response.json();
+
   const items = cartItems.map((item) => ({
     productId: item.product.id,
     quantity: item.quantity,
@@ -119,7 +123,9 @@ export async function action({ request }: Route.ActionArgs) {
 
   // TODO
   // @ts-expect-error Arreglar el tipo de shippingDetails
-  const { id: orderId } = await createOrder(items, shippingDetails); // TODO: Add payment information to the order
+  const { id: orderId } = await createOrder(items, shippingDetails, {
+    culquiChargeId: charge.id,
+  }); // TODO: Add payment information to the order
 
   await deleteRemoteCart(request);
   const session = await getSession(request.headers.get("Cookie"));
@@ -158,7 +164,7 @@ export default function Checkout({ loaderData }: Route.ComponentProps) {
   const loading = navigation.state === "submitting";
 
   const [culqui, setCulqui] = useState<CulqiInstance | null>(null);
-  const scriptRef = useRef<HTMLScriptElement | null>(null);
+  const CulqiCheckout = useCulqiScript();
 
   const {
     register,
@@ -183,96 +189,46 @@ export default function Checkout({ loaderData }: Route.ComponentProps) {
   });
 
   useEffect(() => {
-    // Function to load the Culqi script
-    const loadCulqiScript = (): Promise<Window["CulqiCheckout"]> => {
-      return new Promise<Window["CulqiCheckout"]>((resolve, reject) => {
-        if (window.CulqiCheckout) {
-          resolve(window.CulqiCheckout);
-          return;
-        }
-
-        // Create script element
-        const script = document.createElement("script");
-        script.src = "https://js.culqi.com/checkout-js";
-        script.async = true;
-
-        // Store reference for cleanup
-        scriptRef.current = script;
-
-        script.onload = () => {
-          if (window.CulqiCheckout) {
-            resolve(window.CulqiCheckout);
-          } else {
-            reject(
-              new Error(
-                "Culqi script loaded but CulqiCheckout object not found"
-              )
-            );
-          }
-        };
-
-        script.onerror = () => {
-          reject(new Error("Failed to load CulqiCheckout script"));
-        };
-
-        document.head.appendChild(script);
-      });
+    if (!CulqiCheckout) return;
+    const config = {
+      settings: {
+        currency: "PEN",
+        amount: total * 100,
+      },
+      client: {
+        email: user?.email,
+      },
+      options: {
+        paymentMethods: {
+          tarjeta: true,
+          yape: false,
+        },
+      },
+      appearance: {},
     };
-
-    loadCulqiScript()
-      .then((CulqiCheckout) => {
-        const config = {
-          settings: {
-            currency: "PEN",
-            amount: total * 100,
+    const publicKey = "pk_test_Ws4NXfH95QXlZgaz";
+    const culqiInstance = new CulqiCheckout(publicKey, config);
+    const handleCulqiAction = () => {
+      if (culqiInstance.token) {
+        const token = culqiInstance.token.id;
+        culqiInstance.close();
+        const formData = getValues();
+        submit(
+          {
+            shippingDetailsJson: JSON.stringify(formData),
+            cartItemsJson: JSON.stringify(cart.items),
+            token,
           },
-          client: {
-            email: user?.email,
-          },
-          options: {
-            paymentMethods: {
-              tarjeta: true,
-              yape: false,
-            },
-          },
-          appearance: {},
-        };
-
-        const publicKey = "pk_test_Ws4NXfH95QXlZgaz";
-        const culqiInstance = new CulqiCheckout(publicKey, config);
-
-        const handleCulqiAction = () => {
-          if (culqiInstance.token) {
-            const token = culqiInstance.token.id;
-            culqiInstance.close();
-            const formData = getValues();
-            submit(
-              {
-                shippingDetailsJson: JSON.stringify(formData),
-                cartItemsJson: JSON.stringify(cart.items),
-                token,
-              },
-              { method: "POST" }
-            );
-          } else {
-            console.log("Error : ", culqiInstance.error);
-          }
-        };
-
-        culqiInstance.culqi = handleCulqiAction;
-
-        setCulqui(culqiInstance);
-      })
-      .catch((error) => {
-        console.error("Error loading Culqi script:", error);
-      });
-
-    return () => {
-      if (scriptRef.current) {
-        scriptRef.current.remove();
+          { method: "POST" }
+        );
+      } else {
+        console.log("Error : ", culqiInstance.error);
       }
     };
-  }, [total, user, submit, getValues, cart.items]);
+    culqiInstance.culqi = handleCulqiAction;
+    setCulqui(culqiInstance);
+    // Limpieza no necesaria, el hook ya remueve el script
+  }, [CulqiCheckout, total, user, submit, getValues, cart.items]);
 
   async function onSubmit() {
     if (culqui) {
