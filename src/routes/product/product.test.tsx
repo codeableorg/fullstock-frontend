@@ -51,14 +51,14 @@ describe("Product Component", () => {
       expect(titleElement).toHaveTextContent("Awesome Product");
     });
 
-    it("should render product price with dollar sign", () => {
+    it("should render product price with correct currency", () => {
       // Step 1: Setup - Create test props
       const props = createTestProps({ price: 150.99 });
       // Step 2: Mock - Component mocks already set up above
       // Step 3: Call - Render component
       render(<Product {...props} />);
       // Step 4: Verify - Check price is rendered correctly
-      expect(screen.queryByText("$150.99")).toBeInTheDocument();
+      expect(screen.queryByText("S/150.99")).toBeInTheDocument();
     });
 
     it("should render product description", () => {
