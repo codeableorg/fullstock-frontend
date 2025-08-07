@@ -32,7 +32,7 @@ export async function action({ request }: Route.ActionArgs) {
   try {
     // Proceso de login nuevo
     const user = await prisma.user.findUnique({ where: { email } });
-    if (!user) {
+    if (!user || user.isGuest) {
       return { error: "Correo electrónico o contraseña inválidos" };
     }
 
