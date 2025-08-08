@@ -39,7 +39,7 @@ test.describe("Guest", () => {
     await page.getByRole("button", { name: "Confirmar Orden" }).click();
 
     const checkoutFrame = page.locator('iframe[name="checkout_frame"]');
-    await expect(checkoutFrame).toBeVisible();
+    await expect(checkoutFrame).toBeVisible({ timeout: 10000 });
 
     const validCard = creditCards.valid;
 

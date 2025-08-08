@@ -19,13 +19,9 @@ test.describe("User", () => {
       isGuest: false,
     };
 
-    console.log("Creating test user:", testUser);
-
-    const user = await prisma.user.create({
+    await prisma.user.create({
       data: testUser,
     });
-
-    console.log("Test user created:", user);
   });
 
   test("User can create an order", async ({ page }) => {
@@ -81,7 +77,7 @@ test.describe("User", () => {
     await page.getByRole("button", { name: "Confirmar Orden" }).click();
 
     const checkoutFrame = page.locator('iframe[name="checkout_frame"]');
-    await expect(checkoutFrame).toBeVisible();
+    await expect(checkoutFrame).toBeVisible({ timeout: 10000 });
 
     const validCard = creditCards.valid;
 
