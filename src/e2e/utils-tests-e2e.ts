@@ -19,6 +19,19 @@ export const createOrderFormData = (
   ...overrides,
 });
 
+export const creditCards = {
+  valid: {
+    number: "4111 1111 1111 1111",
+    exp: "12/30",
+    cvv: "123",
+  },
+  declined: {
+    number: "4000 0200 0000 0000",
+    exp: "12/30",
+    cvv: "354",
+  },
+};
+
 export async function cleanDatabase() {
   await prisma.order.deleteMany();
   await prisma.cart.deleteMany();
