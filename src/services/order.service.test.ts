@@ -64,7 +64,7 @@ describe("Order Service", () => {
 
     vi.mocked(mockPrisma.order.create).mockResolvedValue(prismaOrder);
 
-    const order = await createOrder(mockedItems, mockedFormData);
+    const order = await createOrder(mockedItems, mockedFormData, "payment-id");
     expect(mockPrisma.order.create).toHaveBeenCalledWith({
       data: {
         userId: mockedUser.id,
@@ -88,6 +88,7 @@ describe("Order Service", () => {
             imgSrc: item.imgSrc,
           })),
         },
+        paymentId: "payment-id",
       },
       include: {
         items: true,
@@ -118,6 +119,7 @@ describe("Order Service", () => {
         zip: prismaOrder.zip,
         phone: prismaOrder.phone,
       },
+      paymentId: prismaOrder.paymentId,
     });
   });
 
@@ -187,9 +189,9 @@ describe("Order Service", () => {
       new Error("Database error")
     );
 
-    await expect(createOrder(mockedItems, mockedFormData)).rejects.toThrow(
-      "Failed to create order"
-    );
+    await expect(
+      createOrder(mockedItems, mockedFormData, "payment-id")
+    ).rejects.toThrow("Failed to create order");
 
     expect(mockPrisma.order.create).toHaveBeenCalled();
   });

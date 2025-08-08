@@ -61,6 +61,11 @@ jobs:
   e2e-test:
     runs-on: ubuntu-latest
     needs: [test]
+    env:
+      CS_BASE_URL: "https://fullstock-images.s3.us-east-2.amazonaws.com"
+      CULQI_PRIVATE_KEY: "sk_test_EC8oOLd3ZiCTKqjN"
+      VITE_CULQI_PUBLIC_KEY: "pk_test_Ws4NXfH95QXlZgaz"
+      DATABASE_URL: "postgresql://diego@localhost:5432/fullstock_test?schema=public"
     services:
       postgres:
         image: postgres:15
