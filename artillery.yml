@@ -1,0 +1,46 @@
+config:
+  target: "http://localhost:80"
+  phases:
+    - duration: 60
+      arrivalRate: 10
+    - duration: 120
+      arrivalRate: 20
+  defaults:
+    headers:
+      Content-Type: "application/json"
+
+scenarios:
+  - name: "Test páginas principales"
+    weight: 40
+    flow:
+      - get:
+          url: "/"
+      - get:
+          url: "/products"
+      - get:
+          url: "/categories"
+
+  - name: "Test API productos"
+    weight: 30
+    flow:
+      - get:
+          url: "/api/products"
+      - get:
+          url: "/api/categories"
+
+  - name: "Test autenticación"
+    weight: 20
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "test@example.com"
+            password: "password123"
+
+  - name: "Test búsqueda"
+    weight: 10
+    flow:
+      - get:
+          url: "/api/products?search=laptop"
+      - get:
+          url: "/api/products?category=electronics"
