@@ -158,6 +158,7 @@ export const createTestOrder = (overrides: Partial<Order> = {}): Order => {
     createdAt: new Date(),
     updatedAt: new Date(),
     ...details, // Expande todos los campos de contacto sin undefined
+    paymentId: `payment-id-${Math.random()}`,
     ...overrides,
   } satisfies Order;
 };
@@ -181,6 +182,7 @@ export const createTestDBOrder = (
     phone: "123456789",
     createdAt: new Date(),
     updatedAt: new Date(),
+    paymentId: `payment-id-${Math.random()}`,
     ...overrides,
   } satisfies PrismaOrder;
 };

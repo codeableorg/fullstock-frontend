@@ -53,9 +53,9 @@ export default function Orders({ loaderData }: Route.ComponentProps) {
                       Total
                     </dt>
                     <dd className="mt-1 font-medium text-foreground">
-                      {order.totalAmount.toLocaleString("en-US", {
+                      {order.totalAmount.toLocaleString("es-PE", {
                         style: "currency",
-                        currency: "USD",
+                        currency: "PEN",
                       })}
                     </dd>
                   </div>
@@ -102,19 +102,19 @@ export default function Orders({ loaderData }: Route.ComponentProps) {
                               {item.title}
                             </div>
                             <div className="mt-1 sm:hidden">
-                              {item.quantity} × ${item.price.toFixed(2)}
+                              {item.quantity} × S/{item.price.toFixed(2)}
                             </div>
                           </div>
                         </div>
                       </td>
                       <td className="py-6 pr-8 text-center hidden sm:table-cell">
-                        ${item.price.toFixed(2)}
+                        S/{item.price.toFixed(2)}
                       </td>
                       <td className="py-6 pr-8 text-center hidden sm:table-cell">
                         {item.quantity}
                       </td>
                       <td className="py-6 pr-8 whitespace-nowrap text-center font-medium text-foreground">
-                        ${(item.price * item.quantity).toFixed(2)}
+                        S/{(item.price * item.quantity).toFixed(2)}
                       </td>
                     </tr>
                   ))}

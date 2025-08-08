@@ -45,7 +45,7 @@ export async function action({ request }: Route.ActionArgs) {
     const existingUser = await prisma.user.findUnique({
       where: { email: email },
     });
-    if (existingUser) {
+    if (existingUser && !existingUser.isGuest) {
       return { error: "El correo electrónico ya existe" };
     }
 
@@ -58,8 +58,10 @@ export async function action({ request }: Route.ActionArgs) {
       name: null,
     };
 
-    const user = await prisma.user.create({
-      data: newUser,
+    const user = await prisma.user.upsert({
+      where: { email: email },
+      update: newUser,
+      create: newUser,
     });
     session.set("userId", user.id);
 
@@ -92,6 +94,7 @@ export async function action({ request }: Route.ActionArgs) {
 
 export async function loader({ request }: Route.LoaderArgs) {
   await redirectIfAuthenticated(request);
+  return undefined;
 }
 
 export default function Signup({ actionData }: Route.ComponentProps) {

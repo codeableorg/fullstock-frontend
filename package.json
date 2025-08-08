@@ -19,6 +19,7 @@
     "prisma:studio": "prisma studio",
     "prisma:seed": "prisma db seed",
     "test:prisma:migrate:deploy": "dotenv -e .env.test -- prisma migrate deploy",
+    "test:prisma:migrate:reset": "dotenv -e .env.test -- prisma migrate reset",
     "test:e2e": "playwright test",
     "test:prisma:seed": "dotenv -e .env.test prisma db seed"
   },

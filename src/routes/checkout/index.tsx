@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { X } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { redirect, useNavigation, useSubmit } from "react-router";
 import { z } from "zod";
@@ -12,6 +13,11 @@ import {
   Separator,
   SelectField,
 } from "@/components/ui";
+import {
+  useCulqi,
+  type CulqiChargeError,
+  type CulqiInstance,
+} from "@/hooks/use-culqui";
 import { calculateTotal, getCart } from "@/lib/cart";
 import { type CartItem } from "@/models/cart.model";
 import { getCurrentUser } from "@/services/auth.service";
@@ -68,6 +74,34 @@ export async function action({ request }: Route.ActionArgs) {
   const cartItems = JSON.parse(
     formData.get("cartItemsJson") as string
   ) as CartItem[];
+  const token = formData.get("token") as string;
+
+  const total = Math.round(calculateTotal(cartItems) * 100);
+
+  const body = {
+    amount: total,
+    currency_code: "PEN",
+    email: shippingDetails.email,
+    source_id: token,
+    capture: true,
+  };
+
+  const response = await fetch("https://api.culqi.com/v2/charges", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      Authorization: `Bearer ${process.env.CULQI_PRIVATE_KEY}`,
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!response.ok) {
+    const errorData = (await response.json()) as CulqiChargeError;
+    console.error("Error creating charge:", errorData);
+    return { error: errorData.user_message || "Error processing payment" };
+  }
+
+  const chargeData = await response.json();
 
   const items = cartItems.map((item) => ({
     productId: item.product.id,
@@ -77,9 +111,13 @@ export async function action({ request }: Route.ActionArgs) {
     imgSrc: item.product.imgSrc,
   }));
 
-  // TODO
-  // @ts-expect-error Arreglar el tipo de shippingDetails
-  const { id: orderId } = await createOrder(items, shippingDetails);
+  const { id: orderId } = await createOrder(
+    items,
+    // TODO
+    // @ts-expect-error Arreglar el tipo de shippingDetails
+    shippingDetails,
+    chargeData.id
+  );
 
   await deleteRemoteCart(request);
   const session = await getSession(request.headers.get("Cookie"));
@@ -111,16 +149,24 @@ export async function loader({ request }: Route.LoaderArgs) {
   return user ? { user, cart, total } : { cart, total };
 }
 
-export default function Checkout({ loaderData }: Route.ComponentProps) {
+export default function Checkout({
+  loaderData,
+  actionData,
+}: Route.ComponentProps) {
   const { user, cart, total } = loaderData;
   const navigation = useNavigation();
   const submit = useSubmit();
   const loading = navigation.state === "submitting";
+  const paymentError = actionData?.error;
+
+  const [culqui, setCulqui] = useState<CulqiInstance | null>(null);
+  const { CulqiCheckout } = useCulqi();
 
   const {
     register,
     handleSubmit,
     formState: { errors, isValid },
+    getValues,
   } = useForm<CheckoutForm>({
     resolver: zodResolver(CheckoutFormSchema),
     defaultValues: {
@@ -138,14 +184,62 @@ export default function Checkout({ loaderData }: Route.ComponentProps) {
     mode: "onTouched",
   });
 
-  async function onSubmit(formData: CheckoutForm) {
-    submit(
-      {
-        shippingDetailsJson: JSON.stringify(formData),
-        cartItemsJson: JSON.stringify(cart.items),
+  useEffect(() => {
+    if (!CulqiCheckout) return;
+
+    const config = {
+      settings: {
+        currency: "PEN",
+        amount: Math.round(total * 100),
       },
-      { method: "POST" }
+      client: {
+        email: user?.email,
+      },
+      options: {
+        paymentMethods: {
+          tarjeta: true,
+          yape: false,
+        },
+      },
+      appearance: {},
+    };
+
+    const culqiInstance = new CulqiCheckout(
+      import.meta.env.VITE_CULQI_PUBLIC_KEY as string,
+      config
     );
+
+    culqiInstance.culqi = () => {
+      if (culqiInstance.token) {
+        const token = culqiInstance.token.id;
+        culqiInstance.close();
+        const formData = getValues();
+        submit(
+          {
+            shippingDetailsJson: JSON.stringify(formData),
+            cartItemsJson: JSON.stringify(cart.items),
+            token,
+          },
+          { method: "POST" }
+        );
+      } else {
+        console.log("Error : ", culqiInstance.error);
+      }
+    };
+
+    setCulqui(culqiInstance);
+
+    return () => {
+      if (culqiInstance) {
+        culqiInstance.close();
+      }
+    };
+  }, [total, user, submit, getValues, cart.items, CulqiCheckout]);
+
+  async function onSubmit() {
+    if (culqui) {
+      culqui.open();
+    }
   }
 
   return (
@@ -172,14 +266,14 @@ export default function Checkout({ loaderData }: Route.ComponentProps) {
                     <div className="flex text-sm font-medium gap-4 items-center self-end">
                       <p>{quantity}</p>
                       <X className="w-4 h-4" />
-                      <p>${product.price.toFixed(2)}</p>
+                      <p>S/{product.price.toFixed(2)}</p>
                     </div>
                   </div>
                 </div>
               ))}
               <div className="flex justify-between p-6 text-base font-medium">
                 <p>Total</p>
-                <p>${total.toFixed(2)}</p>
+                <p>S/{total.toFixed(2)}</p>
               </div>
             </div>
           </div>
@@ -265,9 +359,16 @@ export default function Checkout({ loaderData }: Route.ComponentProps) {
                 />
               </div>
             </fieldset>
-            <Button size="xl" className="w-full mt-6" disabled={!isValid}>
+            <Button
+              size="xl"
+              className="w-full mt-6"
+              disabled={!isValid || !CulqiCheckout || loading}
+            >
               {loading ? "Procesando..." : "Confirmar Orden"}
             </Button>
+            {paymentError && (
+              <p className="text-red-500 mt-4 text-center">{paymentError}</p>
+            )}
           </form>
         </div>
       </Container>

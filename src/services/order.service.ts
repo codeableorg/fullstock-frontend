@@ -8,7 +8,8 @@ import { getOrCreateUser } from "./user.service";
 
 export async function createOrder(
   items: CartItemInput[],
-  formData: OrderDetails
+  formData: OrderDetails,
+  paymentId: string
 ): Promise<Order> {
   const shippingDetails = formData;
   const user = await getOrCreateUser(shippingDetails.email);
@@ -31,6 +32,7 @@ export async function createOrder(
             imgSrc: item.imgSrc,
           })),
         },
+        paymentId: paymentId,
       },
       include: {
         items: true,
