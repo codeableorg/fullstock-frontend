@@ -1,0 +1,22 @@
+config:
+  target: "http://localhost:50404" # URL base de tu backend en dev o prod
+  phases:
+    - duration: 10
+      arrivalRate: 2
+      name: warmup
+    - duration: 50
+      arrivalRate: 2
+      rampTo: 5
+      name: ramp
+    # - duration: 60
+    #   arrivalRate: 10
+    #   name: sustain
+  # Load the Playwright engine:
+  engines:
+    playwright: {}
+  # Path to JavaScript file that defines Playwright test functions
+  # TypeScript is also supported
+  processor: './flow.mjs'
+scenarios:
+  - engine: playwright
+    testFunction: guestUserPurchase

@@ -28,6 +28,8 @@ dist-ssr
 
 build/
 .env
+.env.example
+.env.test
 
 # Playwright
 /test-results/
