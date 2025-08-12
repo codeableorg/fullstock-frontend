@@ -1,0 +1,33 @@
+config:
+  target: "http://localhost:80"
+  phases:
+    - duration: 60
+      arrivalRate: 2 # Reducir para evitar sobrecarga
+  engines:
+    playwright:
+      aggregateByName: true
+      launchOptions:
+        headless: true
+        args: ["--no-sandbox", "--disable-setuid-sandbox"]
+  processor: "./artillery-functions.js"
+
+scenarios:
+  - name: "Demo navigation flow"
+    engine: playwright
+    weight: 25
+    testFunction: "demoNavigation"
+
+  - name: "Sign in flow"
+    engine: playwright
+    weight: 25
+    testFunction: "signInFlow"
+
+  - name: "Guest order flow"
+    engine: playwright
+    weight: 25
+    testFunction: "guestOrderFlow"
+
+  - name: "User order flow"
+    engine: playwright
+    weight: 25
+    testFunction: "userOrderFlow"
