@@ -2,45 +2,32 @@ config:
   target: "http://localhost:80"
   phases:
     - duration: 60
-      arrivalRate: 10
-    - duration: 120
-      arrivalRate: 20
-  defaults:
-    headers:
-      Content-Type: "application/json"
+      arrivalRate: 2 # Reducir para evitar sobrecarga
+  engines:
+    playwright:
+      aggregateByName: true
+      launchOptions:
+        headless: true
+        args: ["--no-sandbox", "--disable-setuid-sandbox"]
+  processor: "./artillery-functions.js"
 
 scenarios:
-  - name: "Test páginas principales"
-    weight: 40
-    flow:
-      - get:
-          url: "/"
-      - get:
-          url: "/products"
-      - get:
-          url: "/categories"
+  - name: "Demo navigation flow"
+    engine: playwright
+    weight: 25
+    testFunction: "demoNavigation"
 
-  - name: "Test API productos"
-    weight: 30
-    flow:
-      - get:
-          url: "/api/products"
-      - get:
-          url: "/api/categories"
+  - name: "Sign in flow"
+    engine: playwright
+    weight: 25
+    testFunction: "signInFlow"
 
-  - name: "Test autenticación"
-    weight: 20
-    flow:
-      - post:
-          url: "/api/auth/login"
-          json:
-            email: "test@example.com"
-            password: "password123"
+  - name: "Guest order flow"
+    engine: playwright
+    weight: 25
+    testFunction: "guestOrderFlow"
 
-  - name: "Test búsqueda"
-    weight: 10
-    flow:
-      - get:
-          url: "/api/products?search=laptop"
-      - get:
-          url: "/api/products?category=electronics"
+  - name: "User order flow"
+    engine: playwright
+    weight: 25
+    testFunction: "userOrderFlow"
