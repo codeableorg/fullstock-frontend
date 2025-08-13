@@ -1,12 +1,12 @@
 config:
-  target: "http://localhost:50404" # URL base de tu backend en dev o prod
+  target: "{{ $processEnvironment.BASE_URL }}" # URL base de tu backend en dev o prod
   phases:
     - duration: 10
       arrivalRate: 2
       name: warmup
-    - duration: 50
+    - duration: 20
       arrivalRate: 2
-      rampTo: 5
+      rampTo: 4
       name: ramp
     # - duration: 60
     #   arrivalRate: 10
@@ -16,7 +16,7 @@ config:
     playwright: {}
   # Path to JavaScript file that defines Playwright test functions
   # TypeScript is also supported
-  processor: './flow.mjs'
+  processor: "./flow.mjs"
 scenarios:
   - engine: playwright
     testFunction: guestUserPurchase
