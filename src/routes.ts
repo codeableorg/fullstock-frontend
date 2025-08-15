@@ -24,6 +24,7 @@ export default [
       ]),
       route("/not-found", "./routes/not-found/index.tsx"),
       route("/verify-email", "./routes/verify-email/index.tsx"),
+      route("/chat", "./routes/chat/index.tsx"),
     ],
   },
 ] satisfies RouteConfig;
