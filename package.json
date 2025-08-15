@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "start:local": "dotenv -e .env.test -- react-router-serve ./build/server/index.js",
-    "start": "react-router-serve ./build/server/index.js",
+    "start": "dotenv -e .env -- react-router-serve ./build/server/index.js",
     "type-check": "react-router typegen && tsc",
     "test": "vitest",
     "test:load:local": "dotenv -e .env.test -- sh -c 'npx artillery run ./src/tests/test-users.yml --record --key $ARTILLERY_API_KEY'",
