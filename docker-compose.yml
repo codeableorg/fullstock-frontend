@@ -5,8 +5,11 @@ services:
       dockerfile: Dockerfile
     ports:
       - "80:3000"
+    env_file:
+      - .env
     environment:
       DATABASE_URL: postgresql://postgres:letmein@db:5432/postgres?schema=public
+      NODE_ENV: production
     depends_on:
       db:
         condition: service_healthy

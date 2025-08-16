@@ -16,6 +16,7 @@ import {
   Section,
   Separator,
 } from "@/components/ui";
+import { FloatingChat } from "@/components/chat/floating-chat";
 import { getCart } from "@/lib/cart";
 import type { CartWithItems } from "@/models/cart.model";
 import { getCurrentUser } from "@/services/auth.service";
@@ -186,6 +187,10 @@ export default function Root({ loaderData }: Route.ComponentProps) {
           </small>
         </Container>
       </footer>
+
+      {/* Floating Chat */}
+      <FloatingChat />
+
       <ScrollRestoration />
     </div>
   );
