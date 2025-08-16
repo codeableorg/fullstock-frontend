@@ -9,10 +9,29 @@ interface ChatProps {
 }
 
 export function Chat({ className }: ChatProps) {
+  console.log("💬 Chat: Componente renderizando...");
+
   const { state, addMessage, setLoading, setError } = useChat();
   const [input, setInput] = useState("");
-  const [chatService] = useState(() => new ChatService());
+  const [chatService] = useState(() => {
+    console.log("💬 Chat: Creando nueva instancia de ChatService...");
+    return new ChatService();
+  });
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    console.log("💬 Chat: Componente montado");
+
+    // Check service status after mount
+    setTimeout(() => {
+      const status = chatService.getInitializationStatus();
+      console.log("💬 Chat: Estado del servicio después del montaje:", status);
+    }, 1000);
+
+    return () => {
+      console.log("💬 Chat: Componente desmontado");
+    };
+  }, [chatService]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -22,7 +41,12 @@ export function Chat({ className }: ChatProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim() || state.isLoading) return;
+    console.log("💬 Chat: Enviando mensaje:", input.trim());
+
+    if (!input.trim() || state.isLoading) {
+      console.log("💬 Chat: Mensaje vacío o cargando, cancelando envío");
+      return;
+    }
 
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
@@ -31,13 +55,29 @@ export function Chat({ className }: ChatProps) {
       timestamp: new Date(),
     };
 
+    console.log("💬 Chat: Mensaje del usuario creado:", userMessage);
     addMessage(userMessage);
     setInput("");
     setLoading(true);
     setError(null);
 
     try {
+      console.log(
+        "💬 Chat: Verificando estado del servicio antes de enviar..."
+      );
+      const status = chatService.getInitializationStatus();
+      console.log("💬 Chat: Estado del servicio:", status);
+
+      if (!status.isInitialized) {
+        console.log(
+          "💬 Chat: Servicio no inicializado, forzando inicialización..."
+        );
+        await chatService.forceInitialization();
+      }
+
+      console.log("💬 Chat: Enviando mensaje al servicio...");
       const response = await chatService.sendMessage(userMessage.content);
+      console.log("💬 Chat: Respuesta recibida:", response);
 
       if (response.success && response.message) {
         const assistantMessage: ChatMessage = {
@@ -46,26 +86,47 @@ export function Chat({ className }: ChatProps) {
           role: "assistant",
           timestamp: new Date(),
         };
+        console.log("💬 Chat: Mensaje del asistente creado:", assistantMessage);
         addMessage(assistantMessage);
       } else {
+        console.error("💬 Chat: Error en la respuesta:", response.error);
         setError(response.error || "Error al enviar el mensaje");
       }
     } catch (error) {
+      console.error("💬 Chat: Error de conexión:", error);
       setError("Error de conexión");
     } finally {
       setLoading(false);
+      console.log("💬 Chat: Proceso de envío completado");
     }
   };
+
+  console.log("💬 Chat: Estado actual:", {
+    messagesCount: state.messages.length,
+    isLoading: state.isLoading,
+    error: state.error,
+  });
 
   return (
     <div className={`flex flex-col h-96 border rounded-lg ${className}`}>
       {/* Header */}
       <div className="border-b p-3 bg-gray-50">
         <h3 className="font-semibold text-gray-800">Chat con IA</h3>
+        <p className="text-xs text-gray-500 mt-1">
+          Debug: {state.messages.length} mensajes
+        </p>
       </div>
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-3 space-y-3">
+        {state.messages.length === 0 && !state.isLoading && (
+          <div className="flex justify-center items-center h-full">
+            <p className="text-gray-500 text-sm">
+              ¡Hola! Escribe un mensaje para comenzar
+            </p>
+          </div>
+        )}
+
         {state.messages.map((message) => (
           <div
             key={message.id}
