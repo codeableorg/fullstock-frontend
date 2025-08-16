@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import Markdown from "react-markdown";
+import { Link } from "react-router";
 
 import { Button, Input } from "@/components/ui";
 
@@ -45,9 +47,23 @@ export function ChatBot() {
     <div className="p-4 border rounded shadow-lg bg-background text-foreground w-96 max-h-96">
       <div className="overflow-y-auto max-h-60 mb-4">
         {messages.map((msg, index) => (
-          <p className="mb-2" key={index}>
-            {msg}
-          </p>
+          <div className="mb-2" key={index}>
+            <Markdown
+              components={{
+                a: ({ children, href, ...rest }) => (
+                  <Link
+                    to={href!}
+                    className="text-primary font-bold hover:underline"
+                    {...rest}
+                  >
+                    {children}
+                  </Link>
+                ),
+              }}
+            >
+              {msg}
+            </Markdown>
+          </div>
         ))}
       </div>
       <form className="flex flex-col gap-2" onSubmit={handleSubmit}>
