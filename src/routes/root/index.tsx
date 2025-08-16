@@ -23,6 +23,7 @@ import { createRemoteItems } from "@/services/cart.service";
 import { commitSession, getSession } from "@/session.server";
 
 import AuthNav from "./components/auth-nav";
+import { ChatBot } from "./components/chatbot";
 import HeaderMain from "./components/header-main";
 
 import type { Route } from "./+types";
@@ -186,6 +187,9 @@ export default function Root({ loaderData }: Route.ComponentProps) {
           </small>
         </Container>
       </footer>
+      <div className="fixed bottom-4 right-4">
+        <ChatBot />
+      </div>
       <ScrollRestoration />
     </div>
   );
