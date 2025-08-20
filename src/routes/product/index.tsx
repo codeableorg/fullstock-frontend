@@ -24,9 +24,9 @@ export default function Product({ loaderData }: Route.ComponentProps) {
   const cartLoading = navigation.state === "submitting";
 
   // Si el producto tiene variantes, selecciona la primera por defecto
-  const [selectedSize, setSelectedSize] = useState(
-    product?.variants?.[0]?.size ?? ""
-  );
+  const [selectedVariantId, setSelectedVariantId] = useState(
+  product?.variants?.[0]?.id ?? ""
+);
 
   if (!product) {
     return <NotFound />;
@@ -59,28 +59,28 @@ export default function Product({ loaderData }: Route.ComponentProps) {
               />
               {/* Botones de talla si hay variantes */}
               {product.variants && product.variants.length > 0 && (
-                <div className="mb-4">
-                  <label className="block mb-2 font-medium">Talla</label>
-                  <div className="flex gap-2">
-                    {product.variants.map(variant => (
-                      <button
-                        type="button"
-                        key={variant.id}
-                        className={`px-4 py-2 rounded border ${
-                          selectedSize === variant.size
-                            ? "bg-primary text-white border-primary"
-                            : "bg-white text-black border-gray-300"
-                        }`}
-                        onClick={() => setSelectedSize(variant.size)}
-                      >
-                        {variant.size.charAt(0).toUpperCase() + variant.size.slice(1)}
-                      </button>
-                    ))}
-                  </div>
-                  {/* input oculto para enviar la talla seleccionada */}
-                  <input type="hidden" name="size" value={selectedSize} />
-                </div>
-              )}
+  <div className="mb-4">
+    <label className="block mb-2 font-medium">Talla</label>
+    <div className="flex gap-2">
+      {product.variants.map(variant => (
+        <button
+          type="button"
+          key={variant.id}
+          className={`px-4 py-2 rounded border ${
+            selectedVariantId === variant.id
+              ? "bg-primary text-white border-primary"
+              : "bg-white text-black border-gray-300"
+          }`}
+          onClick={() => setSelectedVariantId(variant.id)}
+        >
+          {variant.size.charAt(0).toUpperCase() + variant.size.slice(1)}
+        </button>
+      ))}
+    </div>
+    {/* input oculto para enviar el id del variant seleccionado */}
+    <input type="hidden" name="variantId" value={selectedVariantId} />
+  </div>
+)}
               <Button
                 size="xl"
                 className="w-full md:w-80"
