@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
 
+import { Chatbot } from "./components/chatbot";
 import { ThemeProvider } from "./providers/theme-provider";
 import "./index.css";
 
@@ -29,6 +30,7 @@ export default function Root() {
     <StrictMode>
       <ThemeProvider storageKey="fullstock-ui-theme">
         <Outlet />
+        <Chatbot />
       </ThemeProvider>
     </StrictMode>
   );
