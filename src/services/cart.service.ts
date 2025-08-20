@@ -24,16 +24,8 @@ async function getCart(
     include: {
       items: {
         include: {
-          product: {
-            select: {
-              id: true,
-              title: true,
-              imgSrc: true,
-              alt: true,
-              price: true,
-              isOnSale: true,
-            },
-          },
+          product: true,
+          productVariant: true,
         },
         orderBy: {
           id: "asc",
@@ -50,8 +42,12 @@ async function getCart(
       ...item,
       product: {
         ...item.product,
-        price: item.product.price.toNumber(),
+        price: typeof item.product.price === "object"
+          ? item.product.price.toNumber()
+          : item.product.price,
       },
+      productVariant: item.productVariant ?? null,
+      productVariantId: item.productVariantId ?? null,
     })),
   };
 }
@@ -66,32 +62,29 @@ export async function getOrCreateCart(
   userId: User["id"] | undefined,
   sessionCartId: string | undefined
 ): Promise<CartWithItems> {
-  const cart = await getCart(userId, sessionCartId);
+  // Busca por userId o sessionCartId
+  let cart = await getCart(userId, sessionCartId);
+
+  // Si no se encontró, intenta buscar explícitamente por sessionCartId (por si acaso)
+  if (!cart && sessionCartId) {
+    cart = await getCart(undefined, sessionCartId);
+  }
 
   if (cart) {
     return cart;
   }
 
-  // Si no se encontró un carrito creamos uno nuevo
-
-  // Creamos un carrito con userId si se proporciona
+  // Solo crea si no existe ninguno con ese sessionCartId
   const newCart = await prisma.cart.create({
     data: {
       userId: userId || null,
+      sessionCartId: sessionCartId || undefined,
     },
     include: {
       items: {
         include: {
-          product: {
-            select: {
-              id: true,
-              title: true,
-              imgSrc: true,
-              alt: true,
-              price: true,
-              isOnSale: true,
-            },
-          },
+          product: true,
+          productVariant: true,
         },
       },
     },
@@ -105,8 +98,12 @@ export async function getOrCreateCart(
       ...item,
       product: {
         ...item.product,
-        price: item.product.price.toNumber(),
+        price: typeof item.product.price === "object"
+          ? item.product.price.toNumber()
+          : item.product.price,
       },
+      productVariant: item.productVariant ?? null,
+      productVariantId: item.productVariantId ?? null,
     })),
   };
 }
@@ -132,6 +129,7 @@ export async function createRemoteItems(
         cartId: cart.id,
         productId: item.product.id,
         quantity: item.quantity,
+        productVariantId: item.productVariantId ?? null,
       })),
     });
   }
@@ -147,11 +145,19 @@ export async function alterQuantityCartItem(
   userId: User["id"] | undefined,
   sessionCartId: string | undefined,
   productId: number,
-  quantity: number = 1
+  quantity: number = 1,
+  productVariantId?: number
 ): Promise<CartWithItems> {
   const cart = await getOrCreateCart(userId, sessionCartId);
 
-  const existingItem = cart.items.find((item) => item.product.id === productId);
+  // Busca por productId y productVariantId (si existe)
+  const existingItem = cart.items.find(
+    (item) =>
+      item.product.id === productId &&
+      (productVariantId
+        ? item.productVariantId === productVariantId
+        : !item.productVariantId)
+  );
 
   if (existingItem) {
     const newQuantity = existingItem.quantity + quantity;
@@ -172,6 +178,7 @@ export async function alterQuantityCartItem(
         cartId: cart.id,
         productId,
         quantity,
+        productVariantId: productVariantId ?? null,
       },
     });
   }
@@ -236,16 +243,8 @@ export async function linkCartToUser(
     include: {
       items: {
         include: {
-          product: {
-            select: {
-              id: true,
-              title: true,
-              imgSrc: true,
-              alt: true,
-              price: true,
-              isOnSale: true,
-            },
-          },
+          product: true,
+          productVariant: true,
         },
       },
     },
@@ -259,8 +258,12 @@ export async function linkCartToUser(
       ...item,
       product: {
         ...item.product,
-        price: item.product.price.toNumber(),
+        price: typeof item.product.price === "object"
+          ? item.product.price.toNumber()
+          : item.product.price,
       },
+      productVariant: item.productVariant ?? null,
+      productVariantId: item.productVariantId ?? null,
     })),
   };
 }
@@ -285,16 +288,8 @@ export async function mergeGuestCartWithUserCart(
       include: {
         items: {
           include: {
-            product: {
-              select: {
-                id: true,
-                title: true,
-                imgSrc: true,
-                alt: true,
-                price: true,
-                isOnSale: true,
-              },
-            },
+            product: true,
+            productVariant: true,
           },
         },
       },
@@ -305,8 +300,12 @@ export async function mergeGuestCartWithUserCart(
         ...item,
         product: {
           ...item.product,
-          price: item.product.price.toNumber(),
+          price: typeof item.product.price === "object"
+            ? item.product.price.toNumber()
+            : item.product.price,
         },
+        productVariant: item.productVariant ?? null,
+        productVariantId: item.productVariantId ?? null,
       })),
     };
   }
@@ -330,6 +329,7 @@ export async function mergeGuestCartWithUserCart(
       cartId: userCart.id,
       productId: item.productId,
       quantity: item.quantity,
+      productVariantId: item.productVariantId ?? null,
     })),
   });
 

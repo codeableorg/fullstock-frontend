@@ -29,6 +29,19 @@ export const categories = [
   },
 ];
 
+export const productVariant = [
+  // Ejemplo para un producto Polo
+  { productTitle: "Polo React", sizes: ["small", "medium", "large"] },
+  { productTitle: "Polo JavaScript", sizes: ["small", "medium", "large"] },
+  { productTitle: "Polo Node.js", sizes: ["small", "medium", "large"] },
+  { productTitle: "Polo TypeScript", sizes: ["small", "medium", "large"] },
+  { productTitle: "Polo Backend Developer", sizes: ["small", "medium", "large"] },
+  { productTitle: "Polo Frontend Developer", sizes: ["small", "medium", "large"] },
+  { productTitle: "Polo Full-Stack Developer", sizes: ["small", "medium", "large"] },
+  { productTitle: "Polo It's A Feature", sizes: ["small", "medium", "large"] },
+  { productTitle: "Polo It Works On My Machine", sizes: ["small", "medium", "large"] },
+];
+
 export const products = [
   {
     title: "Polo React",

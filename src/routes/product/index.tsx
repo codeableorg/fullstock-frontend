@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Form, useNavigation } from "react-router";
 
 import { Button, Container, Separator } from "@/components/ui";
@@ -21,6 +22,11 @@ export default function Product({ loaderData }: Route.ComponentProps) {
   const { product } = loaderData;
   const navigation = useNavigation();
   const cartLoading = navigation.state === "submitting";
+
+  // Si el producto tiene variantes, selecciona la primera por defecto
+  const [selectedSize, setSelectedSize] = useState(
+    product?.variants?.[0]?.size ?? ""
+  );
 
   if (!product) {
     return <NotFound />;
@@ -51,6 +57,30 @@ export default function Product({ loaderData }: Route.ComponentProps) {
                 name="redirectTo"
                 value={`/products/${product.id}`}
               />
+              {/* Botones de talla si hay variantes */}
+              {product.variants && product.variants.length > 0 && (
+                <div className="mb-4">
+                  <label className="block mb-2 font-medium">Talla</label>
+                  <div className="flex gap-2">
+                    {product.variants.map(variant => (
+                      <button
+                        type="button"
+                        key={variant.id}
+                        className={`px-4 py-2 rounded border ${
+                          selectedSize === variant.size
+                            ? "bg-primary text-white border-primary"
+                            : "bg-white text-black border-gray-300"
+                        }`}
+                        onClick={() => setSelectedSize(variant.size)}
+                      >
+                        {variant.size.charAt(0).toUpperCase() + variant.size.slice(1)}
+                      </button>
+                    ))}
+                  </div>
+                  {/* input oculto para enviar la talla seleccionada */}
+                  <input type="hidden" name="size" value={selectedSize} />
+                </div>
+              )}
               <Button
                 size="xl"
                 className="w-full md:w-80"

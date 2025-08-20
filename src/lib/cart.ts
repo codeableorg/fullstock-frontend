@@ -19,14 +19,16 @@ export async function addToCart(
   userId: number | undefined,
   sessionCartId: string | undefined,
   productId: Product["id"],
-  quantity: number = 1
+  quantity: number = 1,
+  productVariantId?: number
 ) {
   try {
     const updatedCart = await alterQuantityCartItem(
       userId,
       sessionCartId,
       productId,
-      quantity
+      quantity,
+      productVariantId
     );
     return updatedCart;
   } catch (error) {

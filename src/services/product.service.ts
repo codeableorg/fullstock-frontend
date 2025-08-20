@@ -18,16 +18,20 @@ export async function getProductsByCategorySlug(
   }));
 }
 
-export async function getProductById(id: number): Promise<Product> {
+export async function getProductById(id: number): Promise<Product | null> {
   const product = await prisma.product.findUnique({
     where: { id },
+    include: { variants: true }, // Incluye variantes
   });
-
-  if (!product) {
-    throw new Error("Product not found");
-  }
-
-  return { ...product, price: product.price.toNumber() };
+  if (!product) return null;
+  return {
+    ...product,
+    price: Number(product.price),
+    variants: product.variants?.map(v => ({
+      id: v.id,
+      size: v.size as "small" | "medium" | "large",
+    })),
+  };
 }
 
 export async function getAllProducts(): Promise<Product[]> {

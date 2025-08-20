@@ -51,23 +51,33 @@ model Category {
 }
 
 model Product {
-  id          Int      @id @default(autoincrement())
+  id          Int              @id @default(autoincrement())
   title       String
-  imgSrc      String   @map("img_src")
+  imgSrc      String           @map("img_src")
   alt         String?
-  price       Decimal  @db.Decimal(10, 2)
+  price       Decimal          @db.Decimal(10, 2)
   description String?
-  categoryId  Int?     @map("category_id")
-  isOnSale    Boolean  @default(false) @map("is_on_sale")
+  categoryId  Int?             @map("category_id")
+  isOnSale    Boolean          @default(false) @map("is_on_sale")
   features    String[]
-  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamp(0)
-  updatedAt   DateTime @default(now()) @map("updated_at") @db.Timestamp(0)
+  createdAt   DateTime         @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt   DateTime         @default(now()) @map("updated_at") @db.Timestamp(0)
+  variants    ProductVariant[]
 
   category   Category?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   cartItems  CartItem[]
   orderItems OrderItem[]
 
   @@map("products")
+}
+
+model ProductVariant {
+  id        Int     @id @default(autoincrement())
+  product   Product @relation(fields: [productId], references: [id])
+  productId Int
+  size      String // 'small', 'medium', 'large'
+
+  cartItems CartItem[] @relation("CartItemToProductVariant")
 }
 
 model Cart {
@@ -84,15 +94,17 @@ model Cart {
 }
 
 model CartItem {
-  id        Int      @id @default(autoincrement())
-  cartId    Int      @map("cart_id")
-  productId Int      @map("product_id")
-  quantity  Int
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
-  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamp(0)
+  id               Int      @id @default(autoincrement())
+  cartId           Int
+  productId        Int
+  productVariantId Int?
+  quantity         Int
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt        DateTime @default(now()) @map("updated_at") @db.Timestamp(0)
 
-  cart    Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  cart           Cart            @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product        Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productVariant ProductVariant? @relation("CartItemToProductVariant", fields: [productVariantId], references: [id])
 
   @@unique([cartId, productId], name: "unique_cart_item")
   @@map("cart_items")
