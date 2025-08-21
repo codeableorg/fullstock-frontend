@@ -29,6 +29,12 @@ export const categories = [
   },
 ];
 
+export const variantAttributes = [
+  { name: "talla" },
+  { name: "dimensiones" },
+  { name: "no aplica" },
+]
+
 export const products = [
   {
     title: "Polo React",
@@ -370,4 +376,84 @@ export const products = [
       "Diseño que no pierde color con el uso",
     ],
   },
+];
+
+export const variantAttributeValues = [
+  // --- POLOS (talla: S, M, L) ---
+  { attributeId: 1, productId: 1, value: "S", price: 20.0 },
+  { attributeId: 1, productId: 1, value: "M", price: 20.0 },
+  { attributeId: 1, productId: 1, value: "L", price: 20.0 },
+
+  { attributeId: 1, productId: 2, value: "S", price: 20.0 },
+  { attributeId: 1, productId: 2, value: "M", price: 20.0 },
+  { attributeId: 1, productId: 2, value: "L", price: 20.0 },
+
+  { attributeId: 1, productId: 3, value: "S", price: 20.0 },
+  { attributeId: 1, productId: 3, value: "M", price: 20.0 },
+  { attributeId: 1, productId: 3, value: "L", price: 20.0 },
+
+  { attributeId: 1, productId: 4, value: "S", price: 20.0 },
+  { attributeId: 1, productId: 4, value: "M", price: 20.0 },
+  { attributeId: 1, productId: 4, value: "L", price: 20.0 },
+
+  { attributeId: 1, productId: 5, value: "S", price: 25.0 },
+  { attributeId: 1, productId: 5, value: "M", price: 25.0 },
+  { attributeId: 1, productId: 5, value: "L", price: 25.0 },
+
+  { attributeId: 1, productId: 6, value: "S", price: 25.0 },
+  { attributeId: 1, productId: 6, value: "M", price: 25.0 },
+  { attributeId: 1, productId: 6, value: "L", price: 25.0 },
+
+  { attributeId: 1, productId: 7, value: "S", price: 25.0 },
+  { attributeId: 1, productId: 7, value: "M", price: 25.0 },
+  { attributeId: 1, productId: 7, value: "L", price: 25.0 },
+
+  { attributeId: 1, productId: 8, value: "S", price: 15.0 },
+  { attributeId: 1, productId: 8, value: "M", price: 15.0 },
+  { attributeId: 1, productId: 8, value: "L", price: 15.0 },
+
+  { attributeId: 1, productId: 9, value: "S", price: 15.0 },
+  { attributeId: 1, productId: 9, value: "M", price: 15.0 },
+  { attributeId: 1, productId: 9, value: "L", price: 15.0 },
+
+  // --- STICKERS (dimensiones: 3x3, 6x6, 9x9) ---
+  { attributeId: 2, productId: 10, value: "3x3", price: 2.99 },
+  { attributeId: 2, productId: 10, value: "6x6", price: 3.99 },
+  { attributeId: 2, productId: 10, value: "9x9", price: 4.99 },
+
+  { attributeId: 2, productId: 11, value: "3x3", price: 2.49 },
+  { attributeId: 2, productId: 11, value: "6x6", price: 3.49 },
+  { attributeId: 2, productId: 11, value: "9x9", price: 4.49 },
+
+  { attributeId: 2, productId: 12, value: "3x3", price: 3.99 },
+  { attributeId: 2, productId: 12, value: "6x6", price: 4.99 },
+  { attributeId: 2, productId: 12, value: "9x9", price: 5.99 },
+
+  { attributeId: 2, productId: 13, value: "3x3", price: 2.99 },
+  { attributeId: 2, productId: 13, value: "6x6", price: 3.99 },
+  { attributeId: 2, productId: 13, value: "9x9", price: 4.99 },
+
+  { attributeId: 2, productId: 14, value: "3x3", price: 2.49 },
+  { attributeId: 2, productId: 14, value: "6x6", price: 3.49 },
+  { attributeId: 2, productId: 14, value: "9x9", price: 4.49 },
+
+  { attributeId: 2, productId: 15, value: "3x3", price: 2.49 },
+  { attributeId: 2, productId: 15, value: "6x6", price: 3.49 },
+  { attributeId: 2, productId: 15, value: "9x9", price: 4.49 },
+
+  { attributeId: 2, productId: 16, value: "3x3", price: 2.99 },
+  { attributeId: 2, productId: 16, value: "6x6", price: 3.99 },
+  { attributeId: 2, productId: 16, value: "9x9", price: 4.99 },
+
+  { attributeId: 2, productId: 17, value: "3x3", price: 2.99 },
+  { attributeId: 2, productId: 17, value: "6x6", price: 3.99 },
+  { attributeId: 2, productId: 17, value: "9x9", price: .99 },
+
+  // --- TAZAS (no aplica: Único) ---
+  { attributeId: 3, productId: 18, value: "Único", price: 14.99 },
+  { attributeId: 3, productId: 19, value: "Único", price: 13.99 },
+  { attributeId: 3, productId: 20, value: "Único", price: 12.99 },
+  { attributeId: 3, productId: 21, value: "Único", price: 15.99 },
+  { attributeId: 3, productId: 22, value: "Único", price: 13.99 },
+  { attributeId: 3, productId: 23, value: "Único", price: 14.99 },
 ];
