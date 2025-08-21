@@ -70,18 +70,18 @@ model Product {
   @@map("products")
 }
 
-model VariantsAttribute {
+model VariantAttribute {
   id        Int      @id @default(autoincrement())
   name      String   @unique
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamp(0)
 
-  variantsAttributeValue VariantsAttributeValue[]
+  variantsAttributeValue VariantAttributeValue[]
 
   @@map("variants_attributes")
 }
 
-model VariantsAttributeValue {
+model VariantAttributeValue {
   id          Int      @id @default(autoincrement())
   attributeId Int      @map("attribute_id")
   productId   Int      @map("product_id")
@@ -90,7 +90,7 @@ model VariantsAttributeValue {
   createdAt   DateTime @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt   DateTime @default(now()) @map("updated_at") @db.Timestamp(0)
 
-  variantAttribute VariantsAttribute @relation(fields: [attributeId], references: [id])
+  variantAttribute VariantAttribute @relation(fields: [attributeId], references: [id])
   product          Product           @relation(fields: [productId], references: [id])
 
   @@unique([attributeId, productId, value], name: "unique_attribute_product_value")
