@@ -65,7 +65,7 @@ model Product {
   category               Category?                @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   cartItems              CartItem[]
   orderItems             OrderItem[]
-  VariantsAttributeValue VariantsAttributeValue[]
+  variantAttributeValues VariantAttributeValue[]
 
   @@map("products")
 }
