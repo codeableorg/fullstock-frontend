@@ -48,22 +48,22 @@ export const categoryVariants = [
   // Variantes para Stickers (categoryId: 3) - con modificador de precio
   {
     categoryId: 3,
-    value: "3x3",
-    label: "3×3 cm",
+    value: "3x3 cm",
+    label: "3×3",
     priceModifier: 0,
     sortOrder: 1,
   },
   {
     categoryId: 3,
-    value: "5x5",
-    label: "5×5 cm",
+    value: "5x5 cm",
+    label: "5×5",
     priceModifier: 1.0,
     sortOrder: 2,
   },
   {
     categoryId: 3,
-    value: "10x10",
-    label: "10×10 cm",
+    value: "10x10 cm",
+    label: "10×10",
     priceModifier: 3.0,
     sortOrder: 3,
   },
