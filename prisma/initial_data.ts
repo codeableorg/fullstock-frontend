@@ -6,6 +6,7 @@ export const categories = [
   {
     title: "Polos",
     slug: "polos" as CategorySlug,
+    imgSrc: `${imagesBaseUrl}/polos.jpg`,
     alt: "Hombre luciendo polo azul",
     description:
       "Polos exclusivos con diseños que todo desarrollador querrá lucir. Ideales para llevar el código a donde vayas.",
@@ -13,6 +14,7 @@ export const categories = [
   {
     title: "Tazas",
     slug: "tazas" as CategorySlug,
+    imgSrc: `${imagesBaseUrl}/tazas.jpg`,
     alt: "Tazas con diseño de código",
     description:
       "Tazas que combinan perfectamente con tu café matutino y tu pasión por la programación. ¡Empieza el día con estilo!",
@@ -20,6 +22,7 @@ export const categories = [
   {
     title: "Stickers",
     slug: "stickers" as CategorySlug,
+    imgSrc: `${imagesBaseUrl}/stickers.jpg`,
     alt: "Stickers de desarrollo web",
     description:
       "Personaliza tu espacio de trabajo con nuestros stickers únicos y muestra tu amor por el desarrollo web.",
