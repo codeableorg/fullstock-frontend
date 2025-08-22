@@ -395,36 +395,36 @@ export const variantAttributeValues = [
 
   // --- STICKERS (dimensiones: 3x3, 6x6, 9x9) ---
   { attributeId: 2, productId: 10, value: "3x3", price: 2.99 },
-  { attributeId: 2, productId: 10, value: "6x6", price: 3.99 },
-  { attributeId: 2, productId: 10, value: "9x9", price: 4.99 },
+  { attributeId: 2, productId: 10, value: "5x5", price: 3.99 },
+  { attributeId: 2, productId: 10, value: "10x10", price: 4.99 },
 
   { attributeId: 2, productId: 11, value: "3x3", price: 2.49 },
-  { attributeId: 2, productId: 11, value: "6x6", price: 3.49 },
-  { attributeId: 2, productId: 11, value: "9x9", price: 4.49 },
+  { attributeId: 2, productId: 11, value: "5x5", price: 3.49 },
+  { attributeId: 2, productId: 11, value: "10x10", price: 4.49 },
 
   { attributeId: 2, productId: 12, value: "3x3", price: 3.99 },
-  { attributeId: 2, productId: 12, value: "6x6", price: 4.99 },
-  { attributeId: 2, productId: 12, value: "9x9", price: 5.99 },
+  { attributeId: 2, productId: 12, value: "5x5", price: 4.99 },
+  { attributeId: 2, productId: 12, value: "10x10", price: 5.99 },
 
   { attributeId: 2, productId: 13, value: "3x3", price: 2.99 },
-  { attributeId: 2, productId: 13, value: "6x6", price: 3.99 },
-  { attributeId: 2, productId: 13, value: "9x9", price: 4.99 },
+  { attributeId: 2, productId: 13, value: "5x5", price: 3.99 },
+  { attributeId: 2, productId: 13, value: "10x10", price: 4.99 },
 
   { attributeId: 2, productId: 14, value: "3x3", price: 2.49 },
-  { attributeId: 2, productId: 14, value: "6x6", price: 3.49 },
-  { attributeId: 2, productId: 14, value: "9x9", price: 4.49 },
+  { attributeId: 2, productId: 14, value: "5x5", price: 3.49 },
+  { attributeId: 2, productId: 14, value: "10x10", price: 4.49 },
 
   { attributeId: 2, productId: 15, value: "3x3", price: 2.49 },
-  { attributeId: 2, productId: 15, value: "6x6", price: 3.49 },
-  { attributeId: 2, productId: 15, value: "9x9", price: 4.49 },
+  { attributeId: 2, productId: 15, value: "5x5", price: 3.49 },
+  { attributeId: 2, productId: 15, value: "10x10", price: 4.49 },
 
   { attributeId: 2, productId: 16, value: "3x3", price: 2.99 },
-  { attributeId: 2, productId: 16, value: "6x6", price: 3.99 },
-  { attributeId: 2, productId: 16, value: "9x9", price: 4.99 },
+  { attributeId: 2, productId: 16, value: "5x5", price: 3.99 },
+  { attributeId: 2, productId: 16, value: "10x10", price: 4.99 },
 
   { attributeId: 2, productId: 17, value: "3x3", price: 2.99 },
-  { attributeId: 2, productId: 17, value: "6x6", price: 3.99 },
-  { attributeId: 2, productId: 17, value: "9x9", price: .99 },
+  { attributeId: 2, productId: 17, value: "5x5", price: 3.99 },
+  { attributeId: 2, productId: 17, value: "10x10", price: .99 },
 
   // --- TAZAS (no aplica: Único) ---
   { attributeId: 3, productId: 18, value: "Único", price: 14.99 },
