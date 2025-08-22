@@ -106,7 +106,7 @@ model CartItem {
   product        Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
   productVariant ProductVariant? @relation("CartItemToProductVariant", fields: [productVariantId], references: [id])
 
-  @@unique([cartId, productId], name: "unique_cart_item")
+  @@unique([cartId, productId, productVariantId], name: "unique_cart_item")
   @@map("cart_items")
 }
 

@@ -38,7 +38,7 @@ async function getCart(
 
   return {
     ...data,
-    items: data.items.map((item) => ({
+    items: data.items.map((item: any) => ({
       ...item,
       product: {
         ...item.product,
@@ -46,7 +46,12 @@ async function getCart(
           ? item.product.price.toNumber()
           : item.product.price,
       },
-      productVariant: item.productVariant ?? null,
+      productVariant: item.productVariant
+        ? {
+            id: item.productVariant.id,
+            size: item.productVariant.size as "small" | "medium" | "large",
+          }
+        : null,
       productVariantId: item.productVariantId ?? null,
     })),
   };
@@ -94,15 +99,15 @@ export async function getOrCreateCart(
 
   return {
     ...newCart,
-    items: newCart.items.map((item) => ({
+    items: newCart.items.map((item: any) => ({
       ...item,
       product: {
         ...item.product,
         price: typeof item.product.price === "object"
           ? item.product.price.toNumber()
           : item.product.price,
-      },
-      productVariant: item.productVariant ?? null,
+      } as any, // Cast to any to resolve type issues
+      productVariant: item.productVariant ?? null, // Ensure productVariant is null if undefined
       productVariantId: item.productVariantId ?? null,
     })),
   };
@@ -153,10 +158,8 @@ export async function alterQuantityCartItem(
   // Busca por productId y productVariantId (si existe)
   const existingItem = cart.items.find(
     (item) =>
-      item.product.id === productId &&
-      (productVariantId
-        ? item.productVariantId === productVariantId
-        : !item.productVariantId)
+      item.productId === productId &&
+      item.productVariantId === (productVariantId ?? null)
   );
 
   if (existingItem) {
@@ -254,15 +257,15 @@ export async function linkCartToUser(
 
   return {
     ...updatedCart,
-    items: updatedCart.items.map((item) => ({
+    items: updatedCart.items.map((item: any) => ({
       ...item,
       product: {
         ...item.product,
         price: typeof item.product.price === "object"
           ? item.product.price.toNumber()
           : item.product.price,
-      },
-      productVariant: item.productVariant ?? null,
+      } as any, // Cast to any to resolve type issues
+      productVariant: item.productVariant ?? null, // Ensure productVariant is null if undefined
       productVariantId: item.productVariantId ?? null,
     })),
   };
@@ -295,15 +298,15 @@ export async function mergeGuestCartWithUserCart(
       },
     });
     return {
-      ...updatedCart,
-      items: updatedCart.items.map((item) => ({
+      ...updatedCart, // Spread the updatedCart object
+      items: updatedCart.items.map((item: any) => ({ // Map over items, casting item to any
         ...item,
         product: {
           ...item.product,
           price: typeof item.product.price === "object"
             ? item.product.price.toNumber()
             : item.product.price,
-        },
+        } as any, // Cast product to any to resolve type issues
         productVariant: item.productVariant ?? null,
         productVariantId: item.productVariantId ?? null,
       })),
