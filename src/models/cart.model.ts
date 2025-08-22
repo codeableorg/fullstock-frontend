@@ -6,10 +6,11 @@ import type {
 } from "@/../generated/prisma/client";
 
 export type CartItem = PrismaCartItem & {
-  product: Pick<
-    Product,
-    "id" | "title" | "imgSrc" | "alt" | "price" | "isOnSale"
-  >;
+  product: Pick<Product, "id" | "title" | "imgSrc" | "alt" | "price" | "isOnSale">;
+  productVariant?: {
+    id: number;
+    size: "small" | "medium" | "large";
+  } | null;
 };
 
 export type Cart = PrismaCart;
