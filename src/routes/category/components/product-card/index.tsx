@@ -28,8 +28,8 @@ export function ProductCard({ product }: ProductCardProps) {
           <p className="text-sm text-muted-foreground">{product.description}</p>
           {isSticker && (
             <div className="text-xs text-muted-foreground">
-              <p className="text-sm font-semibold text-accent-foreground">Entre</p>
-              <p className="font-medium text-foreground">2.59 - 5.30</p>
+              <p className="text-base font-semibold text-accent-foreground">Desde</p>
+              <p className="font-medium text-foreground text-base">S/2.59</p>
             </div>
           )}
           {!isSticker && (
