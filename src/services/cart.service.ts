@@ -20,18 +20,22 @@ async function getCart(
   if (!whereCondition) return null;
 
   const data = await prisma.cart.findFirst({
+    // se modifico esta funcion
     where: whereCondition,
     include: {
       items: {
         include: {
-          product: {
-            select: {
-              id: true,
-              title: true,
-              imgSrc: true,
-              alt: true,
-              price: true,
-              isOnSale: true,
+          variantAttributeValue: {
+            include: {
+              product: {
+                select: {
+                  id: true,
+                  title: true,
+                  imgSrc: true,
+                  alt: true,
+                  isOnSale: true,
+                },
+              },
             },
           },
         },
@@ -49,9 +53,10 @@ async function getCart(
     items: data.items.map((item) => ({
       ...item,
       product: {
-        ...item.product,
-        price: item.product.price.toNumber(),
+        ...item.variantAttributeValue.product,
+        price: item.variantAttributeValue.price.toNumber(),
       },
+      variantAttributeValue: item.variantAttributeValue,
     })),
   };
 }
@@ -82,14 +87,17 @@ export async function getOrCreateCart(
     include: {
       items: {
         include: {
-          product: {
-            select: {
-              id: true,
-              title: true,
-              imgSrc: true,
-              alt: true,
-              price: true,
-              isOnSale: true,
+          variantAttributeValue: {
+            include: {
+              product: {
+                select: {
+                  id: true,
+                  title: true,
+                  imgSrc: true,
+                  alt: true,
+                  isOnSale: true,
+                },
+              },
             },
           },
         },
@@ -104,9 +112,10 @@ export async function getOrCreateCart(
     items: newCart.items.map((item) => ({
       ...item,
       product: {
-        ...item.product,
-        price: item.product.price.toNumber(),
+        ...item.variantAttributeValue.product,
+        price: item.variantAttributeValue.price.toNumber(),
       },
+      variantAttributeValue: item.variantAttributeValue,
     })),
   };
 }
@@ -130,7 +139,7 @@ export async function createRemoteItems(
     await prisma.cartItem.createMany({
       data: items.map((item) => ({
         cartId: cart.id,
-        productId: item.product.id,
+        attributeValueId: item.attributeId, // modificar
         quantity: item.quantity,
       })),
     });
@@ -146,12 +155,14 @@ export async function createRemoteItems(
 export async function alterQuantityCartItem(
   userId: User["id"] | undefined,
   sessionCartId: string | undefined,
-  productId: number,
+  attributeId: number,
   quantity: number = 1
 ): Promise<CartWithItems> {
   const cart = await getOrCreateCart(userId, sessionCartId);
 
-  const existingItem = cart.items.find((item) => item.product.id === productId);
+  const existingItem = cart.items.find(
+    (item) => item.attributeValueId === attributeId
+  );
 
   if (existingItem) {
     const newQuantity = existingItem.quantity + quantity;
@@ -170,7 +181,7 @@ export async function alterQuantityCartItem(
     await prisma.cartItem.create({
       data: {
         cartId: cart.id,
-        productId,
+        attributeValueId: attributeId,
         quantity,
       },
     });
@@ -236,14 +247,17 @@ export async function linkCartToUser(
     include: {
       items: {
         include: {
-          product: {
-            select: {
-              id: true,
-              title: true,
-              imgSrc: true,
-              alt: true,
-              price: true,
-              isOnSale: true,
+          variantAttributeValue: {
+            include: {
+              product: {
+                select: {
+                  id: true,
+                  title: true,
+                  imgSrc: true,
+                  alt: true,
+                  isOnSale: true,
+                },
+              },
             },
           },
         },
@@ -258,9 +272,10 @@ export async function linkCartToUser(
     items: updatedCart.items.map((item) => ({
       ...item,
       product: {
-        ...item.product,
-        price: item.product.price.toNumber(),
+        ...item.variantAttributeValue.product,
+        price: item.variantAttributeValue.price.toNumber(),
       },
+      variantAttributeValue: item.variantAttributeValue,
     })),
   };
 }
@@ -285,41 +300,46 @@ export async function mergeGuestCartWithUserCart(
       include: {
         items: {
           include: {
-            product: {
-              select: {
-                id: true,
-                title: true,
-                imgSrc: true,
-                alt: true,
-                price: true,
-                isOnSale: true,
+            variantAttributeValue: {
+              include: {
+                product: {
+                  select: {
+                    id: true,
+                    title: true,
+                    imgSrc: true,
+                    alt: true,
+                    isOnSale: true,
+                  },
+                },
               },
             },
           },
         },
       },
     });
+
     return {
       ...updatedCart,
       items: updatedCart.items.map((item) => ({
         ...item,
         product: {
-          ...item.product,
-          price: item.product.price.toNumber(),
+          ...item.variantAttributeValue.product,
+          price: item.variantAttributeValue.price.toNumber(),
         },
+        variantAttributeValue: item.variantAttributeValue,
       })),
     };
   }
 
   // Obtener productos duplicados para eliminarlos del carrito del usuario
-  const guestProductIds = guestCart.items.map((item) => item.productId);
+  const guestAttributeValueIds = guestCart.items.map((item) => item.attributeValueId);
 
   // Eliminar productos del carrito usuario que también existan en el carrito invitado
   await prisma.cartItem.deleteMany({
     where: {
       cartId: userCart.id,
-      productId: {
-        in: guestProductIds,
+      attributeValueId: {
+        in: guestAttributeValueIds,
       },
     },
   });
@@ -328,7 +348,7 @@ export async function mergeGuestCartWithUserCart(
   await prisma.cartItem.createMany({
     data: guestCart.items.map((item) => ({
       cartId: userCart.id,
-      productId: item.productId,
+      attributeValueId: item.attributeValueId,
       quantity: item.quantity,
     })),
   });
@@ -341,3 +361,4 @@ export async function mergeGuestCartWithUserCart(
   // Devolver el carrito actualizado del usuario
   return await getCart(userId);
 }
+
