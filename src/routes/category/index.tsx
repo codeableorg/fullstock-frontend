@@ -36,8 +36,24 @@ export async function loader({ params, request }: Route.LoaderArgs) {
       const min = minPrice ? parseFloat(minPrice) : 0;
       const max = maxPrice ? parseFloat(maxPrice) : Infinity;
       return products.filter(
-        (product) => product.price >= min && product.price <= max
-      );
+        (product) => {
+          const minProductPrice = product.minPrice||0
+          const maxProductPrice = product.maxPrice ||0
+          const productPrice = product.price || 0
+
+          if (min && max) {
+            return ((productPrice||minProductPrice) >= min) && ((productPrice||maxProductPrice) <= max)
+          }
+
+          if (min) {
+            return (productPrice||minProductPrice) >= min 
+          }
+          if (max) {
+            return (productPrice||maxProductPrice) <= max 
+
+          }
+          return true
+    });
     };
 
     const filteredProducts = filterProductsByPrice(

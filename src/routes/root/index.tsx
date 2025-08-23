@@ -68,7 +68,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   }
 
   const totalItems =
-    cart?.items.reduce((total, item) => total + item.quantity, 0) || 0;
+    cart?.items?.reduce((total, item) => total + item.quantity, 0) || 0;
 
   // Preparar datos de respuesta según estado de autenticación
   const responseData = user ? { user, totalItems } : { totalItems };

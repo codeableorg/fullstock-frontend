@@ -18,42 +18,52 @@ async function getCart(
     : undefined;
 
   if (!whereCondition) return null;
+  try {
 
-  const data = await prisma.cart.findFirst({
-    where: whereCondition,
-    include: {
-      items: {
-        include: {
-          product: {
-            select: {
-              id: true,
-              title: true,
-              imgSrc: true,
-              alt: true,
-              price: true,
-              isOnSale: true,
+    const data = await prisma.cart.findFirst({
+      where: whereCondition,
+      include: {
+        items: {
+          include: {
+            product: {
+              select: {
+                id: true,
+                title: true,
+                imgSrc: true,
+                alt: true,
+                price: true,
+                isOnSale: true,
+              },
             },
           },
-        },
-        orderBy: {
-          id: "asc",
+          orderBy: {
+            id: "asc",
+          },
         },
       },
-    },
-  });
+    });
+  
+    if (!data) return null;
+  
+    return {
+      ...data,
+      items: data.items.map((item) => ({
+        ...item,
+        product: {
+          ...item.product,
+          price: item.product.price.toNumber(),
+        },
+      })),
+    };
+  }catch(e) {
+    console.log(e)
+     return {
+      error: true,
+      status: 500,
+      message: "Error al obtener el carrito. Verifica el modelo Product.",
+    };
+  }
 
-  if (!data) return null;
-
-  return {
-    ...data,
-    items: data.items.map((item) => ({
-      ...item,
-      product: {
-        ...item.product,
-        price: item.product.price.toNumber(),
-      },
-    })),
-  };
 }
 
 export async function getRemoteCart(
