@@ -1,4 +1,4 @@
-import { categories, products } from "./initial_data";
+import { categories, products, variantAttributes, variantAttributeValues } from "./initial_data";
 import { PrismaClient } from "../generated/prisma/client";
 
 const prisma = new PrismaClient();
@@ -9,10 +9,23 @@ async function seedDb() {
   });
   console.log("1. Categories successfully inserted");
 
+  await prisma.variantAttribute.createMany({
+    data: variantAttributes,
+  })
+  console.log("2. Variant Attributes successfully inserted");
+
   await prisma.product.createMany({
     data: products,
+
   });
-  console.log("2. Products successfully inserted");
+  console.log("3. Products successfully inserted");
+
+  await prisma.variantAttributeValue.createMany({
+    data: variantAttributeValues,
+  })
+
+  console.log("4. Variant Attribute Values successfully inserted");
+
 }
 
 seedDb()

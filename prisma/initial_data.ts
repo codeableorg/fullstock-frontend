@@ -29,11 +29,16 @@ export const categories = [
   },
 ];
 
+export const variantAttributes = [
+  { name: "no aplica" },
+  { name: "talla" },
+  { name: "dimensiones" },
+]
+
 export const products = [
   {
     title: "Polo React",
     imgSrc: `${imagesBaseUrl}/polos/polo-react.png`,
-    price: 20.0,
     description:
       "Viste tu pasión por React con estilo y comodidad en cada línea de código.",
     categoryId: 1,
@@ -48,7 +53,6 @@ export const products = [
   {
     title: "Polo JavaScript",
     imgSrc: `${imagesBaseUrl}/polos/polo-js.png`,
-    price: 20.0,
     description:
       "Deja que tu amor por JavaScript hable a través de cada hilo de este polo.",
     categoryId: 1,
@@ -63,7 +67,6 @@ export const products = [
   {
     title: "Polo Node.js",
     imgSrc: `${imagesBaseUrl}/polos/polo-node.png`,
-    price: 20.0,
     description:
       "Conéctate al estilo con este polo de Node.js, tan robusto como tu código.",
     categoryId: 1,
@@ -78,7 +81,6 @@ export const products = [
   {
     title: "Polo TypeScript",
     imgSrc: `${imagesBaseUrl}/polos/polo-ts.png`,
-    price: 20.0,
     description:
       "Tipa tu estilo con precisión: lleva tu pasión por TypeScript en cada hilo.",
     categoryId: 1,
@@ -93,7 +95,6 @@ export const products = [
   {
     title: "Polo Backend Developer",
     imgSrc: `${imagesBaseUrl}/polos/polo-backend.png`,
-    price: 25.0,
     description:
       "Domina el servidor con estilo: viste con orgullo tu título de Backend Developer.",
     categoryId: 1,
@@ -108,7 +109,6 @@ export const products = [
   {
     title: "Polo Frontend Developer",
     imgSrc: `${imagesBaseUrl}/polos/polo-frontend.png`,
-    price: 25.0,
     description:
       "Construye experiencias con estilo: luce con orgullo tu polo de Frontend Developer.",
     categoryId: 1,
@@ -123,7 +123,6 @@ export const products = [
   {
     title: "Polo Full-Stack Developer",
     imgSrc: `${imagesBaseUrl}/polos/polo-fullstack.png`,
-    price: 25.0,
     description:
       "Domina ambos mundos con estilo: lleva tu título de FullStack Developer en cada línea de tu look.",
     categoryId: 1,
@@ -138,7 +137,6 @@ export const products = [
   {
     title: "Polo It's A Feature",
     imgSrc: `${imagesBaseUrl}/polos/polo-feature.png`,
-    price: 15.0,
     description:
       "Cuando el bug se convierte en arte: lleva con orgullo tu polo 'It's a feature'.",
     categoryId: 1,
@@ -153,7 +151,6 @@ export const products = [
   {
     title: "Polo It Works On My Machine",
     imgSrc: `${imagesBaseUrl}/polos/polo-works.png`,
-    price: 15.0,
     description:
       "El clásico del desarrollador: presume tu confianza con 'It works on my machine'.",
     categoryId: 1,
@@ -168,7 +165,6 @@ export const products = [
   {
     title: "Sticker JavaScript",
     imgSrc: `${imagesBaseUrl}/stickers/sticker-js.png`,
-    price: 2.99,
     description:
       "Muestra tu amor por JavaScript con este elegante sticker clásico.",
     categoryId: 3,
@@ -183,7 +179,6 @@ export const products = [
   {
     title: "Sticker React",
     imgSrc: `${imagesBaseUrl}/stickers/sticker-react.png`,
-    price: 2.49,
     description:
       "Decora tus dispositivos con el icónico átomo giratorio de React.",
     categoryId: 3,
@@ -198,7 +193,6 @@ export const products = [
   {
     title: "Sticker Git",
     imgSrc: `${imagesBaseUrl}/stickers/sticker-git.png`,
-    price: 3.99,
     description:
       "Visualiza el poder del control de versiones con este sticker de Git.",
     categoryId: 3,
@@ -213,7 +207,6 @@ export const products = [
   {
     title: "Sticker Docker",
     imgSrc: `${imagesBaseUrl}/stickers/sticker-docker.png`,
-    price: 2.99,
     description:
       "La adorable ballena de Docker llevando contenedores en un sticker único.",
     categoryId: 3,
@@ -228,7 +221,6 @@ export const products = [
   {
     title: "Sticker Linux",
     imgSrc: `${imagesBaseUrl}/stickers/sticker-linux.png`,
-    price: 2.49,
     description:
       "El querido pingüino Tux, mascota oficial de Linux, en formato sticker.",
     categoryId: 3,
@@ -243,7 +235,6 @@ export const products = [
   {
     title: "Sticker VS Code",
     imgSrc: `${imagesBaseUrl}/stickers/sticker-vscode.png`,
-    price: 2.49,
     description: "El elegante logo del editor favorito de los desarrolladores.",
     categoryId: 3,
     isOnSale: false,
@@ -257,7 +248,6 @@ export const products = [
   {
     title: "Sticker GitHub",
     imgSrc: `${imagesBaseUrl}/stickers/sticker-github.png`,
-    price: 2.99,
     description:
       "El alojamiento de repositorios más popular en un sticker de alta calidad.",
     categoryId: 3,
@@ -272,7 +262,6 @@ export const products = [
   {
     title: "Sticker HTML",
     imgSrc: `${imagesBaseUrl}/stickers/sticker-html.png`,
-    price: 2.99,
     description:
       "El escudo naranja de HTML5, el lenguaje que estructura la web.",
     categoryId: 3,
@@ -287,7 +276,6 @@ export const products = [
   {
     title: "Taza JavaScript",
     imgSrc: `${imagesBaseUrl}/tazas/taza-js.png`,
-    price: 14.99,
     description:
       "Disfruta tu café mientras programas con el logo de JavaScript.",
     categoryId: 2,
@@ -302,7 +290,6 @@ export const products = [
   {
     title: "Taza React",
     imgSrc: `${imagesBaseUrl}/tazas/taza-react.png`,
-    price: 13.99,
     description:
       "Una taza que hace render de tu bebida favorita con estilo React.",
     categoryId: 2,
@@ -317,7 +304,6 @@ export const products = [
   {
     title: "Taza Git",
     imgSrc: `${imagesBaseUrl}/tazas/taza-git.png`,
-    price: 12.99,
     description: "Commit a tu rutina diaria de café con esta taza de Git.",
     categoryId: 2,
     isOnSale: false,
@@ -331,7 +317,6 @@ export const products = [
   {
     title: "Taza SQL",
     imgSrc: `${imagesBaseUrl}/tazas/taza-sql.png`,
-    price: 15.99,
     description: "Tu amor por los lenguajes estructurados en una taza de SQL.",
     categoryId: 2,
     isOnSale: false,
@@ -345,7 +330,6 @@ export const products = [
   {
     title: "Taza Linux",
     imgSrc: `${imagesBaseUrl}/tazas/taza-linux.png`,
-    price: 13.99,
     description: "Toma tu café con la libertad que solo Linux puede ofrecer.",
     categoryId: 2,
     isOnSale: false,
@@ -359,7 +343,6 @@ export const products = [
   {
     title: "Taza GitHub",
     imgSrc: `${imagesBaseUrl}/tazas/taza-github.png`,
-    price: 14.99,
     description: "Colabora con tu café en esta taza con el logo de GitHub.",
     categoryId: 2,
     isOnSale: false,
@@ -370,4 +353,84 @@ export const products = [
       "Diseño que no pierde color con el uso",
     ],
   },
+];
+
+export const variantAttributeValues = [
+  // --- POLOS (talla: S, M, L) ---
+  { attributeId: 1, productId: 1, value: "S", price: 20.0 },
+  { attributeId: 1, productId: 1, value: "M", price: 20.0 },
+  { attributeId: 1, productId: 1, value: "L", price: 20.0 },
+
+  { attributeId: 1, productId: 2, value: "S", price: 20.0 },
+  { attributeId: 1, productId: 2, value: "M", price: 20.0 },
+  { attributeId: 1, productId: 2, value: "L", price: 20.0 },
+
+  { attributeId: 1, productId: 3, value: "S", price: 20.0 },
+  { attributeId: 1, productId: 3, value: "M", price: 20.0 },
+  { attributeId: 1, productId: 3, value: "L", price: 20.0 },
+
+  { attributeId: 1, productId: 4, value: "S", price: 20.0 },
+  { attributeId: 1, productId: 4, value: "M", price: 20.0 },
+  { attributeId: 1, productId: 4, value: "L", price: 20.0 },
+
+  { attributeId: 1, productId: 5, value: "S", price: 25.0 },
+  { attributeId: 1, productId: 5, value: "M", price: 25.0 },
+  { attributeId: 1, productId: 5, value: "L", price: 25.0 },
+
+  { attributeId: 1, productId: 6, value: "S", price: 25.0 },
+  { attributeId: 1, productId: 6, value: "M", price: 25.0 },
+  { attributeId: 1, productId: 6, value: "L", price: 25.0 },
+
+  { attributeId: 1, productId: 7, value: "S", price: 25.0 },
+  { attributeId: 1, productId: 7, value: "M", price: 25.0 },
+  { attributeId: 1, productId: 7, value: "L", price: 25.0 },
+
+  { attributeId: 1, productId: 8, value: "S", price: 15.0 },
+  { attributeId: 1, productId: 8, value: "M", price: 15.0 },
+  { attributeId: 1, productId: 8, value: "L", price: 15.0 },
+
+  { attributeId: 1, productId: 9, value: "S", price: 15.0 },
+  { attributeId: 1, productId: 9, value: "M", price: 15.0 },
+  { attributeId: 1, productId: 9, value: "L", price: 15.0 },
+
+  // --- STICKERS (dimensiones: 3x3, 6x6, 9x9) ---
+  { attributeId: 2, productId: 10, value: "3x3", price: 2.99 },
+  { attributeId: 2, productId: 10, value: "6x6", price: 3.99 },
+  { attributeId: 2, productId: 10, value: "9x9", price: 4.99 },
+
+  { attributeId: 2, productId: 11, value: "3x3", price: 2.49 },
+  { attributeId: 2, productId: 11, value: "6x6", price: 3.49 },
+  { attributeId: 2, productId: 11, value: "9x9", price: 4.49 },
+
+  { attributeId: 2, productId: 12, value: "3x3", price: 3.99 },
+  { attributeId: 2, productId: 12, value: "6x6", price: 4.99 },
+  { attributeId: 2, productId: 12, value: "9x9", price: 5.99 },
+
+  { attributeId: 2, productId: 13, value: "3x3", price: 2.99 },
+  { attributeId: 2, productId: 13, value: "6x6", price: 3.99 },
+  { attributeId: 2, productId: 13, value: "9x9", price: 4.99 },
+
+  { attributeId: 2, productId: 14, value: "3x3", price: 2.49 },
+  { attributeId: 2, productId: 14, value: "6x6", price: 3.49 },
+  { attributeId: 2, productId: 14, value: "9x9", price: 4.49 },
+
+  { attributeId: 2, productId: 15, value: "3x3", price: 2.49 },
+  { attributeId: 2, productId: 15, value: "6x6", price: 3.49 },
+  { attributeId: 2, productId: 15, value: "9x9", price: 4.49 },
+
+  { attributeId: 2, productId: 16, value: "3x3", price: 2.99 },
+  { attributeId: 2, productId: 16, value: "6x6", price: 3.99 },
+  { attributeId: 2, productId: 16, value: "9x9", price: 4.99 },
+
+  { attributeId: 2, productId: 17, value: "3x3", price: 2.99 },
+  { attributeId: 2, productId: 17, value: "6x6", price: 3.99 },
+  { attributeId: 2, productId: 17, value: "9x9", price: .99 },
+
+  // --- TAZAS (no aplica: Único) ---
+  { attributeId: 3, productId: 18, value: "Único", price: 14.99 },
+  { attributeId: 3, productId: 19, value: "Único", price: 13.99 },
+  { attributeId: 3, productId: 20, value: "Único", price: 12.99 },
+  { attributeId: 3, productId: 21, value: "Único", price: 15.99 },
+  { attributeId: 3, productId: 22, value: "Único", price: 13.99 },
+  { attributeId: 3, productId: 23, value: "Único", price: 14.99 },
 ];
