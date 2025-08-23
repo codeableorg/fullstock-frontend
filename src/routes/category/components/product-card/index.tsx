@@ -9,6 +9,7 @@ export function ProductCard({ product }: ProductCardProps) {
   const isSticker = product.categoryId === 3;
   
   return (
+    <>
     <Link
       to={`/products/${product.id}`}
       className="block"
@@ -29,7 +30,7 @@ export function ProductCard({ product }: ProductCardProps) {
           {isSticker && (
             <div className="text-xs text-muted-foreground">
               <p className="text-base font-semibold text-accent-foreground">Desde</p>
-              <p className="font-medium text-foreground text-base">S/2.59</p>
+              <p className="font-medium text-foreground text-base">S/{product.minPrice} - S/{product.maxPrice}p>
             </div>
           )}
           {!isSticker && (
@@ -43,5 +44,6 @@ export function ProductCard({ product }: ProductCardProps) {
         )}
       </div>
     </Link>
+    </>
   );
 }
