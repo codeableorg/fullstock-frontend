@@ -1,5 +1,9 @@
 import { prisma } from "@/db/prisma";
-import type { CartItemWithProduct, CartWithItems } from "@/models/cart.model";
+import type {
+  CartItem,
+  CartItemWithProduct,
+  CartWithItems,
+} from "@/models/cart.model";
 import type { User } from "@/models/user.model";
 import { getSession } from "@/session.server";
 
@@ -19,41 +23,70 @@ async function getCart(
 
   if (!whereCondition) return null;
 
-  const data = await prisma.cart.findFirst({
-    where: whereCondition,
-    include: {
-      items: {
-        include: {
-          product: {
-            select: {
-              id: true,
-              title: true,
-              imgSrc: true,
-              alt: true,
-              price: true,
-              isOnSale: true,
+  try {
+    const data = await prisma.cart.findFirst({
+      where: whereCondition,
+      include: {
+        items: {
+          include: {
+            product: {
+              select: {
+                id: true,
+                title: true,
+                imgSrc: true,
+                alt: true,
+                price: true,
+                isOnSale: true,
+              },
+            },
+            categoryVariant: {
+              // ✅ CRÍTICO: Incluir esta relación
+              select: {
+                id: true,
+                label: true,
+                value: true,
+                priceModifier: true,
+              },
             },
           },
-        },
-        orderBy: {
-          id: "asc",
+          orderBy: { id: "asc" },
         },
       },
-    },
-  });
+    });
 
-  if (!data) return null;
+    if (!data) return null;
 
-  return {
-    ...data,
-    items: data.items.map((item) => ({
-      ...item,
-      product: {
-        ...item.product,
-        price: item.product.price.toNumber(),
-      },
-    })),
-  };
+    return {
+      ...data,
+      items: data.items.map((item) => ({
+        id: item.id,
+        cartId: item.cartId,
+        productId: item.productId,
+        categoryVariantId: item.categoryVariantId,
+        quantity: item.quantity,
+        finalPrice: item.finalPrice
+          ? Number(item.finalPrice)
+          : Number(item.product.price),
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt,
+        product: {
+          ...item.product,
+          price: Number(item.product.price),
+        },
+        categoryVariant: item.categoryVariant
+          ? {
+              id: item.categoryVariant.id,
+              label: item.categoryVariant.label,
+              value: item.categoryVariant.value,
+              priceModifier: Number(item.categoryVariant.priceModifier),
+            }
+          : null,
+      })),
+    };
+  } catch (error) {
+    console.error("Error in getCart:", error);
+    return null;
+  }
 }
 
 export async function getRemoteCart(
@@ -66,55 +99,45 @@ export async function getOrCreateCart(
   userId: User["id"] | undefined,
   sessionCartId: string | undefined
 ): Promise<CartWithItems> {
-  const cart = await getCart(userId, sessionCartId);
+  try {
+    const cart = await getCart(userId, sessionCartId);
 
-  if (cart) {
-    return cart;
+    if (cart) {
+      return cart;
+    }
+    const newCart = await prisma.cart.create({
+      data: {
+        userId: userId || null,
+        sessionCartId: sessionCartId,
+      },
+    });
+
+    if (!newCart) {
+      throw new Error("Failed to create new cart");
+    }
+
+    // ✅ IMPORTANTE: Usar getCart para obtener el carrito con todas las relaciones
+    const cartWithItems = await getCart(
+      newCart.userId || undefined,
+      newCart.sessionCartId || undefined,
+      newCart.id
+    );
+
+    if (!cartWithItems) {
+      throw new Error("Failed to fetch cart after creation");
+    }
+
+    return cartWithItems;
+  } catch (error) {
+    console.error("Error in getOrCreateCart:", error);
+    throw new Error(`Failed to get or create cart: ${error}`);
   }
-
-  // Si no se encontró un carrito creamos uno nuevo
-
-  // Creamos un carrito con userId si se proporciona
-  const newCart = await prisma.cart.create({
-    data: {
-      userId: userId || null,
-    },
-    include: {
-      items: {
-        include: {
-          product: {
-            select: {
-              id: true,
-              title: true,
-              imgSrc: true,
-              alt: true,
-              price: true,
-              isOnSale: true,
-            },
-          },
-        },
-      },
-    },
-  });
-
-  if (!newCart) throw new Error("Failed to create cart");
-
-  return {
-    ...newCart,
-    items: newCart.items.map((item) => ({
-      ...item,
-      product: {
-        ...item.product,
-        price: item.product.price.toNumber(),
-      },
-    })),
-  };
 }
 
 export async function createRemoteItems(
   userId: User["id"] | undefined,
   sessionCartId: string | undefined,
-  items: CartItemWithProduct[] = []
+  items: CartItem[] = []
 ): Promise<CartWithItems> {
   const cart = await getOrCreateCart(userId, sessionCartId);
 
@@ -132,11 +155,17 @@ export async function createRemoteItems(
         cartId: cart.id,
         productId: item.product.id,
         quantity: item.quantity,
+        categoryVariantId: item.categoryVariantId,
+        finalPrice: item.finalPrice,
       })),
     });
   }
 
-  const updatedCart = await getCart(userId, sessionCartId, cart.id);
+  const updatedCart = await getCart(
+    cart.userId || undefined,
+    cart.sessionCartId || undefined,
+    cart.id
+  );
 
   if (!updatedCart) throw new Error("Cart not found after creation");
 
@@ -147,11 +176,18 @@ export async function alterQuantityCartItem(
   userId: User["id"] | undefined,
   sessionCartId: string | undefined,
   productId: number,
-  quantity: number = 1
+  quantity: number = 1,
+  categoryVariantId: number | null = null
 ): Promise<CartWithItems> {
   const cart = await getOrCreateCart(userId, sessionCartId);
 
-  const existingItem = cart.items.find((item) => item.product.id === productId);
+  const existingItem = cart.items.find(
+    (item) =>
+      item.productId === productId &&
+      item.categoryVariantId === categoryVariantId
+  );
+
+  const finalPrice = await calculateFinalPrice(productId, categoryVariantId);
 
   if (existingItem) {
     const newQuantity = existingItem.quantity + quantity;
@@ -164,6 +200,7 @@ export async function alterQuantityCartItem(
       },
       data: {
         quantity: newQuantity,
+        finalPrice,
       },
     });
   } else {
@@ -171,7 +208,9 @@ export async function alterQuantityCartItem(
       data: {
         cartId: cart.id,
         productId,
+        categoryVariantId,
         quantity,
+        finalPrice,
       },
     });
   }
@@ -181,6 +220,35 @@ export async function alterQuantityCartItem(
   if (!updatedCart) throw new Error("Cart not found after update");
 
   return updatedCart;
+}
+
+async function calculateFinalPrice(
+  productId: number,
+  categoryVariantId: number | null
+): Promise<number> {
+  // Obtener producto
+  const product = await prisma.product.findUnique({
+    where: { id: productId },
+    select: { price: true },
+  });
+
+  if (!product) throw new Error("Product not found");
+
+  let finalPrice = Number(product.price);
+
+  // Si hay variante, sumar el modificador
+  if (categoryVariantId) {
+    const variant = await prisma.categoryVariant.findUnique({
+      where: { id: categoryVariantId },
+      select: { priceModifier: true },
+    });
+
+    if (variant) {
+      finalPrice += Number(variant.priceModifier);
+    }
+  }
+
+  return finalPrice;
 }
 
 export async function deleteRemoteCartItem(
@@ -261,6 +329,7 @@ export async function linkCartToUser(
         ...item.product,
         price: item.product.price.toNumber(),
       },
+      finalPrice: Number(item.finalPrice),
     })),
   };
 }
@@ -307,6 +376,7 @@ export async function mergeGuestCartWithUserCart(
           ...item.product,
           price: item.product.price.toNumber(),
         },
+        finalPrice: Number(item.finalPrice),
       })),
     };
   }
@@ -326,11 +396,18 @@ export async function mergeGuestCartWithUserCart(
 
   // Mover los items del carrito de invitado al carrito de usuario
   await prisma.cartItem.createMany({
-    data: guestCart.items.map((item) => ({
-      cartId: userCart.id,
-      productId: item.productId,
-      quantity: item.quantity,
-    })),
+    data: await Promise.all(
+      guestCart.items.map(async (item) => ({
+        cartId: userCart.id,
+        productId: item.productId,
+        quantity: item.quantity,
+        categoryVariantId: item.categoryVariantId ?? null,
+        finalPrice: await calculateFinalPrice(
+          item.productId,
+          item.categoryVariantId ?? null
+        ),
+      }))
+    ),
   });
 
   // Eliminar el carrito de invitado

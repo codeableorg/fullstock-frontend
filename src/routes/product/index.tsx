@@ -134,7 +134,6 @@ export default function Product({ loaderData }: Route.ComponentProps) {
                 name="redirectTo"
                 value={`/products/${product.id}`}
               />
-              <input type="hidden" name="productId" value={product.id} />
               {selectedVariant && (
                 <input
                   type="hidden"
