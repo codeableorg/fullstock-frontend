@@ -55,6 +55,7 @@ model Product {
   title       String
   imgSrc      String   @map("img_src")
   alt         String?
+  price       Decimal  @db.Decimal(10, 2)
   description String?
   categoryId  Int?     @map("category_id")
   isOnSale    Boolean  @default(false) @map("is_on_sale")
@@ -62,41 +63,11 @@ model Product {
   createdAt   DateTime @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt   DateTime @default(now()) @map("updated_at") @db.Timestamp(0)
 
-  category               Category?                @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  
-  orderItems             OrderItem[]
-  variantAttributeValues VariantAttributeValue[]
+  category   Category?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  cartItems  CartItem[]
+  orderItems OrderItem[]
 
   @@map("products")
-}
-
-model VariantAttribute {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
-  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamp(0)
-
-  variantsAttributeValue VariantAttributeValue[]
-
-  @@map("variants_attributes")
-}
-
-model VariantAttributeValue {
-  id          Int      @id @default(autoincrement())
-  attributeId Int      @map("attribute_id")
-  productId   Int      @map("product_id")
-  value       String
-  price       Decimal  @db.Decimal(10, 2)
-  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamp(0)
-  updatedAt   DateTime @default(now()) @map("updated_at") @db.Timestamp(0)
-
-  variantAttribute VariantAttribute @relation(fields: [attributeId], references: [id])
-  product          Product           @relation(fields: [productId], references: [id])
-  
-  CartItem CartItem[]
-
-  @@unique([attributeId, productId, value], name: "unique_attribute_product_value")
-  @@map("variants_attributes_values")
 }
 
 model Cart {
@@ -115,15 +86,15 @@ model Cart {
 model CartItem {
   id        Int      @id @default(autoincrement())
   cartId    Int      @map("cart_id")
-  attributeValueId Int @map("attribute_value_id")
+  productId Int      @map("product_id")
   quantity  Int
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamp(0)
 
   cart    Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
-  variantAttributeValue VariantAttributeValue @relation(fields: [attributeValueId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
-  @@unique([cartId, attributeValueId], name: "unique_cart_item")
+  @@unique([cartId, productId], name: "unique_cart_item")
   @@map("cart_items")
 }
 
