@@ -32,6 +32,8 @@ export type CartItem = {
 export interface CartItemInput {
   productId: Product["id"];
   quantity: number;
+  categoryVariantId: number | null;
+  variantInfo: string | null;
   title: Product["title"];
   price: Product["price"];
   imgSrc: Product["imgSrc"];
