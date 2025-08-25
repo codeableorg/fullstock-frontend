@@ -54,9 +54,10 @@ export async function loader({ request }: Route.LoaderArgs) {
   if (!user && !sessionCartId) {
     try {
       cart = await createRemoteItems(undefined, undefined, []);
-      const cartId = cart.sessionCartId;
-      if (cartId) {
-        session.set("sessionCartId", cartId);
+
+      if (cart) {
+        session.set("sessionCartId", cart.sessionCartId);
+        session.set("userId", cart.userId ?? undefined);
       }
     } catch (error) {
       console.error("Error al crear carrito de invitado:", error);

@@ -26,8 +26,10 @@ export async function createOrder(
         items: {
           create: items.map((item) => ({
             productId: item.productId,
+            categoryVariantId: item.categoryVariantId,
             quantity: item.quantity,
             title: item.title,
+            variantInfo: item.variantInfo,
             price: item.price,
             imgSrc: item.imgSrc,
           })),

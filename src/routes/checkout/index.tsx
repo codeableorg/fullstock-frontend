@@ -105,9 +105,13 @@ export async function action({ request }: Route.ActionArgs) {
 
   const items = cartItems.map((item) => ({
     productId: item.product.id,
+    categoryVariantId: item.categoryVariantId, // ← NUEVO
     quantity: item.quantity,
     title: item.product.title,
-    price: item.product.price,
+    variantInfo: item.categoryVariant
+      ? getVariantInfoText(item.categoryVariantId, item.categoryVariant)
+      : null,
+    price: item.finalPrice,
     imgSrc: item.product.imgSrc,
   }));
 
@@ -128,6 +132,15 @@ export async function action({ request }: Route.ActionArgs) {
       "Set-Cookie": await commitSession(session),
     },
   });
+}
+
+function getVariantInfoText(
+  categoryId: number | null,
+  categoryVariant: any
+): string {
+  if (categoryId === 1) return `Talla: ${categoryVariant.label}`;
+  if (categoryId === 3) return `Tamaño: ${categoryVariant.label}`;
+  return `Opción: ${categoryVariant.label}`;
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -249,28 +262,37 @@ export default function Checkout({
           <div className="flex-grow">
             <h2 className="text-lg font-medium mb-4">Resumen de la orden</h2>
             <div className="border border-border rounded-xl bg-background flex flex-col">
-              {cart?.items?.map(({ product, quantity }) => (
-                <div
-                  key={product.id}
-                  className="flex gap-6 p-6 border-b border-border"
-                >
-                  <div className="w-20 rounded-xl bg-muted">
-                    <img
-                      src={product.imgSrc}
-                      alt={product.title}
-                      className="w-full aspect-square object-contain"
-                    />
-                  </div>
-                  <div className="flex flex-col justify-between flex-grow">
-                    <h3 className="text-sm leading-5">{product.title}</h3>
-                    <div className="flex text-sm font-medium gap-4 items-center self-end">
-                      <p>{quantity}</p>
-                      <X className="w-4 h-4" />
-                      <p>S/{product.price.toFixed(2)}</p>
+              {cart?.items?.map(
+                ({ product, quantity, finalPrice, categoryVariant }) => (
+                  <div
+                    key={`${product.id}-${categoryVariant?.id}`}
+                    className="flex gap-6 p-6 border-b border-border"
+                  >
+                    <div className="w-20 rounded-xl bg-muted">
+                      <img
+                        src={product.imgSrc}
+                        alt={product.title}
+                        className="w-full aspect-square object-contain"
+                      />
+                    </div>
+                    <div className="flex flex-col justify-between flex-grow">
+                      <div className="flex items-center">
+                        <h3 className="text-sm leading-5">{product.title}</h3>
+                        {categoryVariant && (
+                          <p className="text-sm leading-5">
+                            ({categoryVariant.label})
+                          </p>
+                        )}
+                      </div>
+                      <div className="flex text-sm font-medium gap-4 items-center self-end">
+                        <p>{quantity}</p>
+                        <X className="w-4 h-4" />
+                        <p>S/{finalPrice.toFixed(2)}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                )
+              )}
               <div className="flex justify-between p-6 text-base font-medium">
                 <p>Total</p>
                 <p>S/{total.toFixed(2)}</p>

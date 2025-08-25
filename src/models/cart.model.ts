@@ -5,18 +5,35 @@ import type {
   CartItem as PrismaCartItem,
 } from "@/../generated/prisma/client";
 
-export type CartItem = PrismaCartItem & {
+export type Cart = PrismaCart;
+
+export type CartItem = {
+  id: number;
+  cartId: number;
+  productId: number;
+  categoryVariantId: number | null;
+  quantity: number;
+  finalPrice: number; // ← number, no Decimal
+  createdAt: Date;
+  updatedAt: Date;
+  // Campos adicionales transformados
   product: Pick<
     Product,
     "id" | "title" | "imgSrc" | "alt" | "price" | "isOnSale"
   >;
+  categoryVariant?: {
+    id: number;
+    label: string;
+    value: string;
+    priceModifier: number;
+  } | null;
 };
-
-export type Cart = PrismaCart;
 
 export interface CartItemInput {
   productId: Product["id"];
   quantity: number;
+  categoryVariantId: number | null;
+  variantInfo: string | null;
   title: Product["title"];
   price: Product["price"];
   imgSrc: Product["imgSrc"];
@@ -33,6 +50,8 @@ export type CartProductInfo = Pick<
 export type CartItemWithProduct = {
   product: CartProductInfo;
   quantity: number;
+  categoryVariantId: number | null;
+  finalPrice: number;
 };
 
 // Tipo para el carrito con items y productos incluidos

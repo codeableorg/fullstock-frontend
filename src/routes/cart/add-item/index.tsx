@@ -8,13 +8,22 @@ import type { Route } from "../+types";
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
   const productId = Number(formData.get("productId"));
+  const categoryVariantId = formData.get("categoryVariantId")
+    ? Number(formData.get("categoryVariantId"))
+    : null;
   const quantity = Number(formData.get("quantity")) || 1;
   const redirectTo = formData.get("redirectTo") as string | null;
   const session = await getSession(request.headers.get("Cookie"));
   const sessionCartId = session.get("sessionCartId");
   const userId = session.get("userId");
 
-  await addToCart(userId, sessionCartId, productId, quantity);
+  await addToCart(
+    userId,
+    sessionCartId,
+    productId,
+    quantity,
+    categoryVariantId
+  );
 
   return redirect(redirectTo || "/cart");
 }

@@ -29,8 +29,10 @@ export type Order = Omit<PrismaOrder, "totalAmount"> & {
 
 export interface OrderItemInput {
   productId: number;
+  categoryVariantId?: number | null;
   quantity: number;
   title: string;
+  variantInfo?: string | null; // ← NUEVO
   price: number;
   imgSrc: string;
 }
