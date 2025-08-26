@@ -31,7 +31,8 @@ export default function Cart({ loaderData }: Route.ComponentProps) {
           Carrito de compras
         </h1>
         <div className="border-solid border rounded-xl flex flex-col">
-          {cart?.items?.map(({ product, quantity, id, productVariant }) => (
+          {cart?.items?.map(
+            ({ product, quantity, id, productVariant, stickersVariant }) => (
             <div key={id} className="flex gap-7 p-6 border-b">
               <div className="w-20 rounded-xl bg-muted">
                 <img
@@ -47,6 +48,11 @@ export default function Cart({ loaderData }: Route.ComponentProps) {
                     {productVariant && (
                       <span className="ml-2 text-xs text-muted-foreground">
                         ({productVariant.size})
+                      </span>
+                    )}
+                    {stickersVariant && (
+                      <span className="ml-2 text-xs text-muted-foreground">
+                        ({stickersVariant.measure})
                       </span>
                     )}
                   </h2>
@@ -71,6 +77,13 @@ export default function Cart({ loaderData }: Route.ComponentProps) {
                       {productVariant && (
                         <input type="hidden" name="size" value={productVariant.size} />
                       )}
+                      {stickersVariant && (
+                        <input
+                          type="hidden"
+                          name="measure"
+                          value={stickersVariant.measure}
+                        />
+                      )}
                       <input type="hidden" name="productId" value={product.id} />
                       <Button
                         name="productId"
@@ -89,6 +102,13 @@ export default function Cart({ loaderData }: Route.ComponentProps) {
                       {productVariant && (
                         <input type="hidden" name="size" value={productVariant.size} />
                       )}
+                      {stickersVariant && (
+                        <input
+                          type="hidden"
+                          name="measure"
+                          value={stickersVariant.measure}
+                        />
+                      )}
                       <input type="hidden" name="productId" value={product.id} />
                       <Button
                         variant="outline"
@@ -103,7 +123,8 @@ export default function Cart({ loaderData }: Route.ComponentProps) {
                 </div>
               </div>
             </div>
-          ))}
+            )
+          )}
           <div className="flex justify-between p-6 text-base font-medium border-b">
             <p>Total</p>
             <p>S/{total.toFixed(2)}</p>

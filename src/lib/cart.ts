@@ -20,7 +20,8 @@ export async function addToCart(
   sessionCartId: string | undefined,
   productId: Product["id"],
   quantity: number = 1,
-  productVariantId?: number
+  productVariantId?: number,
+  stickersVariantId?: number
 ) {
   try {
     const updatedCart = await alterQuantityCartItem(
@@ -28,7 +29,8 @@ export async function addToCart(
       sessionCartId,
       productId,
       quantity,
-      productVariantId
+      productVariantId,
+      stickersVariantId
     );
     return updatedCart;
   } catch (error) {
