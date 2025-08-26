@@ -38,6 +38,8 @@ describe("Order Service", () => {
       title: "Test Product",
       price: 19.99,
       imgSrc: "test-product.jpg",
+      categoryVariantId: 1,
+      variantInfo: "Talla: S",
     },
     {
       productId: 2,
@@ -45,6 +47,8 @@ describe("Order Service", () => {
       title: "Another Product",
       price: 29.99,
       imgSrc: "another-product.jpg",
+      categoryVariantId: 2,
+      variantInfo: "Talla: M",
     },
   ];
 
@@ -86,6 +90,8 @@ describe("Order Service", () => {
             title: item.title,
             price: item.price,
             imgSrc: item.imgSrc,
+            categoryVariantId: item.categoryVariantId,
+            variantInfo: item.variantInfo,
           })),
         },
         paymentId: "payment-id",

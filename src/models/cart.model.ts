@@ -1,9 +1,7 @@
 import { type Product } from "./product.model";
 
-import type {
-  Cart as PrismaCart,
-  CartItem as PrismaCartItem,
-} from "@/../generated/prisma/client";
+import type { CategoryVariant } from "./category.model";
+import type { Cart as PrismaCart } from "@/../generated/prisma/client";
 
 export type Cart = PrismaCart;
 
@@ -21,12 +19,7 @@ export type CartItem = {
     Product,
     "id" | "title" | "imgSrc" | "alt" | "price" | "isOnSale"
   >;
-  categoryVariant?: {
-    id: number;
-    label: string;
-    value: string;
-    priceModifier: number;
-  } | null;
+  categoryVariant?: CategoryVariant | null;
 };
 
 export interface CartItemInput {

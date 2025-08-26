@@ -1,15 +1,15 @@
+import { useEffect, useState } from "react";
 import { Form, useNavigation } from "react-router";
 
 import { Button, Container, Separator } from "@/components/ui";
 import { cn } from "@/lib/utils";
 import { type Product } from "@/models/product.model";
+import { getCategoryWithVariants } from "@/services/category.service";
 import { getProductById } from "@/services/product.service";
 
 import NotFound from "../not-found";
 
 import type { Route } from "./+types";
-import { useEffect, useState } from "react";
-import { getCategoryWithVariants } from "@/services/category.service";
 
 interface CategoryVariant {
   id: number;
@@ -59,7 +59,7 @@ export default function Product({ loaderData }: Route.ComponentProps) {
 
     setVariants(mappedVariants);
     setSelectedVariant(mappedVariants[0] || null);
-  }, [categoryWithVariants?.id, categoryWithVariants?.hasVariants]);
+  }, [categoryWithVariants]);
 
   if (!product) {
     return <NotFound />;

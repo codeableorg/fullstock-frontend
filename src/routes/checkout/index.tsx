@@ -20,6 +20,7 @@ import {
 } from "@/hooks/use-culqui";
 import { calculateTotal, getCart } from "@/lib/cart";
 import { type CartItem } from "@/models/cart.model";
+import type { CategoryVariant } from "@/models/category.model";
 import { getCurrentUser } from "@/services/auth.service";
 import { deleteRemoteCart } from "@/services/cart.service";
 import { createOrder } from "@/services/order.service";
@@ -109,7 +110,7 @@ export async function action({ request }: Route.ActionArgs) {
     quantity: item.quantity,
     title: item.product.title,
     variantInfo: item.categoryVariant
-      ? getVariantInfoText(item.categoryVariantId, item.categoryVariant)
+      ? getVariantInfoText(item.categoryVariant)
       : null,
     price: item.finalPrice,
     imgSrc: item.product.imgSrc,
@@ -134,12 +135,9 @@ export async function action({ request }: Route.ActionArgs) {
   });
 }
 
-function getVariantInfoText(
-  categoryId: number | null,
-  categoryVariant: any
-): string {
-  if (categoryId === 1) return `Talla: ${categoryVariant.label}`;
-  if (categoryId === 3) return `Tamaño: ${categoryVariant.label}`;
+function getVariantInfoText(categoryVariant: CategoryVariant): string {
+  if (categoryVariant.id === 1) return `Talla: ${categoryVariant.label}`;
+  if (categoryVariant.id === 3) return `Tamaño: ${categoryVariant.label}`;
   return `Opción: ${categoryVariant.label}`;
 }
 

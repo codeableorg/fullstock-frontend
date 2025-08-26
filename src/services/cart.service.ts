@@ -1,9 +1,5 @@
 import { prisma } from "@/db/prisma";
-import type {
-  CartItem,
-  CartItemWithProduct,
-  CartWithItems,
-} from "@/models/cart.model";
+import type { CartItem, CartWithItems } from "@/models/cart.model";
 import type { User } from "@/models/user.model";
 import { getSession } from "@/session.server";
 
