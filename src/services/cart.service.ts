@@ -41,6 +41,10 @@ async function getCart(
     ...data,
     items: data.items.map((item: any) => ({
       ...item,
+      price:
+        typeof item.price === "object"
+          ? item.price.toNumber()
+          : item.price,
       product: {
         ...item.product,
         price:
@@ -59,6 +63,10 @@ async function getCart(
         ? {
             id: item.stickersVariant.id,
             measure: item.stickersVariant.measure as "3*3" | "5*5" | "10*10",
+            price:
+              typeof item.stickersVariant.price === "object"
+                ? item.stickersVariant.price.toNumber()
+                : item.stickersVariant.price,
           }
         : null,
       stickersVariantId: item.stickersVariantId ?? null,
@@ -79,7 +87,7 @@ export async function getOrCreateCart(
   // Busca por userId o sessionCartId
   let cart = await getCart(userId, sessionCartId);
 
-  // Si no se encontró, intenta buscar explícitamente por sessionCartId (por si acaso)
+  // Si no se encontró, intenta buscar por sessionCartId 
   if (!cart && sessionCartId) {
     cart = await getCart(undefined, sessionCartId);
   }
@@ -117,8 +125,8 @@ export async function getOrCreateCart(
           typeof item.product.price === "object"
             ? item.product.price.toNumber()
             : item.product.price,
-      } as any, // Cast to any to resolve type issues
-      productVariant: item.productVariant ?? null, // Ensure productVariant is null if undefined
+      } as any, 
+      productVariant: item.productVariant ?? null, 
       productVariantId: item.productVariantId ?? null,
     })),
   };
@@ -138,7 +146,7 @@ export async function createRemoteItems(
     });
   }
 
-  // Si hay elementos para agregar, agregarlos
+  
   if (items.length > 0) {
     await prisma.cartItem.createMany({
       data: items.map((item) => ({
@@ -172,19 +180,19 @@ export async function alterQuantityCartItem(
   let existingItem;
 
   if (stickersVariantId) {
-    // Handle sticker variants
+    
     existingItem = cart.items.find(
       (item) =>
         item.productId === productId &&
         item.stickersVariantId === stickersVariantId
     );
   } else {
-    // Handle product variants (or no variant)
+   
     existingItem = cart.items.find(
       (item) =>
         item.productId === productId &&
         item.productVariantId === (productVariantId ?? null) &&
-        item.stickersVariantId === null // Make sure it's not a sticker item
+        item.stickersVariantId === null 
     );
   }
 
@@ -234,12 +242,6 @@ export async function alterQuantityCartItem(
         throw new Error(
           `Product variant with id ${productVariantId} not found`
         );
-      if (productVariant.price) {
-        price =
-          typeof productVariant.price === "object"
-            ? productVariant.price.toNumber()
-            : productVariant.price;
-      }
     }
     await prisma.cartItem.create({
       data: {
@@ -248,7 +250,7 @@ export async function alterQuantityCartItem(
         quantity,
         productVariantId: productVariantId ?? null,
         stickersVariantId: stickersVariantId ?? null,
-        price, // Use the determined price instead of 0
+        price, 
       },
     });
   }
@@ -289,12 +291,7 @@ export async function deleteRemoteCart(request: Request): Promise<void> {
 
   if (!cart) throw new Error("Cart not found");
 
-  // Eliminar todos los items del carrito primero
-  // await prisma.cartItem.deleteMany({
-  //   where: { cartId: cart.id },
-  // });
-
-  // Luego eliminar el carrito
+  
   await prisma.cart.delete({
     where: { id: cart.id },
   });
@@ -333,8 +330,8 @@ export async function linkCartToUser(
           typeof item.product.price === "object"
             ? item.product.price.toNumber()
             : item.product.price,
-      } as any, // Cast to any to resolve type issues
-      productVariant: item.productVariant ?? null, // Ensure productVariant is null if undefined
+      } as any, 
+      productVariant: item.productVariant ?? null, 
       productVariantId: item.productVariantId ?? null,
     })),
   };
@@ -368,9 +365,9 @@ export async function mergeGuestCartWithUserCart(
       },
     });
     return {
-      ...updatedCart, // Spread the updatedCart object
+      ...updatedCart, 
       items: updatedCart.items.map((item: any) => ({
-        // Map over items, casting item to any
+      
         ...item,
         product: {
           ...item.product,
@@ -378,7 +375,7 @@ export async function mergeGuestCartWithUserCart(
             typeof item.product.price === "object"
               ? item.product.price.toNumber()
               : item.product.price,
-        } as any, // Cast product to any to resolve type issues
+        } as any, 
         productVariant: item.productVariant ?? null,
         productVariantId: item.productVariantId ?? null,
         stickersVariantId: item.stickersVariantId ?? null,

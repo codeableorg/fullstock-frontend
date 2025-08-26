@@ -45,7 +45,7 @@ export async function removeFromCart(
   itemId: CartItem["id"]
 ) {
   try {
-    // El backend determinará si es un usuario autenticado o invitado
+    // La parte del backend determina si es un usuario autenticado o invitado
     const updatedCart = await deleteRemoteCartItem(
       userId,
       sessionCartId,
@@ -63,12 +63,12 @@ export function calculateTotal(items: CartItemInput[]): number;
 
 export function calculateTotal(items: CartItem[] | CartItemInput[]): number {
   return items.reduce((total, item) => {
-    // Type guard to determine which type we're working with
+    
     if ("product" in item) {
-      // CartItem - has a product property
-      return total + item.product.price * item.quantity;
+     
+      return total + item.price * item.quantity;
     } else {
-      // CartItemInput - has price directly
+      
       return total + item.price * item.quantity;
     }
   }, 0);

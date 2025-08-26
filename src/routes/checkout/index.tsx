@@ -107,7 +107,7 @@ export async function action({ request }: Route.ActionArgs) {
     productId: item.product.id,
     quantity: item.quantity,
     title: item.product.title,
-    price: item.product.price,
+    price: item.price, // Usar el precio del item (que puede ser de la variante)
     imgSrc: item.product.imgSrc,
     productVariantTitle: item.productVariant?.size || null,
   }));
@@ -251,7 +251,7 @@ export default function Checkout({
             <h2 className="text-lg font-medium mb-4">Resumen de la orden</h2>
             <div className="border border-border rounded-xl bg-background flex flex-col">
               {cart?.items?.map(
-                ({ product, quantity, id, productVariant, stickersVariant }) => (
+                ({ product, quantity, id, productVariant, stickersVariant, price }) => (
                 <div
                   key={id}
                   className="flex gap-6 p-6 border-b border-border"
@@ -280,7 +280,7 @@ export default function Checkout({
                     <div className="flex text-sm font-medium gap-4 items-center self-end">
                       <p>{quantity}</p>
                       <X className="w-4 h-4" />
-                      <p>S/{product.price.toFixed(2)}</p>
+                      <p>S/{price.toFixed(2)}</p>
                     </div>
                   </div>
                 </div>

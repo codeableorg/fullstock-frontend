@@ -32,7 +32,7 @@ export default function Cart({ loaderData }: Route.ComponentProps) {
         </h1>
         <div className="border-solid border rounded-xl flex flex-col">
           {cart?.items?.map(
-            ({ product, quantity, id, productVariant, stickersVariant }) => (
+            ({ product, quantity, id, productVariant, stickersVariant, price }) => (
             <div key={id} className="flex gap-7 p-6 border-b">
               <div className="w-20 rounded-xl bg-muted">
                 <img
@@ -69,7 +69,7 @@ export default function Cart({ loaderData }: Route.ComponentProps) {
                 </div>
                 <div className="flex flex-col gap-2 md:flex-row md:justify-between md:items-center">
                   <p className="text-sm font-medium">
-                    ${product.price.toFixed(2)}
+                    ${price.toFixed(2)}
                   </p>
                   <div className="flex gap-4 items-center">
                     <Form method="post" action="/cart/add-item">
