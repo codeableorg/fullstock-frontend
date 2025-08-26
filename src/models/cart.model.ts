@@ -6,10 +6,15 @@ import type {
 } from "@/../generated/prisma/client";
 
 export type CartItem = PrismaCartItem & {
-  product: Pick<
-    Product,
-    "id" | "title" | "imgSrc" | "alt" | "price" | "isOnSale"
-  >;
+  product: Pick<Product, "id" | "title" | "imgSrc" | "alt" | "price" | "isOnSale">;
+  productVariant?: {
+    id: number;
+    size: "small" | "medium" | "large";
+  } | null;
+  stickersVariant?: {
+    id: number;
+    measure: "3*3" | "5*5" | "10*10";
+  } | null;
 };
 
 export type Cart = PrismaCart;
@@ -34,6 +39,8 @@ export type CartItemWithProduct = {
   product: CartProductInfo;
   quantity: number;
   productVariantId: number | null;
+  stickersVariantId: number | null;
+  price: number;
 };
 
 // Tipo para el carrito con items y productos incluidos

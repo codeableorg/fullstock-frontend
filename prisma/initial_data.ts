@@ -42,6 +42,17 @@ export const productVariant = [
   { productTitle: "Polo It Works On My Machine", sizes: ["small", "medium", "large"] },
 ];
 
+export const stickersVariant = [
+    { productTitle: "Sticker JavaScript", measure: ["3*3", "5*5", "10*10"] },
+    { productTitle: "Sticker React", measure: ["3*3", "5*5", "10*10"] },
+    { productTitle: "Sticker Git", measure: ["3*3", "5*5", "10*10"] },
+    { productTitle: "Sticker Docker", measure: ["3*3", "5*5", "10*10"] },
+    { productTitle: "Sticker Linux", measure: ["3*3", "5*5", "10*10"] },
+    { productTitle: "Sticker VS Code", measure: ["3*3", "5*5", "10*10"] },
+    { productTitle: "Sticker GitHub", measure: ["3*3", "5*5", "10*10"] },
+    { productTitle: "Sticker HTML", measure: ["3*3", "5*5", "10*10"] },
+  ];  
+
 export const products = [
   {
     title: "Polo React",

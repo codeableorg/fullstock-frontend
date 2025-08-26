@@ -109,6 +109,7 @@ export async function action({ request }: Route.ActionArgs) {
     title: item.product.title,
     price: item.product.price,
     imgSrc: item.product.imgSrc,
+    productVariantTitle: item.productVariant?.size || null,
   }));
 
   const { id: orderId } = await createOrder(
@@ -249,9 +250,10 @@ export default function Checkout({
           <div className="flex-grow">
             <h2 className="text-lg font-medium mb-4">Resumen de la orden</h2>
             <div className="border border-border rounded-xl bg-background flex flex-col">
-              {cart?.items?.map(({ product, quantity }) => (
+              {cart?.items?.map(
+                ({ product, quantity, id, productVariant, stickersVariant }) => (
                 <div
-                  key={product.id}
+                  key={id}
                   className="flex gap-6 p-6 border-b border-border"
                 >
                   <div className="w-20 rounded-xl bg-muted">
@@ -262,7 +264,19 @@ export default function Checkout({
                     />
                   </div>
                   <div className="flex flex-col justify-between flex-grow">
-                    <h3 className="text-sm leading-5">{product.title}</h3>
+                    <h2 className="text-sm">
+                    {product.title}
+                    {productVariant && (
+                      <span className="ml-2 text-xs text-muted-foreground">
+                        ({productVariant.size})
+                      </span>
+                      )}
+                      {stickersVariant && (
+                        <span className="ml-2 text-xs text-muted-foreground">
+                          ({stickersVariant.measure})
+                        </span>
+                      )}
+                    </h2>
                     <div className="flex text-sm font-medium gap-4 items-center self-end">
                       <p>{quantity}</p>
                       <X className="w-4 h-4" />
@@ -270,7 +284,8 @@ export default function Checkout({
                     </div>
                   </div>
                 </div>
-              ))}
+                )
+              )}
               <div className="flex justify-between p-6 text-base font-medium">
                 <p>Total</p>
                 <p>S/{total.toFixed(2)}</p>

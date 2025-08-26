@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Form, useNavigation } from "react-router";
 
+import { VariantSelector } from "@/components/product/VariantSelector";
 import { Button, Container, Separator } from "@/components/ui";
-import { type Product } from "@/models/product.model";
+import { capitalize } from "@/lib/utils";
 import { getProductById } from "@/services/product.service";
 
 import NotFound from "../not-found";
@@ -24,12 +25,23 @@ export default function Product({ loaderData }: Route.ComponentProps) {
   const cartLoading = navigation.state === "submitting";
 
   // Si el producto tiene variantes, selecciona la primera por defecto
-  const [selectedVariantId, setSelectedVariantId] = useState(
-  product?.variants?.[0]?.id ?? ""
-);
+  const [selectedSize, setSelectedSize] = useState(
+    product?.variants?.[0]?.size ?? ""
+  );
+
+  // Si el producto tiene variantes de stickers, selecciona la primera por defecto
+  const [selectedMeasure, setSelectedMeasure] = useState(
+    product?.stickersVariants?.[0]?.measure ?? ""
+  );
 
   if (!product) {
     return <NotFound />;
+  }
+
+  let displayedPrice = product.price;
+
+  if (selectedMeasure) {
+    displayedPrice = product.stickersVariants?.find(v => v.measure === selectedMeasure)?.price || product.price;
   }
 
   return (
@@ -47,7 +59,7 @@ export default function Product({ loaderData }: Route.ComponentProps) {
             <h1 className="text-3xl leading-9 font-bold mb-3">
               {product.title}
             </h1>
-            <p className="text-3xl leading-9 mb-6">S/{product.price}</p>
+            <p className="text-3xl leading-9 mb-6">S/{displayedPrice}</p>
             <p className="text-sm leading-5 text-muted-foreground mb-10">
               {product.description}
             </p>
@@ -59,28 +71,33 @@ export default function Product({ loaderData }: Route.ComponentProps) {
               />
               {/* Botones de talla si hay variantes */}
               {product.variants && product.variants.length > 0 && (
-  <div className="mb-4">
-    <label className="block mb-2 font-medium">Talla</label>
-    <div className="flex gap-2">
-      {product.variants.map(variant => (
-        <button
-          type="button"
-          key={variant.id}
-          className={`px-4 py-2 rounded border ${
-            selectedVariantId === variant.id
-              ? "bg-primary text-white border-primary"
-              : "bg-white text-black border-gray-300"
-          }`}
-          onClick={() => setSelectedVariantId(variant.id)}
-        >
-          {variant.size.charAt(0).toUpperCase() + variant.size.slice(1)}
-        </button>
-      ))}
-    </div>
-    {/* input oculto para enviar el id del variant seleccionado */}
-    <input type="hidden" name="variantId" value={selectedVariantId} />
-  </div>
-)}
+                <VariantSelector
+                  label="Talla"
+                  name="size"
+                  options={product.variants.map(variant => ({
+                    id: variant.id,
+                    label: capitalize(variant.size),
+                    value: variant.size ,
+                  }))}
+                  selectedValue={selectedSize}
+                  onSelect={setSelectedSize}
+                />
+              )}
+              {/* Botones de medida si hay variantes de stickers */}
+              {product.stickersVariants && product.stickersVariants.length > 0 && (
+                <VariantSelector
+                  label="Medida"
+                  name="measure"
+                  options={product.stickersVariants.map(variant => ({
+                    id: variant.id,
+                    label: variant.measure,
+                    value: variant.measure ,
+                  }))}
+                  selectedValue={selectedMeasure}
+                  onSelect={setSelectedMeasure}
+                />
+              )}
+              {/* Botón de agregar al carrito */}
               <Button
                 size="xl"
                 className="w-full md:w-80"
