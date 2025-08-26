@@ -14,7 +14,9 @@ export type CartItem = PrismaCartItem & {
   stickersVariant?: {
     id: number;
     measure: "3*3" | "5*5" | "10*10";
+    price: number;
   } | null;
+  price: number;
 };
 
 export type Cart = PrismaCart;
@@ -27,7 +29,7 @@ export interface CartItemInput {
   imgSrc: Product["imgSrc"];
 }
 
-// Tipo para representar un producto simplificado en el carrito
+// Tipo para representar un producto en el carrito
 
 export type CartProductInfo = Pick<
   Product,
