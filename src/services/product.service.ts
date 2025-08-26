@@ -21,7 +21,10 @@ export async function getProductsByCategorySlug(
 export async function getProductById(id: number): Promise<Product | null> {
   const product = await prisma.product.findUnique({
     where: { id },
-    include: { variants: true }, // Incluye variantes
+    include: { 
+      stickersVariants: true,
+      variants: true 
+    }, // Incluye variantes
   });
   if (!product) return null;
   return {
@@ -30,6 +33,11 @@ export async function getProductById(id: number): Promise<Product | null> {
     variants: product.variants?.map(v => ({
       id: v.id,
       size: v.size as "small" | "medium" | "large",
+    })),
+    stickersVariants: product.stickersVariants?.map(s => ({
+      id: s.id,
+      measure: s.measure as "3*3" | "5*5" | "10*10",
+      price: s.price.toNumber(),
     })),
   };
 }
