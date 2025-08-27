@@ -20,7 +20,6 @@ async function getCart(
   if (!whereCondition) return null;
 
   const data = await prisma.cart.findFirst({
-    // se modifico esta funcion
     where: whereCondition,
     include: {
       items: {
@@ -332,7 +331,9 @@ export async function mergeGuestCartWithUserCart(
   }
 
   // Obtener productos duplicados para eliminarlos del carrito del usuario
-  const guestAttributeValueIds = guestCart.items.map((item) => item.attributeValueId);
+  const guestAttributeValueIds = guestCart.items.map(
+    (item) => item.attributeValueId
+  );
 
   // Eliminar productos del carrito usuario que también existan en el carrito invitado
   await prisma.cartItem.deleteMany({

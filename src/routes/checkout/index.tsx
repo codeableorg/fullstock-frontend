@@ -301,56 +301,79 @@ export default function Checkout({
                 Información de envío
               </legend>
               <div className="flex flex-col gap-6">
-                <InputField
-                  label="Nombre"
-                  autoComplete="given-name"
-                  error={errors.firstName?.message}
-                  {...register("firstName")}
-                />
-                <InputField
-                  label="Apellido"
-                  autoComplete="family-name"
-                  error={errors.lastName?.message}
-                  {...register("lastName")}
-                />
-                <InputField
-                  label="Compañia"
-                  autoComplete="organization"
-                  error={errors.company?.message}
-                  {...register("company")}
-                />
-                {errors.company?.message && <p>{errors.company?.message}</p>}
-                <InputField
-                  label="Dirección"
-                  autoComplete="street-address"
-                  error={errors.address?.message}
-                  {...register("address")}
-                />
-                <InputField
-                  label="Ciudad"
-                  autoComplete="address-level2"
-                  error={errors.city?.message}
-                  {...register("city")}
-                />
-                <SelectField
-                  label="País"
-                  options={countryOptions}
-                  placeholder="Seleccionar país"
-                  error={errors.country?.message}
-                  {...register("country")}
-                />
-                <InputField
-                  label="Provincia/Estado"
-                  autoComplete="address-level1"
-                  error={errors.region?.message}
-                  {...register("region")}
-                />
-                <InputField
-                  label="Código Postal"
-                  autoComplete="postal-code"
-                  error={errors.zip?.message}
-                  {...register("zip")}
-                />
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex-1">
+                  <InputField
+                    label="Nombre"
+                    autoComplete="given-name"
+                    error={errors.firstName?.message}
+                    {...register("firstName")}
+                  />
+                </div>
+                <div className="flex-1">
+                  <InputField
+                    label="Apellido"
+                    autoComplete="family-name"
+                    error={errors.lastName?.message}
+                    {...register("lastName")}
+                  />
+                </div>
+              </div>
+
+              <InputField
+                label="Compañia"
+                autoComplete="organization"
+                error={errors.company?.message}
+                {...register("company")}
+              />
+              {errors.company?.message && <p>{errors.company?.message}</p>}
+              
+              <InputField
+                label="Dirección"
+                autoComplete="street-address"
+                error={errors.address?.message}
+                {...register("address")}
+              />
+
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex-1">
+                  <InputField
+                    label="Ciudad"
+                    autoComplete="address-level2"
+                    error={errors.city?.message}
+                    {...register("city")}
+                  />
+                </div>
+                <div className="flex-1">
+                  <SelectField
+                    label="País"
+                    options={countryOptions}
+                    placeholder="Seleccionar país"
+                    error={errors.country?.message}
+                    {...register("country")}
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex-1">
+                  <InputField
+                    label="Provincia/Estado"
+                    autoComplete="address-level1"
+                    error={errors.region?.message}
+                    {...register("region")}
+                  />
+                </div>
+                <div className="flex-1">
+                  <InputField
+                    label="Código Postal"
+                    autoComplete="postal-code"
+                    error={errors.zip?.message}
+                    {...register("zip")}
+                  />
+                </div>
+                </div>
+
                 <InputField
                   label="Teléfono"
                   autoComplete="tel"
