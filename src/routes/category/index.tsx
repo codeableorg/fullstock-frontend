@@ -82,7 +82,11 @@ export default function Category({ loaderData }: Route.ComponentProps) {
             />
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 flex-grow">
               {products.map((product) => (
-                <ProductCard product={product} key={product.id} />
+                <ProductCard
+                  product={product}
+                  key={product.id}
+                  categorySlug={category.slug}
+                />
               ))}
             </div>
           </div>
