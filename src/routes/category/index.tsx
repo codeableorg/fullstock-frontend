@@ -48,9 +48,9 @@ export async function loader({ params, request }: Route.LoaderArgs) {
           if (min) {
             return (productPrice||minProductPrice) >= min 
           }
+
           if (max) {
             return (productPrice||maxProductPrice) <= max 
-
           }
           return true
     });
