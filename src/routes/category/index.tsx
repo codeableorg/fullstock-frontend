@@ -92,6 +92,6 @@ export default function Category({ loaderData }: Route.ComponentProps) {
           </div>
         </Container>
       </section>
-    </>
-  );
+    </>
+  );
 }

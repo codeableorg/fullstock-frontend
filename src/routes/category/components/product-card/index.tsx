@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "react-router";
+import { useState } from "react";
 
 import type { Product } from "@/models/product.model";
 import { Button } from "@/components/ui";
@@ -10,9 +11,16 @@ interface ProductCardProps {
 
 export function ProductCard({ product, categorySlug }: ProductCardProps) {
   const navigate = useNavigate();
+  const [hoveredPrice, setHoveredPrice] = useState<number | null>(null);
   let variantTitle: string | null = null;
   let variants: string[] = [];
   let variantParamName: "size" | "measure" | null = null;
+
+  const variantMap: Record<string, string> = {
+    "3*3": "3*3",
+    "5*5": "5*5", 
+    "10*10": "10*10"
+  };
 
   if (categorySlug === "polos") {
     variantTitle = "Elige la talla";
@@ -20,7 +28,7 @@ export function ProductCard({ product, categorySlug }: ProductCardProps) {
     variantParamName = "size";
   } else if (categorySlug === "stickers") {
     variantTitle = "Elige la medida";
-    variants = ["3*3", "5*5", "10*10"];
+    variants = ["3*3", "5*5", "10*10"]; 
     variantParamName = "measure";
   }
 
@@ -35,6 +43,23 @@ export function ProductCard({ product, categorySlug }: ProductCardProps) {
         variantParamName === "size" ? variant.toLowerCase() : variant;
       navigate(`/products/${product.id}?${variantParamName}=${paramValue}`);
     }
+  };
+
+  const hoverVariantClick = (variant: string) => {
+    if (variantParamName === "measure") {
+      if (product.stickersVariants && product.stickersVariants.length > 0) {
+        const variantPrice = product.stickersVariants.find(
+          (v) => v.measure === variant
+        )?.price;
+        setHoveredPrice(variantPrice || null);
+      } else {
+        setHoveredPrice(null);
+      }
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredPrice(null);
   };
 
   return (
@@ -59,6 +84,8 @@ export function ProductCard({ product, categorySlug }: ProductCardProps) {
                   <Button
                     key={variant}
                     onClick={(e) => handleVariantClick(e, variant)}
+                    onMouseEnter={() => hoverVariantClick(variant)}
+                    onMouseLeave={handleMouseLeave}
                   >
                     {variant}
                   </Button>
@@ -70,7 +97,9 @@ export function ProductCard({ product, categorySlug }: ProductCardProps) {
         <div className="flex grow flex-col gap-2 p-4">
           <h2 className="text-sm font-medium">{product.title}</h2>
           <p className="text-sm text-muted-foreground">{product.description}</p>
-          <p className="mt-auto text-base font-medium">S/{product.price}</p>
+          <p className="mt-auto text-base font-medium">
+            S/{hoveredPrice !== null ? hoveredPrice : product.price}
+          </p>
         </div>
         {product.isOnSale && (
           <span className="absolute top-0 right-0 rounded-bl-xl bg-primary px-2 py-1 text-sm font-medium text-primary-foreground">
