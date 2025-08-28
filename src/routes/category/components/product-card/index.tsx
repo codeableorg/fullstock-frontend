@@ -7,9 +7,16 @@ import { Button } from "@/components/ui";
 interface ProductCardProps {
   product: Product;
   categorySlug: string;
+  minPrice?: string;
+  maxPrice?: string;
 }
 
-export function ProductCard({ product, categorySlug }: ProductCardProps) {
+export function ProductCard({
+  product,
+  categorySlug,
+  minPrice,
+  maxPrice,
+}: ProductCardProps) {
   const navigate = useNavigate();
   const [hoveredPrice, setHoveredPrice] = useState<number | null>(null);
   let variantTitle: string | null = null;
@@ -18,8 +25,8 @@ export function ProductCard({ product, categorySlug }: ProductCardProps) {
 
   const variantMap: Record<string, string> = {
     "3*3": "3*3",
-    "5*5": "5*5", 
-    "10*10": "10*10"
+    "5*5": "5*5",
+    "10*10": "10*10",
   };
 
   if (categorySlug === "polos") {
@@ -28,7 +35,17 @@ export function ProductCard({ product, categorySlug }: ProductCardProps) {
     variantParamName = "size";
   } else if (categorySlug === "stickers") {
     variantTitle = "Elige la medida";
-    variants = ["3*3", "5*5", "10*10"]; 
+
+    const min = minPrice ? parseFloat(minPrice) : 0;
+    const max = maxPrice ? parseFloat(maxPrice) : Infinity;
+
+    if (product.stickersVariants?.length) {
+      variants = product.stickersVariants
+        .filter((variant) => variant.price >= min && variant.price <= max)
+        .map((variant) => variant.measure);
+    } else {
+      variants = ["3*3", "5*5", "10*10"];
+    }
     variantParamName = "measure";
   }
 
