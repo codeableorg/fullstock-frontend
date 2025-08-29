@@ -252,8 +252,8 @@ Este proyecto está bajo la licencia [MIT](./LICENSE).
 
 **Jota(Jhonattan Saldaña Camacho)**
 
-- GitHub: [@tuusuario](https://github.com/jhonattan)
-- LinkedIn: [Tu LinkedIn](https://www.linkedin.com/in/jhonattansaldana/)
+- GitHub: [@jhonattan](https://github.com/jhonattan)
+- LinkedIn: [jhonattansaldana](https://www.linkedin.com/in/jhonattansaldana/)
 - Email: jsaldana999@gmail.com
 
 ## 🙏 Agradecimientos
