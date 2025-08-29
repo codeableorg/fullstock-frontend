@@ -8,6 +8,21 @@ import { getProductById } from "@/services/product.service";
 import NotFound from "../not-found";
 
 import type { Route } from "./+types";
+const categoryStickerId =3
+const categoryTazaId = 2
+const initialVariantPosition = 1
+
+const variantGroupLabel: { [key: number]: string } = {
+  3: 'No aplica',
+  1: 'Talla',
+  2: 'Dimensiones'
+}
+const displayVariantSize: { [key: string]: string } = {
+  'S': 'Small',
+  'M': 'Medium',
+  'L': 'Large'
+}
+
 
 export async function loader({ params }: Route.LoaderArgs) {
   try {
@@ -20,50 +35,59 @@ export async function loader({ params }: Route.LoaderArgs) {
 
 export default function Product({ loaderData }: Route.ComponentProps) {
   const { product } = loaderData;
-  const navigation = useNavigation();
-  const cartLoading = navigation.state === "submitting";
-  const [selectedSize, setSelectedSize] = useState<string>("Medium");
-
-  if (!product) {
-    return <NotFound />;
-  }
-
-  const showSizeSelector = product.categoryId === 1 || product.categoryId === 3;
-
-  const getAttributeValueId = () => { // AQUI TRAER EL AttributeValueId con el cambio de SEBAS
-    if (
-      !product.variantAttributeValues ||
-      product.variantAttributeValues.length === 0
-    ) {
-      return undefined;
-    }
-    // Devuelve el attributeId de la posición 0
-    return product.variantAttributeValues[0].id;
-  };
 
   const getSizeOptions = () => {
-    if (product.categoryId === 3) {
+    const options = product?.variantAttributeValues?.map((variantAttribute, index) => ({
+      value: variantAttribute.id,
+      label: product.categoryId === categoryStickerId ? `${variantAttribute.value} cm` : displayVariantSize[variantAttribute.value],
+      price: variantAttribute.price,
+      selected: index===initialVariantPosition?true:false
+    }));
+    if (product?.categoryId === categoryTazaId) {
       return {
-        label: "Dimensiones",
-        options: [
-          { value: "Small", label: "3x3 cm" },
-          { value: "Medium", label: "5x5 cm" },
-          { value: "Large", label: "10x10 cm" },
-        ],
-      };
-    } else {
-      return {
-        label: "Talla",
-        options: [
-          { value: "Small", label: "Small" },
-          { value: "Medium", label: "Medium" },
-          { value: "Large", label: "Large" },
-        ],
-      };
+        label: '',
+        options: [{
+          value: product?.variantAttributeValues?.[0].id,
+          label: product?.variantAttributeValues?.[0].value,
+          price: product?.variantAttributeValues?.[0].price,
+          selected: true
+        }]
+      }
+    }
+    return {
+      label: variantGroupLabel[product?.variantAttributeValues?.[0].attributeId as number],
+      options: options || [],
     }
   };
 
   const sizeOptions = getSizeOptions();
+  const navigation = useNavigation();
+  const cartLoading = navigation.state === "submitting";
+  const [data, setData] = useState(sizeOptions)
+  const showSizeSelector = product?.categoryId === 1 || product?.categoryId === 3;
+  const selectedDisplay = data.options.find((option) => option.selected === true);
+
+  const onSelectedVariant = (id: number) => {
+    setData({
+      ...data,
+      options: data.options.map((v) => {
+        if (v.value === id) {
+          return ({
+            ...v,
+            selected: true
+          })
+        }
+        return ({
+          ...v,
+          selected: false
+        })
+      })
+    })
+  }
+
+  if (!product) {
+    return <NotFound />;
+  }
 
   return (
     <>
@@ -84,15 +108,15 @@ export default function Product({ loaderData }: Route.ComponentProps) {
                   {" "}
                   (
                   {
-                    sizeOptions.options.find(
-                      (option) => option.value === selectedSize
+                    data.options.find(
+                      (option) => option.selected === true
                     )?.label
                   }
                   )
                 </span>
               )}
             </h1>
-            <p className="text-3xl leading-9 mb-6">S/{product.price}</p>
+            <p className="text-3xl leading-9 mb-6">S/ {selectedDisplay?.price}</p>
             <p className="text-sm leading-5 text-muted-foreground mb-10">
               {product.description}
             </p>
@@ -107,10 +131,10 @@ export default function Product({ loaderData }: Route.ComponentProps) {
                     <Button
                       key={option.value}
                       variant={
-                        selectedSize === option.value ? "default" : "secondary"
+                        selectedDisplay?.value === option.value ? "default" : "secondary"
                       }
                       size="lg"
-                      onClick={() => setSelectedSize(option.value)}
+                      onClick={() => onSelectedVariant(option?.value||0)}
                     >
                       {option.label}
                     </Button>
@@ -128,7 +152,7 @@ export default function Product({ loaderData }: Route.ComponentProps) {
               <input
                 type="hidden"
                 name="attributeValueId"
-                value={getAttributeValueId() ?? ""}
+                value={selectedDisplay?.value||""}
               />
               <Button
                 size="xl"

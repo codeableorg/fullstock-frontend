@@ -30,9 +30,9 @@ export const categories = [
 ];
 
 export const variantAttributes = [
-  { name: "no aplica" },
   { name: "talla" },
   { name: "dimensiones" },
+  { name: "no aplica" },
 ]
 
 export const products = [
