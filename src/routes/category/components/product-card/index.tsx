@@ -29,6 +29,37 @@ export function ProductCard({
     "10*10": "10*10",
   };
 
+  // Obtener el precio base para stickers para la variante 3*3
+  const getBasePrice = () => {
+    if (categorySlug === "stickers" && product.stickersVariants?.length) {
+      const baseVariant = product.stickersVariants.find(
+        (variant) => variant.measure === "3*3"
+      );
+      return baseVariant ? baseVariant.price : product.price;
+    }
+    return product.price;
+  };
+
+  // Obtener rango de precios para las variantes filtradas
+  const getPriceRange = () => {
+    if (categorySlug === "stickers" && product.stickersVariants?.length && variants.length > 0) {
+      const filteredVariants = product.stickersVariants.filter(variant => 
+        variants.includes(variant.measure)
+      );
+      
+      if (filteredVariants.length > 0) {
+        const minPrice = Math.min(...filteredVariants.map(v => v.price));
+        const maxPrice = Math.max(...filteredVariants.map(v => v.price));
+        
+        if (minPrice === maxPrice) {
+          return `S/${minPrice}`;
+        }
+        return `S/${minPrice} - S/${maxPrice}`;
+      }
+    }
+    return null;
+  };
+
   if (categorySlug === "polos") {
     variantTitle = "Elige la talla";
     variants = ["Small", "Medium", "Large"];
@@ -48,6 +79,9 @@ export function ProductCard({
     }
     variantParamName = "measure";
   }
+
+  const basePrice = getBasePrice();
+  const priceRange = getPriceRange();
 
   const handleVariantClick = (
     e: React.MouseEvent<HTMLButtonElement>,
@@ -115,7 +149,7 @@ export function ProductCard({
           <h2 className="text-sm font-medium">{product.title}</h2>
           <p className="text-sm text-muted-foreground">{product.description}</p>
           <p className="mt-auto text-base font-medium">
-            S/{hoveredPrice !== null ? hoveredPrice : product.price}
+            {hoveredPrice !== null ? `S/${hoveredPrice}` : (priceRange ? priceRange : `S/${basePrice}`)}
           </p>
         </div>
         {product.isOnSale && (
