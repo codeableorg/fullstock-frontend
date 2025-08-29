@@ -1,4 +1,3 @@
-import { Decimal } from "decimal.js";
 import { describe, expect, it, vi } from "vitest";
 
 import { createTestProduct } from "@/lib/utils.tests";
@@ -7,7 +6,7 @@ import * as productService from "@/services/product.service";
 
 import { loader } from ".";
 
-import type { CategorySlug } from "generated/prisma/client";
+import type { CategorySlug } from "generated/prisma/enums";
 
 // Mock the product service
 vi.mock("@/services/product.service", () => ({
@@ -33,39 +32,48 @@ describe("Product loader", () => {
   it("returns a product when it exists", async () => {
     const mockProduct = createTestProduct({ categoryId: 1 });
 
-    const mockCategoryWithVariants = {
-      id: 1,
-      title: "Polos",
-      slug: "POLOS" as CategorySlug,
-      hasVariants: true,
-      imgSrc: "POLOS",
-      alt: "POLOS",
-      description: "POLOS",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      categoryVariants: [
-        {
-          id: 1,
-          value: "small",
-          label: "S",
-          priceModifier: new Decimal(0.0),
-          categoryId: 1,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          sortOrder: 1,
-        },
-        {
-          id: 2,
-          value: "medium",
-          label: "M",
-          priceModifier: new Decimal(0.0),
-          categoryId: 1,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          sortOrder: 2,
-        },
-      ],
-    };
+    const mockCategoryWithVariants: categoryService.CategoryWithVariantsTransformed =
+      {
+        id: 1,
+        title: "Test Category",
+        slug: "polos" as CategorySlug,
+        hasVariants: true,
+        description: "Test category description",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        categoryVariants: [
+          {
+            id: 1,
+            value: "small",
+            label: "S",
+            priceModifier: 0, // ← CORREGIDO: number en lugar de Decimal
+            categoryId: 1,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            sortOrder: 1,
+          },
+          {
+            id: 2,
+            value: "medium",
+            label: "M",
+            priceModifier: 2, // ← CORREGIDO: number en lugar de Decimal
+            categoryId: 1,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            sortOrder: 2,
+          },
+          {
+            id: 3,
+            value: "large",
+            label: "L",
+            priceModifier: 3, // ← CORREGIDO: number en lugar de Decimal
+            categoryId: 1,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            sortOrder: 3,
+          },
+        ],
+      };
 
     mockGetProductById.mockResolvedValue(mockProduct);
     mockGetCategoryWithVariants.mockResolvedValue(mockCategoryWithVariants);

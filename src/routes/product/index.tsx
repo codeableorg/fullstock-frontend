@@ -15,6 +15,7 @@ interface CategoryVariant {
   id: number;
   value: string;
   label: string;
+  priceModifier: number;
 }
 
 export async function loader({ params }: Route.LoaderArgs) {
@@ -38,9 +39,21 @@ export default function Product({ loaderData }: Route.ComponentProps) {
   const [variants, setVariants] = useState<CategoryVariant[]>([]);
   const [selectedVariant, setSelectedVariant] =
     useState<CategoryVariant | null>(null);
+  const [finalPrice, setFinalPrice] = useState<number>(0);
+
+  const calculateDisplayPrice = (variant: CategoryVariant | null): number => {
+    const basePrice = product?.price || 0;
+    const modifier = variant?.priceModifier || 0;
+    return basePrice + modifier;
+  };
 
   // Cargar variantes si la categoría las tiene
   useEffect(() => {
+    if (!product) return;
+
+    // Establecer precio inicial
+    setFinalPrice(product.price);
+
     if (
       !categoryWithVariants?.hasVariants ||
       !categoryWithVariants.categoryVariants.length
@@ -55,11 +68,20 @@ export default function Product({ loaderData }: Route.ComponentProps) {
         id: variant.id,
         value: variant.value,
         label: variant.label,
+        priceModifier: variant.priceModifier,
       }));
 
     setVariants(mappedVariants);
-    setSelectedVariant(mappedVariants[0] || null);
-  }, [categoryWithVariants]);
+
+    const firstVariant = mappedVariants[0] || null;
+    setSelectedVariant(firstVariant);
+    setFinalPrice(calculateDisplayPrice(firstVariant));
+  }, [categoryWithVariants, product]);
+
+  const handleVariantChange = (variant: CategoryVariant) => {
+    setSelectedVariant(variant);
+    setFinalPrice(calculateDisplayPrice(variant));
+  };
 
   if (!product) {
     return <NotFound />;
@@ -89,7 +111,7 @@ export default function Product({ loaderData }: Route.ComponentProps) {
             <h1 className="text-3xl leading-9 font-bold mb-3">
               {product.title}
             </h1>
-            <p className="text-3xl leading-9 mb-6">S/{product.price}</p>
+            <p className="text-3xl leading-9 mb-6">S/{finalPrice.toFixed(2)}</p>
             <p className="text-sm leading-5 text-muted-foreground mb-10">
               {product.description}
             </p>
@@ -112,7 +134,7 @@ export default function Product({ loaderData }: Route.ComponentProps) {
                             : "outline"
                         }
                         size="default"
-                        onClick={() => setSelectedVariant(variant)}
+                        onClick={() => handleVariantChange(variant)}
                         className={cn(
                           "h-10 px-4 transition-all duration-200",
                           selectedVariant?.id === variant.id

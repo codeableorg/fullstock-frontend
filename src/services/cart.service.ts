@@ -218,7 +218,7 @@ export async function alterQuantityCartItem(
   return updatedCart;
 }
 
-async function calculateFinalPrice(
+export async function calculateFinalPrice(
   productId: number,
   categoryVariantId: number | null
 ): Promise<number> {

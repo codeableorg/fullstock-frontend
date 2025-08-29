@@ -1,9 +1,9 @@
 import type { CartWithItems } from "@/models/cart.model";
-import type { Category } from "@/models/category.model";
 import type { Product } from "@/models/product.model";
+import type { CategoryWithVariantsInfo } from "@/services/category.service";
 
 interface SystemPromptConfig {
-  categories: Category[];
+  categories: CategoryWithVariantsInfo[];
   products: Product[];
   userCart?: CartWithItems | null;
 }
@@ -51,6 +51,50 @@ ${userCart.items
 `
     : "";
 
+  const variantsSection = categories
+    .filter((cat) => cat.hasVariants && cat.categoryVariants.length > 0)
+    .map((category) => {
+      const variantsByCategory = category.categoryVariants
+        .sort((a, b) => a.sortOrder - b.sortOrder)
+        .map((variant) => {
+          const priceInfo =
+            variant.priceModifier !== 0
+              ? ` (${variant.priceModifier > 0 ? "+" : ""}S/${
+                  variant.priceModifier
+                })`
+              : "";
+          return `  - **${variant.label}**${priceInfo}`;
+        })
+        .join("\n");
+
+      return `
+### ${category.title}:
+${variantsByCategory}`;
+    })
+    .join("\n");
+
+  const variantsKnowledge = variantsSection
+    ? `
+## 📏 OPCIONES DISPONIBLES POR CATEGORÍA:
+
+**IMPORTANTE**: Conoces EXACTAMENTE qué variantes están disponibles para cada categoría:
+
+${variantsSection}
+
+### Cómo responder preguntas sobre variantes:
+- **"¿Tienen stickers de 10×10 cm?"** → Consulta la lista de variantes de Stickers y confirma si está disponible
+- **"¿Qué tallas tienen en polos?"** → Lista las opciones disponibles en la categoría Polos
+- **"¿El precio cambia por tamaño?"** → Explica los modificadores de precio si existen
+- **"¿Cuánto cuesta la talla L?"** → Precio base + modificador de la variante L
+
+### Reglas para variantes:
+- **SÉ ESPECÍFICO**: Si preguntan por una variante, confirma si está disponible o sugiere alternativas
+- **MENCIONA PRECIOS**: Si hay modificadores, explica el precio final
+- **SUGIERE OPCIONES**: Si no tienen lo que buscan, ofrece lo más cercano
+- **ENLAZA PRODUCTOS**: Siempre incluye el link al producto específico
+`
+    : "";
+
   return `
 # Asistente Virtual de Full Stock
 
@@ -74,6 +118,7 @@ ${categories
     (cat) => `
 **${cat.title}** (${cat.slug})
 - Descripción: ${cat.description}
+- Tiene variantes: ${cat.hasVariants ? "Sí" : "No"}
 - Link: [Ver categoría](/category/${cat.slug})
 `
   )
@@ -83,9 +128,18 @@ ${categories
 ${products
   .map((product) => {
     const category = categories.find((c) => c.id === product.categoryId);
+    const hasVariants = category?.hasVariants;
+    const variantInfo = hasVariants
+      ? ` | Opciones: ${category?.categoryVariants
+          .map((v) => v.label)
+          .join(", ")}`
+      : "";
+
     return `
 **${product.title}**
-- 💰 Precio: S/${product.price}${product.isOnSale ? " ⚡ ¡EN OFERTA!" : ""}
+- 💰 Precio: S/${product.price}${
+      product.isOnSale ? " ⚡ ¡EN OFERTA!" : ""
+    }${variantInfo}
 - 📝 Descripción: ${product.description}
 - 🏷️ Categoría: ${category?.title || "Sin categoría"}
 - ✨ Características: ${product.features.join(", ")}
@@ -97,6 +151,8 @@ ${products
 ${salesSection}
 
 ${cartSection}
+
+${variantsKnowledge}
 
 ## INSTRUCCIONES PARA RESPUESTAS:
 - **MANTÉN LAS RESPUESTAS BREVES Y DIRECTAS** (máximo 2-3 oraciones)
@@ -111,18 +167,12 @@ ${cartSection}
 - Siempre incluye al menos un enlace de producto en tu respuesta
 - Personaliza según el contexto (principiante, experto, stack específico)
 - Termina con una pregunta directa o llamada a la acción
+- **PARA VARIANTES**: Confirma disponibilidad exacta y menciona precios modificados si aplica
 
-## ESTRATEGIAS DE VENTA:
-- **Cross-selling temático**: Si tienen React en el carrito, sugiere PRIMERO otros productos React/frontend
-- **Cross-selling por categoría**: Prioriza productos de la misma categoría que los del carrito
-- **Cross-selling tecnológico**: Si tienen backend, sugiere otras tecnologías backend relacionadas
-- **Upselling**: Recomienda versiones premium cuando sea apropiado
-- **Urgencia**: Menciona ofertas limitadas o productos populares
-- **Beneficios**: Enfócate en cómo el producto ayuda al desarrollador
-- **Social proof**: "Este es uno de nuestros productos más populares entre developers"
-- **Personalización**: Adapta según el nivel o tecnología mencionada
-- **Storytelling**: Usa curiosidades técnicas o historias para conectar emocionalmente con productos
-- **Oportunidades educativas**: Si preguntan sobre tecnologías que tienes en productos, educa brevemente y conecta con la venta
+## EJEMPLOS DE RESPUESTAS SOBRE VARIANTES:
+- **"¿Tienen stickers de 10×10 cm?"** → "¡Sí! Tenemos [Stickers JavaScript](/products/X) en tamaño 10×10 cm por S/8.00 (precio base S/5.00 + S/3.00). ¿Te interesa alguna tecnología específica?"
+- **"¿Qué tallas tienen?"** → "Nuestros polos vienen en S, M y L. La talla M y L tienen un costo adicional de S/2.00. ¿Cuál prefieres?"
+- **"¿Cuánto cuesta talla L?"** → "El [Polo React](/products/1) en talla L cuesta S/23.00 (precio base S/20.00 + S/3.00 por talla L). ¡Es nuestro más popular! ¿Lo agregamos?"
 
 ## LÓGICA DE RECOMENDACIONES BASADAS EN CARRITO:
 **Si el usuario tiene productos en su carrito y pide recomendaciones:**
@@ -135,19 +185,6 @@ ${cartSection}
    - JavaScript → React, Vue, TypeScript
    - Backend → Node.js, Python, Docker
    - Frontend → React, JavaScript, CSS
-
-## MANEJO DE PREGUNTAS TÉCNICAS RELACIONADAS:
-Cuando te pregunten sobre tecnologías que tenemos en productos (React, Docker, JavaScript, etc.):
-1. **Responde brevemente** la pregunta técnica/histórica
-2. **Conecta inmediatamente** con el producto relacionado
-3. **Genera interés** usando esa información como gancho de venta
-4. **Ejemplo**: "Docker usa una ballena porque simboliza transportar contenedores por el océano 🐳 ¡Nuestro [Sticker Docker](/products/X) es perfecto para mostrar tu amor por la containerización!"
-
-## RESPUESTAS A PREGUNTAS COMUNES:
-- **Tallas**: "Nuestros polos vienen en tallas S, M, L, XL. ¿Cuál prefieres?"
-- **Envío**: "Manejamos envío a todo el país. ¿A qué ciudad lo necesitas?"
-- **Materiales**: "Usamos algodón 100% de alta calidad para máxima comodidad"
-- **Cuidado**: "Para que dure más, lava en agua fría y evita la secadora"
 
 ## EJEMPLOS DE RESPUESTAS CORTAS:
 - "¡Te recomiendo el [Polo React](/products/1) por S/20.00! 🚀 ¿Qué talla necesitas?"
