@@ -1,9 +1,12 @@
-import { Form, useNavigation } from "react-router";
 import { useState } from "react";
+import { Form, useNavigation } from "react-router";
+
 import { Button, Container, Separator } from "@/components/ui";
 import { type Product } from "@/models/product.model";
 import { getProductById } from "@/services/product.service";
+
 import NotFound from "../not-found";
+
 import type { Route } from "./+types";
 
 export async function loader({ params }: Route.LoaderArgs) {
@@ -26,7 +29,18 @@ export default function Product({ loaderData }: Route.ComponentProps) {
   }
 
   const showSizeSelector = product.categoryId === 1 || product.categoryId === 3;
-  
+
+  const getAttributeValueId = () => { // AQUI TRAER EL AttributeValueId con el cambio de SEBAS
+    if (
+      !product.variantAttributeValues ||
+      product.variantAttributeValues.length === 0
+    ) {
+      return undefined;
+    }
+    // Devuelve el attributeId de la posición 0
+    return product.variantAttributeValues[0].id;
+  };
+
   const getSizeOptions = () => {
     if (product.categoryId === 3) {
       return {
@@ -34,8 +48,8 @@ export default function Product({ loaderData }: Route.ComponentProps) {
         options: [
           { value: "Small", label: "3x3 cm" },
           { value: "Medium", label: "5x5 cm" },
-          { value: "Large", label: "10x10 cm" }
-        ]
+          { value: "Large", label: "10x10 cm" },
+        ],
       };
     } else {
       return {
@@ -43,8 +57,8 @@ export default function Product({ loaderData }: Route.ComponentProps) {
         options: [
           { value: "Small", label: "Small" },
           { value: "Medium", label: "Medium" },
-          { value: "Large", label: "Large" }
-        ]
+          { value: "Large", label: "Large" },
+        ],
       };
     }
   };
@@ -67,7 +81,14 @@ export default function Product({ loaderData }: Route.ComponentProps) {
               {product.title}
               {showSizeSelector && (
                 <span className="text-muted-foreground">
-                  {" "}({sizeOptions.options.find(option => option.value === selectedSize)?.label})
+                  {" "}
+                  (
+                  {
+                    sizeOptions.options.find(
+                      (option) => option.value === selectedSize
+                    )?.label
+                  }
+                  )
                 </span>
               )}
             </h1>
@@ -78,12 +99,16 @@ export default function Product({ loaderData }: Route.ComponentProps) {
 
             {showSizeSelector && (
               <div className="mb-9">
-                <p className="text-sm font-semibold text-accent-foreground mb-2">{sizeOptions.label}</p>
+                <p className="text-sm font-semibold text-accent-foreground mb-2">
+                  {sizeOptions.label}
+                </p>
                 <div className="flex gap-2">
                   {sizeOptions.options.map((option) => (
                     <Button
                       key={option.value}
-                      variant={selectedSize === option.value ? "default" : "secondary"}
+                      variant={
+                        selectedSize === option.value ? "default" : "secondary"
+                      }
                       size="lg"
                       onClick={() => setSelectedSize(option.value)}
                     >
@@ -100,20 +125,25 @@ export default function Product({ loaderData }: Route.ComponentProps) {
                 name="redirectTo"
                 value={`/products/${product.id}`}
               />
+              <input
+                type="hidden"
+                name="attributeValueId"
+                value={getAttributeValueId() ?? ""}
+              />
               <Button
                 size="xl"
                 className="w-full md:w-80"
                 type="submit"
-                name="productId"
-                value={product.id}
+                // name="productId"
+                // value={product.id}
                 disabled={cartLoading}
               >
                 {cartLoading ? "Agregando..." : "Agregar al Carrito"}
               </Button>
             </Form>
-            
+
             <Separator className="my-6" />
-            
+
             <div>
               <h2 className="text-sm font-semibold text-accent-foreground mb-6">
                 Características

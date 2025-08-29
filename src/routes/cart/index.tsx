@@ -30,7 +30,7 @@ export default function Cart({ loaderData }: Route.ComponentProps) {
           Carrito de compras
         </h1>
         <div className="border-solid border rounded-xl flex flex-col">
-          {cart?.items?.map(({ product, quantity, id }) => (
+          {cart?.items?.map(({ product, quantity, id, attributeValueId }) => (
             <div key={product.id} className="flex gap-7 p-6 border-b">
               <div className="w-20 rounded-xl bg-muted">
                 <img
@@ -55,14 +55,14 @@ export default function Cart({ loaderData }: Route.ComponentProps) {
                 </div>
                 <div className="flex flex-col gap-2 md:flex-row md:justify-between md:items-center">
                   <p className="text-sm font-medium">
-                    ${product.price.toFixed(2)}
+                    ${product.price!.toFixed(2)}
                   </p>
                   <div className="flex gap-4 items-center">
                     <Form method="post" action="/cart/add-item">
                       <input type="hidden" name="quantity" value="-1" />
                       <Button
-                        name="productId"
-                        value={product.id}
+                        name="attributeValueId"
+                        value={attributeValueId}
                         variant="outline"
                         size="sm-icon"
                         disabled={quantity === 1}
@@ -77,8 +77,8 @@ export default function Cart({ loaderData }: Route.ComponentProps) {
                       <Button
                         variant="outline"
                         size="sm-icon"
-                        name="productId"
-                        value={product.id}
+                        name="attributeValueId"
+                        value={attributeValueId}
                       >
                         <Plus />
                       </Button>

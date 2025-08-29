@@ -5,6 +5,7 @@ export type Product = PrismaProduct & {
   price?: number | null;
   minPrice?: number | null;
   maxPrice?: number | null;
+  variantAttributeValues?: VariantAttributeValue[];
 };
 
 export type ProductVariantValue = PrismaProduct & {
