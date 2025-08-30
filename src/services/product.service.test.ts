@@ -51,6 +51,10 @@ describe("Product Service", () => {
       expect(getCategoryBySlug).toHaveBeenCalledWith(testCategory.slug);
       expect(mockPrisma.product.findMany).toHaveBeenCalledWith({
         where: { categoryId: testCategory.id },
+        include: {
+          stickersVariants: true,
+          variants: true
+        },
       });
       expect(products).toEqual(
         mockedProducts.map((product) => ({
@@ -93,6 +97,10 @@ describe("Product Service", () => {
       // Step 4: Verify expected behavior
       expect(mockPrisma.product.findUnique).toHaveBeenCalledWith({
         where: { id: testProduct.id },
+        include: { 
+          stickersVariants: true,
+          variants: true 
+        },
       });
       expect(result).toEqual({
         ...testProduct,
@@ -100,7 +108,7 @@ describe("Product Service", () => {
       });
     });
 
-    it("should throw error when product does not exist", async () => {
+    it("should return null when product does not exist", async () => {
       // Step 1: Setup - Configure ID for non-existent product
       const nonExistentId = 999;
 
@@ -108,12 +116,16 @@ describe("Product Service", () => {
       vi.mocked(mockPrisma.product.findUnique).mockResolvedValue(null);
 
       // Step 3: Call service function
-      const productPromise = getProductById(nonExistentId);
+      const result = await getProductById(nonExistentId);
 
       // Step 4: Verify expected behavior
-      await expect(productPromise).rejects.toThrow("Product not found");
+      expect(result).toBeNull();
       expect(mockPrisma.product.findUnique).toHaveBeenCalledWith({
         where: { id: nonExistentId },
+        include: { 
+          stickersVariants: true,
+          variants: true 
+        },
       });
     });
   });

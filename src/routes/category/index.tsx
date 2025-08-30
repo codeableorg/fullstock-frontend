@@ -31,19 +31,29 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     const filterProductsByPrice = (
       products: Product[],
       minPrice: string,
-      maxPrice: string
+      maxPrice: string,
+      categorySlug: string
     ) => {
       const min = minPrice ? parseFloat(minPrice) : 0;
       const max = maxPrice ? parseFloat(maxPrice) : Infinity;
-      return products.filter(
-        (product) => product.price >= min && product.price <= max
-      );
+      return products.filter((product) => {
+        if (
+          categorySlug === "stickers" &&
+          product.stickersVariants?.length
+        ) {
+          return product.stickersVariants.some(
+            (variant) => variant.price >= min && variant.price <= max
+          );
+        }
+        return product.price >= min && product.price <= max;
+      });
     };
 
     const filteredProducts = filterProductsByPrice(
       products,
       minPrice,
-      maxPrice
+      maxPrice,
+      categorySlug
     );
 
     return {
@@ -82,7 +92,13 @@ export default function Category({ loaderData }: Route.ComponentProps) {
             />
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 flex-grow">
               {products.map((product) => (
-                <ProductCard product={product} key={product.id} />
+                <ProductCard
+                  product={product}
+                  key={product.id}
+                  categorySlug={category.slug}
+                  minPrice={minPrice}
+                  maxPrice={maxPrice}
+                />
               ))}
             </div>
           </div>
