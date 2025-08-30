@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Form, useNavigation, useSearchParams } from "react-router";
 
 import { VariantSelector } from "@/components/product/VariantSelector";
@@ -25,38 +25,45 @@ export default function Product({ loaderData }: Route.ComponentProps) {
   const [searchParams] = useSearchParams();
   const cartLoading = navigation.state === "submitting";
 
-  const getInitialSize = () => {
-    const isValidSize = (size: string | null) => {
+  const getInitialSize = useCallback(() => {
+    const isValidSize = (
+      size: string | null
+    ): size is "small" | "medium" | "large" => {
       return size === "small" || size === "medium" || size === "large";
     };
     const sizeFromUrl = searchParams.get("size");
     const availableSizes = product?.variants?.map((v) => v.size) || [];
     if (isValidSize(sizeFromUrl) && availableSizes.includes(sizeFromUrl)) {
-    return sizeFromUrl;
-  }
+      return sizeFromUrl;
+    }
     return product?.variants?.[0]?.size ?? "";
-  };
+  }, [product?.variants, searchParams]);
 
-  const getInitialMeasure = () => {
-    const isValidMeasure = (measure: string | null) => {
+  const getInitialMeasure = useCallback(() => {
+    const isValidMeasure = (
+      measure: string | null
+    ): measure is "3*3" | "5*5" | "10*10" => {
       return measure === "3*3" || measure === "5*5" || measure === "10*10";
     };
     const measureFromUrl = searchParams.get("measure");
     const availableMeasures =
       product?.stickersVariants?.map((v) => v.measure) || [];
-    if (isValidMeasure(measureFromUrl) && availableMeasures.includes(measureFromUrl)) {
+    if (
+      isValidMeasure(measureFromUrl) &&
+      availableMeasures.includes(measureFromUrl)
+    ) {
       return measureFromUrl;
     }
     return product?.stickersVariants?.[0]?.measure ?? "";
-  };
+  }, [product?.stickersVariants, searchParams]);
 
   const [selectedSize, setSelectedSize] = useState(getInitialSize);
   const [selectedMeasure, setSelectedMeasure] = useState(getInitialMeasure);
 
   useEffect(() => {
-    setSelectedSize(getInitialSize);
-    setSelectedMeasure(getInitialMeasure);
-  }, [searchParams, product?.id]);
+    setSelectedSize(getInitialSize());
+    setSelectedMeasure(getInitialMeasure());
+  }, [getInitialMeasure, getInitialSize]);
 
   if (!product) {
     return <NotFound />;
