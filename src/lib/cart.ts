@@ -19,18 +19,14 @@ export async function addToCart(
   userId: number | undefined,
   sessionCartId: string | undefined,
   productId: Product["id"],
-  quantity: number = 1,
-  productVariantId?: number,
-  stickersVariantId?: number
+  quantity: number = 1
 ) {
   try {
     const updatedCart = await alterQuantityCartItem(
       userId,
       sessionCartId,
       productId,
-      quantity,
-      productVariantId,
-      stickersVariantId
+      quantity
     );
     return updatedCart;
   } catch (error) {
@@ -45,7 +41,7 @@ export async function removeFromCart(
   itemId: CartItem["id"]
 ) {
   try {
-    // La parte del backend determina si es un usuario autenticado o invitado
+    // El backend determinará si es un usuario autenticado o invitado
     const updatedCart = await deleteRemoteCartItem(
       userId,
       sessionCartId,
@@ -63,12 +59,12 @@ export function calculateTotal(items: CartItemInput[]): number;
 
 export function calculateTotal(items: CartItem[] | CartItemInput[]): number {
   return items.reduce((total, item) => {
-    
+    // Type guard to determine which type we're working with
     if ("product" in item) {
-     
-      return total + item.price * item.quantity;
+      // CartItem - has a product property
+      return total + item.product.price * item.quantity;
     } else {
-      
+      // CartItemInput - has price directly
       return total + item.price * item.quantity;
     }
   }, 0);

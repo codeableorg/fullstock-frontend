@@ -30,9 +30,8 @@ export default function Cart({ loaderData }: Route.ComponentProps) {
           Carrito de compras
         </h1>
         <div className="border-solid border rounded-xl flex flex-col">
-          {cart?.items?.map(
-            ({ product, quantity, id, productVariant, stickersVariant, price }) => (
-            <div key={id} className="flex gap-7 p-6 border-b">
+          {cart?.items?.map(({ product, quantity, id }) => (
+            <div key={product.id} className="flex gap-7 p-6 border-b">
               <div className="w-20 rounded-xl bg-muted">
                 <img
                   src={product.imgSrc}
@@ -42,19 +41,7 @@ export default function Cart({ loaderData }: Route.ComponentProps) {
               </div>
               <div className="flex grow flex-col justify-between">
                 <div className="flex gap-4 justify-between items-center">
-                  <h2 className="text-sm">
-                    {product.title}
-                    {productVariant && (
-                      <span className="ml-2 text-xs text-muted-foreground">
-                        ({productVariant.size})
-                      </span>
-                    )}
-                    {stickersVariant && (
-                      <span className="ml-2 text-xs text-muted-foreground">
-                        ({stickersVariant.measure})
-                      </span>
-                    )}
-                  </h2>
+                  <h2 className="text-sm">{product.title}</h2>
                   <Form method="post" action="/cart/remove-item">
                     <Button
                       size="sm-icon"
@@ -68,22 +55,11 @@ export default function Cart({ loaderData }: Route.ComponentProps) {
                 </div>
                 <div className="flex flex-col gap-2 md:flex-row md:justify-between md:items-center">
                   <p className="text-sm font-medium">
-                    ${price.toFixed(2)}
+                    ${product.price.toFixed(2)}
                   </p>
                   <div className="flex gap-4 items-center">
                     <Form method="post" action="/cart/add-item">
                       <input type="hidden" name="quantity" value="-1" />
-                      {productVariant && (
-                        <input type="hidden" name="size" value={productVariant.size} />
-                      )}
-                      {stickersVariant && (
-                        <input
-                          type="hidden"
-                          name="measure"
-                          value={stickersVariant.measure}
-                        />
-                      )}
-                      <input type="hidden" name="productId" value={product.id} />
                       <Button
                         name="productId"
                         value={product.id}
@@ -98,17 +74,6 @@ export default function Cart({ loaderData }: Route.ComponentProps) {
                       {quantity}
                     </span>
                     <Form method="post" action="/cart/add-item">
-                      {productVariant && (
-                        <input type="hidden" name="size" value={productVariant.size} />
-                      )}
-                      {stickersVariant && (
-                        <input
-                          type="hidden"
-                          name="measure"
-                          value={stickersVariant.measure}
-                        />
-                      )}
-                      <input type="hidden" name="productId" value={product.id} />
                       <Button
                         variant="outline"
                         size="sm-icon"
@@ -122,8 +87,7 @@ export default function Cart({ loaderData }: Route.ComponentProps) {
                 </div>
               </div>
             </div>
-            )
-          )}
+          ))}
           <div className="flex justify-between p-6 text-base font-medium border-b">
             <p>Total</p>
             <p>S/{total.toFixed(2)}</p>

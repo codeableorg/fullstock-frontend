@@ -63,8 +63,6 @@ export const createTestProduct = (overrides?: Partial<Product>): Product => ({
   categoryId: 1,
   isOnSale: false,
   features: ["Feature 1", "Feature 2"],
-  variants: [],
-  stickersVariants: [],
   createdAt: new Date(),
   updatedAt: new Date(),
   ...overrides,

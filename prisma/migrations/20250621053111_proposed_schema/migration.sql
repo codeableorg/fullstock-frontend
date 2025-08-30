@@ -1,24 +1,8 @@
--- CreateEnum
-CREATE TYPE "CategorySlug" AS ENUM ('polos', 'tazas', 'stickers');
-
--- CreateTable
-CREATE TABLE "users" (
-    "id" SERIAL NOT NULL,
-    "email" TEXT NOT NULL,
-    "name" TEXT,
-    "password" TEXT,
-    "is_guest" BOOLEAN NOT NULL DEFAULT true,
-    "created_at" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT "users_pkey" PRIMARY KEY ("id")
-);
-
 -- CreateTable
 CREATE TABLE "categories" (
     "id" SERIAL NOT NULL,
     "title" TEXT NOT NULL,
-    "slug" "CategorySlug" NOT NULL,
+    "slug" TEXT NOT NULL,
     "img_src" TEXT,
     "alt" TEXT,
     "description" TEXT,
@@ -46,25 +30,6 @@ CREATE TABLE "products" (
 );
 
 -- CreateTable
-CREATE TABLE "ProductVariant" (
-    "id" SERIAL NOT NULL,
-    "productId" INTEGER NOT NULL,
-    "size" TEXT NOT NULL,
-
-    CONSTRAINT "ProductVariant_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "stickersVariant" (
-    "id" SERIAL NOT NULL,
-    "productId" INTEGER NOT NULL,
-    "measure" TEXT NOT NULL,
-    "price" DECIMAL(10,2) NOT NULL,
-
-    CONSTRAINT "stickersVariant_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "carts" (
     "id" SERIAL NOT NULL,
     "session_cart_id" UUID NOT NULL DEFAULT gen_random_uuid(),
@@ -78,11 +43,8 @@ CREATE TABLE "carts" (
 -- CreateTable
 CREATE TABLE "cart_items" (
     "id" SERIAL NOT NULL,
-    "cartId" INTEGER NOT NULL,
-    "productId" INTEGER NOT NULL,
-    "productVariantId" INTEGER,
-    "stickersVariantId" INTEGER,
-    "price" DECIMAL(10,2) NOT NULL,
+    "cart_id" INTEGER NOT NULL,
+    "product_id" INTEGER NOT NULL,
     "quantity" INTEGER NOT NULL,
     "created_at" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -96,7 +58,6 @@ CREATE TABLE "orders" (
     "user_id" INTEGER NOT NULL,
     "total_amount" DECIMAL(10,2) NOT NULL,
     "email" TEXT NOT NULL,
-    "payment_id" TEXT,
     "first_name" TEXT NOT NULL,
     "last_name" TEXT NOT NULL,
     "company" TEXT,
@@ -128,40 +89,25 @@ CREATE TABLE "order_items" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
-
--- CreateIndex
 CREATE UNIQUE INDEX "categories_slug_key" ON "categories"("slug");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "carts_session_cart_id_key" ON "carts"("session_cart_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "cart_items_cartId_productId_productVariantId_stickersVarian_key" ON "cart_items"("cartId", "productId", "productVariantId", "stickersVariantId");
+CREATE UNIQUE INDEX "cart_items_cart_id_product_id_key" ON "cart_items"("cart_id", "product_id");
 
 -- AddForeignKey
 ALTER TABLE "products" ADD CONSTRAINT "products_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "categories"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ProductVariant" ADD CONSTRAINT "ProductVariant_productId_fkey" FOREIGN KEY ("productId") REFERENCES "products"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "stickersVariant" ADD CONSTRAINT "stickersVariant_productId_fkey" FOREIGN KEY ("productId") REFERENCES "products"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "carts" ADD CONSTRAINT "carts_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "cart_items" ADD CONSTRAINT "cart_items_cartId_fkey" FOREIGN KEY ("cartId") REFERENCES "carts"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "cart_items" ADD CONSTRAINT "cart_items_cart_id_fkey" FOREIGN KEY ("cart_id") REFERENCES "carts"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "cart_items" ADD CONSTRAINT "cart_items_productId_fkey" FOREIGN KEY ("productId") REFERENCES "products"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "cart_items" ADD CONSTRAINT "cart_items_productVariantId_fkey" FOREIGN KEY ("productVariantId") REFERENCES "ProductVariant"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "cart_items" ADD CONSTRAINT "cart_items_stickersVariantId_fkey" FOREIGN KEY ("stickersVariantId") REFERENCES "stickersVariant"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "cart_items" ADD CONSTRAINT "cart_items_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "products"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "orders" ADD CONSTRAINT "orders_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
