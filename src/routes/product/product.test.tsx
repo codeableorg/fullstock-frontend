@@ -27,6 +27,7 @@ vi.mock("react-router", () => ({
   Form: vi.fn(({ children }) => <form>{children}</form>),
   useNavigation: vi.fn(() => createTestNavigation()),
   Link: vi.fn(({ children, ...props }) => <a {...props}>{children}</a>),
+  useSearchParams: vi.fn(() => [new URLSearchParams(), vi.fn()]),
 }));
 
 const createTestProps = (
@@ -59,6 +60,23 @@ describe("Product Component", () => {
       render(<Product {...props} />);
       // Step 4: Verify - Check price is rendered correctly
       expect(screen.queryByText("S/150.99")).toBeInTheDocument();
+    });
+
+    it("should render product price with correct currency for stickers variants", () => {
+      // Step 1: Setup - Create test props with stickers variants
+      const props = createTestProps({
+        price: 100,
+        stickersVariants: [
+          { id: 1, measure: "3*3", price: 80 },
+          { id: 2, measure: "5*5", price: 120 },
+          { id: 3, measure: "10*10", price: 150 },
+        ],
+      });
+      // Step 2: Mock - Component mocks already set up above
+      // Step 3: Call - Render component
+      render(<Product {...props} />);
+      // Step 4: Verify - Check price is rendered correctly (should use first variant price)
+      expect(screen.queryByText("S/80")).toBeInTheDocument();
     });
 
     it("should render product description", () => {
@@ -99,6 +117,44 @@ describe("Product Component", () => {
       features.forEach((feature) => {
         expect(screen.queryByText(feature)).toBeInTheDocument();
       });
+    });
+
+    it("should render size selector when product has variants", () => {
+      // Step 1: Setup - Create test props with variants
+      const props = createTestProps({
+        variants: [
+          { id: 1, size: "small" },
+          { id: 2, size: "medium" },
+          { id: 3, size: "large" },
+        ],
+      });
+      // Step 2: Mock - Component mocks already set up above
+      // Step 3: Call - Render component
+      render(<Product {...props} />);
+      // Step 4: Verify - Check size selector is rendered
+      expect(screen.queryByText("Talla")).toBeInTheDocument();
+      expect(screen.queryByText("Small")).toBeInTheDocument();
+      expect(screen.queryByText("Medium")).toBeInTheDocument();
+      expect(screen.queryByText("Large")).toBeInTheDocument();
+    });
+
+    it("should render measure selector when product has stickers variants", () => {
+      // Step 1: Setup - Create test props with stickers variants
+      const props = createTestProps({
+        stickersVariants: [
+          { id: 1, measure: "3*3", price: 80 },
+          { id: 2, measure: "5*5", price: 120 },
+          { id: 3, measure: "10*10", price: 150 },
+        ],
+      });
+      // Step 2: Mock - Component mocks already set up above
+      // Step 3: Call - Render component
+      render(<Product {...props} />);
+      // Step 4: Verify - Check measure selector is rendered
+      expect(screen.queryByText("Medida")).toBeInTheDocument();
+      expect(screen.queryByText("3*3")).toBeInTheDocument();
+      expect(screen.queryByText("5*5")).toBeInTheDocument();
+      expect(screen.queryByText("10*10")).toBeInTheDocument();
     });
 
     it('should render "Agregar al Carrito" button', () => {
@@ -148,7 +204,7 @@ describe("Product Component", () => {
     it("should render NotFound component when product is not provided", () => {
       // Step 1: Setup - Create props without product
       const props = createTestProps();
-      props.loaderData.product = undefined;
+      props.loaderData = { product: undefined };
 
       // Step 2: Mock - Mock NotFound component
       // vi.mock("../not-found", () => ({

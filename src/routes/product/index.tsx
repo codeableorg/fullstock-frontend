@@ -121,7 +121,7 @@ export default function Product({ loaderData }: Route.ComponentProps) {
                   onSelect={setSelectedMeasure}
                 />
               )}
-              {/* Botón de agregar al carrito */}
+              
               <Button
                 size="xl"
                 className="w-full md:w-80"
