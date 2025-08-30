@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Form, useNavigation } from "react-router";
 
 import { Button, Container, Separator } from "@/components/ui";
@@ -22,13 +22,56 @@ export default function Product({ loaderData }: Route.ComponentProps) {
   const { product } = loaderData;
   const navigation = useNavigation();
   const cartLoading = navigation.state === "submitting";
-  const [selectedSize, setSelectedSize] = useState<string>("Medium");
+  
+  // Estados para manejar variantes
+  const [selectedVariant, setSelectedVariant] = useState<number | null>(null);
+  const [currentPrice, setCurrentPrice] = useState<number>(0);
 
   if (!product) {
     return <NotFound />;
   }
 
   const showSizeSelector = product.categoryId === 1 || product.categoryId === 3;
+
+  // Verificar si el producto tiene variantes
+  const hasVariants = product.variantAttributeValues && product.variantAttributeValues.length > 0;
+  
+  // Verificar si debe mostrar selectores (solo polos y stickers)
+  const shouldShowVariants = hasVariants && (product.categoryId === 1 || product.categoryId === 3);
+  
+  // Agrupar variantes por atributo (en caso de que un producto tenga múltiples tipos de atributos)
+  const variantGroups = shouldShowVariants 
+    ? product.variantAttributeValues.reduce((groups, variant) => {
+        const attributeName = variant.variantAttribute.name;
+        if (!groups[attributeName]) {
+          groups[attributeName] = [];
+        }
+        groups[attributeName].push(variant);
+        return groups;
+      }, {} as Record<string, typeof product.variantAttributeValues>)
+    : {};
+
+  // Inicializar precio y variante seleccionada
+  useEffect(() => {
+    if (hasVariants) {
+      // Seleccionar la primera variante por defecto
+      const firstVariant = product.variantAttributeValues[0];
+      setSelectedVariant(firstVariant.id);
+      setCurrentPrice(firstVariant.price);
+    } else {
+      // Si no hay variantes, usar el precio base del producto (asumiendo que existe)
+      setCurrentPrice(product.price || 0);
+    }
+  }, [product]);
+
+  // Manejar cambio de variante
+  const handleVariantChange = (variantId: number) => {
+    setSelectedVariant(variantId);
+    const variant = product.variantAttributeValues.find(v => v.id === variantId);
+    if (variant) {
+      setCurrentPrice(variant.price);
+    }
+  };
 
   const getAttributeValueId = () => { // AQUI TRAER EL AttributeValueId con el cambio de SEBAS
     if (
@@ -41,29 +84,6 @@ export default function Product({ loaderData }: Route.ComponentProps) {
     return product.variantAttributeValues[0].id;
   };
 
-  const getSizeOptions = () => {
-    if (product.categoryId === 3) {
-      return {
-        label: "Dimensiones",
-        options: [
-          { value: "Small", label: "3x3 cm" },
-          { value: "Medium", label: "5x5 cm" },
-          { value: "Large", label: "10x10 cm" },
-        ],
-      };
-    } else {
-      return {
-        label: "Talla",
-        options: [
-          { value: "Small", label: "Small" },
-          { value: "Medium", label: "Medium" },
-          { value: "Large", label: "Large" },
-        ],
-      };
-    }
-  };
-
-  const sizeOptions = getSizeOptions();
 
   return (
     <>
