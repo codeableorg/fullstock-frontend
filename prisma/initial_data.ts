@@ -30,9 +30,9 @@ export const categories = [
 ];
 
 export const variantAttributes = [
-  { name: "no aplica" },
   { name: "talla" },
   { name: "dimensiones" },
+  { name: "no aplica" },
 ]
 
 export const products = [
@@ -357,74 +357,74 @@ export const products = [
 
 export const variantAttributeValues = [
   // --- POLOS (talla: S, M, L) ---
-  { attributeId: 1, productId: 1, value: "S", price: 20.0 },
-  { attributeId: 1, productId: 1, value: "M", price: 20.0 },
-  { attributeId: 1, productId: 1, value: "L", price: 20.0 },
+  { attributeId: 1, productId: 1, value: "Small", price: 20.0 },
+  { attributeId: 1, productId: 1, value: "Medium", price: 20.0 },
+  { attributeId: 1, productId: 1, value: "Large", price: 20.0 },
 
-  { attributeId: 1, productId: 2, value: "S", price: 20.0 },
-  { attributeId: 1, productId: 2, value: "M", price: 20.0 },
-  { attributeId: 1, productId: 2, value: "L", price: 20.0 },
+  { attributeId: 1, productId: 2, value: "Small", price: 20.0 },
+  { attributeId: 1, productId: 2, value: "Medium", price: 20.0 },
+  { attributeId: 1, productId: 2, value: "Large", price: 20.0 },
 
-  { attributeId: 1, productId: 3, value: "S", price: 20.0 },
-  { attributeId: 1, productId: 3, value: "M", price: 20.0 },
-  { attributeId: 1, productId: 3, value: "L", price: 20.0 },
+  { attributeId: 1, productId: 3, value: "Small", price: 20.0 },
+  { attributeId: 1, productId: 3, value: "Medium", price: 20.0 },
+  { attributeId: 1, productId: 3, value: "Large", price: 20.0 },
 
-  { attributeId: 1, productId: 4, value: "S", price: 20.0 },
-  { attributeId: 1, productId: 4, value: "M", price: 20.0 },
-  { attributeId: 1, productId: 4, value: "L", price: 20.0 },
+  { attributeId: 1, productId: 4, value: "Small", price: 20.0 },
+  { attributeId: 1, productId: 4, value: "Medium", price: 20.0 },
+  { attributeId: 1, productId: 4, value: "Large", price: 20.0 },
 
-  { attributeId: 1, productId: 5, value: "S", price: 25.0 },
-  { attributeId: 1, productId: 5, value: "M", price: 25.0 },
-  { attributeId: 1, productId: 5, value: "L", price: 25.0 },
+  { attributeId: 1, productId: 5, value: "Small", price: 25.0 },
+  { attributeId: 1, productId: 5, value: "Medium", price: 25.0 },
+  { attributeId: 1, productId: 5, value: "Large", price: 25.0 },
 
-  { attributeId: 1, productId: 6, value: "S", price: 25.0 },
-  { attributeId: 1, productId: 6, value: "M", price: 25.0 },
-  { attributeId: 1, productId: 6, value: "L", price: 25.0 },
+  { attributeId: 1, productId: 6, value: "Small", price: 25.0 },
+  { attributeId: 1, productId: 6, value: "Medium", price: 25.0 },
+  { attributeId: 1, productId: 6, value: "Large", price: 25.0 },
 
-  { attributeId: 1, productId: 7, value: "S", price: 25.0 },
-  { attributeId: 1, productId: 7, value: "M", price: 25.0 },
-  { attributeId: 1, productId: 7, value: "L", price: 25.0 },
+  { attributeId: 1, productId: 7, value: "Small", price: 25.0 },
+  { attributeId: 1, productId: 7, value: "Medium", price: 25.0 },
+  { attributeId: 1, productId: 7, value: "Large", price: 25.0 },
 
-  { attributeId: 1, productId: 8, value: "S", price: 15.0 },
-  { attributeId: 1, productId: 8, value: "M", price: 15.0 },
-  { attributeId: 1, productId: 8, value: "L", price: 15.0 },
+  { attributeId: 1, productId: 8, value: "Small", price: 15.0 },
+  { attributeId: 1, productId: 8, value: "Medium", price: 15.0 },
+  { attributeId: 1, productId: 8, value: "Large", price: 15.0 },
 
-  { attributeId: 1, productId: 9, value: "S", price: 15.0 },
-  { attributeId: 1, productId: 9, value: "M", price: 15.0 },
-  { attributeId: 1, productId: 9, value: "L", price: 15.0 },
+  { attributeId: 1, productId: 9, value: "Small", price: 15.0 },
+  { attributeId: 1, productId: 9, value: "Medium", price: 15.0 },
+  { attributeId: 1, productId: 9, value: "Large", price: 15.0 },
 
   // --- STICKERS (dimensiones: 3x3, 6x6, 9x9) ---
-  { attributeId: 2, productId: 10, value: "3x3", price: 2.99 },
-  { attributeId: 2, productId: 10, value: "5x5", price: 3.99 },
-  { attributeId: 2, productId: 10, value: "10x10", price: 4.99 },
+  { attributeId: 2, productId: 10, value: "3x3 cm", price: 2.99 },
+  { attributeId: 2, productId: 10, value: "5x5 cm", price: 3.99 },
+  { attributeId: 2, productId: 10, value: "10x10 cm", price: 4.99 },
 
-  { attributeId: 2, productId: 11, value: "3x3", price: 2.49 },
-  { attributeId: 2, productId: 11, value: "5x5", price: 3.49 },
-  { attributeId: 2, productId: 11, value: "10x10", price: 4.49 },
+  { attributeId: 2, productId: 11, value: "3x3 cm", price: 2.49 },
+  { attributeId: 2, productId: 11, value: "5x5 cm", price: 3.49 },
+  { attributeId: 2, productId: 11, value: "10x10 cm", price: 4.49 },
 
-  { attributeId: 2, productId: 12, value: "3x3", price: 3.99 },
-  { attributeId: 2, productId: 12, value: "5x5", price: 4.99 },
-  { attributeId: 2, productId: 12, value: "10x10", price: 5.99 },
+  { attributeId: 2, productId: 12, value: "3x3 cm", price: 3.99 },
+  { attributeId: 2, productId: 12, value: "5x5 cm", price: 4.99 },
+  { attributeId: 2, productId: 12, value: "10x10 cm", price: 5.99 },
 
-  { attributeId: 2, productId: 13, value: "3x3", price: 2.99 },
-  { attributeId: 2, productId: 13, value: "5x5", price: 3.99 },
-  { attributeId: 2, productId: 13, value: "10x10", price: 4.99 },
+  { attributeId: 2, productId: 13, value: "3x3 cm", price: 2.99 },
+  { attributeId: 2, productId: 13, value: "5x5 cm", price: 3.99 },
+  { attributeId: 2, productId: 13, value: "10x10 cm", price: 4.99 },
 
-  { attributeId: 2, productId: 14, value: "3x3", price: 2.49 },
-  { attributeId: 2, productId: 14, value: "5x5", price: 3.49 },
-  { attributeId: 2, productId: 14, value: "10x10", price: 4.49 },
+  { attributeId: 2, productId: 14, value: "3x3 cm", price: 2.49 },
+  { attributeId: 2, productId: 14, value: "5x5 cm", price: 3.49 },
+  { attributeId: 2, productId: 14, value: "10x10 cm", price: 4.49 },
 
-  { attributeId: 2, productId: 15, value: "3x3", price: 2.49 },
-  { attributeId: 2, productId: 15, value: "5x5", price: 3.49 },
-  { attributeId: 2, productId: 15, value: "10x10", price: 4.49 },
+  { attributeId: 2, productId: 15, value: "3x3 cm", price: 2.49 },
+  { attributeId: 2, productId: 15, value: "5x5 cm", price: 3.49 },
+  { attributeId: 2, productId: 15, value: "10x10 cm", price: 4.49 },
 
-  { attributeId: 2, productId: 16, value: "3x3", price: 2.99 },
-  { attributeId: 2, productId: 16, value: "5x5", price: 3.99 },
-  { attributeId: 2, productId: 16, value: "10x10", price: 4.99 },
+  { attributeId: 2, productId: 16, value: "3x3 cm", price: 2.99 },
+  { attributeId: 2, productId: 16, value: "5x5 cm", price: 3.99 },
+  { attributeId: 2, productId: 16, value: "10x10 cm", price: 4.99 },
 
-  { attributeId: 2, productId: 17, value: "3x3", price: 2.99 },
-  { attributeId: 2, productId: 17, value: "5x5", price: 3.99 },
-  { attributeId: 2, productId: 17, value: "10x10", price: .99 },
+  { attributeId: 2, productId: 17, value: "3x3 cm", price: 2.99 },
+  { attributeId: 2, productId: 17, value: "5x5 cm", price: 3.99 },
+  { attributeId: 2, productId: 17, value: "10x10 cm", price: 4.99 },
 
   // --- TAZAS (no aplica: Único) ---
   { attributeId: 3, productId: 18, value: "Único", price: 14.99 },
