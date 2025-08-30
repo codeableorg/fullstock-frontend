@@ -2,9 +2,8 @@ import { redirect } from "react-router";
 
 import { Container } from "@/components/ui";
 import { isValidCategorySlug, type Category } from "@/models/category.model";
-import type { Product } from "@/models/product.model";
 import { getCategoryBySlug } from "@/services/category.service";
-import { getProductsByCategorySlug } from "@/services/product.service";
+import { filterByMinMaxPrice } from "@/services/product.service";
 
 import { PriceFilter } from "./components/price-filter";
 import { ProductCard } from "./components/product-card";
@@ -19,54 +18,25 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   }
 
   const url = new URL(request.url);
-  const minPrice = url.searchParams.get("minPrice") || "";
-  const maxPrice = url.searchParams.get("maxPrice") || "";
+  const minPrice = url.searchParams.get("minPrice");
+  const minValue = minPrice ? parseFloat(minPrice) : undefined;
+  const maxPrice = url.searchParams.get("maxPrice");
+  const maxValue = maxPrice ? parseFloat(maxPrice) : undefined;
+
 
   try {
-    const [category, products] = await Promise.all([
+    const [category] = await Promise.all([
       getCategoryBySlug(categorySlug),
-      getProductsByCategorySlug(categorySlug),
     ]);
-
-    const filterProductsByPrice = (
-      products: Product[],
-      minPrice: string,
-      maxPrice: string
-    ) => {
-      const min = minPrice ? parseFloat(minPrice) : 0;
-      const max = maxPrice ? parseFloat(maxPrice) : Infinity;
-      return products.filter(
-        (product) => {
-          const minProductPrice = product.minPrice||0
-          const maxProductPrice = product.maxPrice ||0
-          const productPrice = product.price || 0
-
-          if (min && max) {
-            return ((productPrice||minProductPrice) >= min) && ((productPrice||maxProductPrice) <= max)
-          }
-
-          if (min) {
-            return (productPrice||minProductPrice) >= min 
-          }
-
-          if (max) {
-            return (productPrice||maxProductPrice) <= max 
-          }
-          return true
-    });
-    };
-
-    const filteredProducts = filterProductsByPrice(
-      products,
-      minPrice,
-      maxPrice
-    );
+    console.log({categorySlug, minValue, maxValue})
+    const finalProducts = await filterByMinMaxPrice(categorySlug, minValue, maxValue);
 
     return {
       category,
-      products: filteredProducts,
-      minPrice,
-      maxPrice,
+      products: finalProducts,
+      minPrice: minValue,
+      maxPrice: maxValue,
+      finalProducts
     };
   } catch (e) {
     throw new Response("Error loading category: " + e, { status: 500 });

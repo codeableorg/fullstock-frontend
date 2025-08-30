@@ -5,9 +5,9 @@ import type { VariantAttributeValue } from "@/models/variant-attribute.model";
 
 import { getCategoryBySlug } from "./category.service";
 
-const formattedProduct = (product: ProductVariantValue)  => {
+const formattedProduct = (product:any ): ProductVariantValue  => {
     const {variantAttributeValues, ...rest} = product
-    const prices = variantAttributeValues.map((v: VariantAttributeValue) => Number(v.price))
+    const prices = variantAttributeValues.map((v: VariantAttributeValue) => v.price.toNumber())
     const minPrice = Math.min(...prices)
     const maxPrice = Math.max(...prices)
     if (minPrice === maxPrice) {
@@ -19,7 +19,7 @@ const formattedProduct = (product: ProductVariantValue)  => {
     return {
       ...rest,
       minPrice,
-      maxPrice
+      maxPrice,
     }
 }
 
@@ -37,7 +37,7 @@ export async function getProductsByCategorySlug(
   return products.map(formattedProduct)
 }
 
-export async function getProductById(id: number): Promise<Product> {
+export async function getProductById(id: number): Promise<any> {
   const product = await prisma.product.findUnique({
     where: { id },
     include: {
@@ -50,10 +50,10 @@ export async function getProductById(id: number): Promise<Product> {
   }
   const variants = product.variantAttributeValues.map((variant)=> ({
     ...variant,
-    price: Number(variant.price)
+    price: variant.price.toNumber()
   }))
 
-return {...product, variantAttributeValues: variants } as Product
+return {...product, variantAttributeValues: variants }
 }
 
 export async function getAllProducts(): Promise<Product[]> {
@@ -63,4 +63,37 @@ export async function getAllProducts(): Promise<Product[]> {
     }
   });
   return products.map(formattedProduct)
+}
+
+export async function filterByMinMaxPrice(
+  slug: string,
+  min?: number,
+  max?: number
+): Promise<Product[]> {
+  const priceFilter: any = {};
+
+  if (min !== undefined) {
+    priceFilter.gte = min;
+  }
+  if (max !== undefined) {
+    priceFilter.lte = max;
+  }
+
+  const result = await prisma.product.findMany({
+    where: {
+      category: {
+        slug: slug as any, // si slug es enum
+      },
+      variantAttributeValues: {
+        some: {
+          price: priceFilter, // 👈 el rango se aplica al mismo variant
+        },
+      },
+    },
+    include: {
+      variantAttributeValues: true,
+    },
+  });
+
+  return result.map(formattedProduct);
 }
