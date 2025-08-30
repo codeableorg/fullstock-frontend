@@ -1,16 +1,17 @@
 import { Link } from "react-router";
+
 import type { Product } from "@/models/product.model";
 
 interface ProductCardProps {
   product: Product;
 }
 
-const stickerCategoryId = 3;
+const stickerCategoryId = 3; // ID de la categoría "Stickers"
 
 export function ProductCard({ product }: ProductCardProps) {
-  
-  const isSticker = stickerCategoryId;
-  
+
+  const isSticker = product.categoryId === stickerCategoryId;
+
   return (
     <>
     <Link

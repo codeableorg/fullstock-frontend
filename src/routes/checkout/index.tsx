@@ -266,7 +266,7 @@ export default function Checkout({
                     <div className="flex text-sm font-medium gap-4 items-center self-end">
                       <p>{quantity}</p>
                       <X className="w-4 h-4" />
-                      <p>S/{product.price.toFixed(2)}</p>
+                      <p>S/{product.price!.toFixed(2)}</p>
                     </div>
                   </div>
                 </div>

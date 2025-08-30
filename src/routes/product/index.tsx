@@ -1,9 +1,12 @@
-import { Form, useNavigation } from "react-router";
 import { useState, useEffect } from "react";
+import { Form, useNavigation } from "react-router";
+
 import { Button, Container, Separator } from "@/components/ui";
 import { type Product } from "@/models/product.model";
 import { getProductById } from "@/services/product.service";
+
 import NotFound from "../not-found";
+
 import type { Route } from "./+types";
 
 export async function loader({ params }: Route.LoaderArgs) {
@@ -27,6 +30,8 @@ export default function Product({ loaderData }: Route.ComponentProps) {
   if (!product) {
     return <NotFound />;
   }
+
+  const showSizeSelector = product.categoryId === 1 || product.categoryId === 3;
 
   // Verificar si el producto tiene variantes
   const hasVariants = product.variantAttributeValues && product.variantAttributeValues.length > 0;
@@ -68,6 +73,18 @@ export default function Product({ loaderData }: Route.ComponentProps) {
     }
   };
 
+  const getAttributeValueId = () => { // AQUI TRAER EL AttributeValueId con el cambio de SEBAS
+    if (
+      !product.variantAttributeValues ||
+      product.variantAttributeValues.length === 0
+    ) {
+      return undefined;
+    }
+    // Devuelve el attributeId de la posición 0
+    return product.variantAttributeValues[0].id;
+  };
+
+
   return (
     <>
       <section className="py-12">
@@ -82,43 +99,46 @@ export default function Product({ loaderData }: Route.ComponentProps) {
           <div className="flex-grow flex-basis-0">
             <h1 className="text-3xl leading-9 font-bold mb-3">
               {product.title}
+              {showSizeSelector && (
+                <span className="text-muted-foreground">
+                  {" "}
+                  (
+                  {
+                    sizeOptions.options.find(
+                      (option) => option.value === selectedSize
+                    )?.label
+                  }
+                  )
+                </span>
+              )}
             </h1>
-            
-            {/* Precio dinámico */}
-            <p className="text-3xl leading-9 mb-6">
-              S/{currentPrice.toFixed(2)}
-            </p>
-            
+            <p className="text-3xl leading-9 mb-6">S/{product.price}</p>
             <p className="text-sm leading-5 text-muted-foreground mb-10">
               {product.description}
             </p>
 
-            {/* Selectores de variantes dinámicos - solo para polos y stickers */}
-            {shouldShowVariants && (
-              <>
-                {Object.entries(variantGroups).map(([attributeName, variants]) => (
-                  <div key={attributeName} className="mb-9">
-                    <p className="text-sm font-semibold text-accent-foreground mb-2">
-                      {attributeName.charAt(0).toUpperCase() + attributeName.slice(1)}
-                    </p>
-                    <div className="flex gap-2">
-                      {variants.map((variant) => (
-                        <Button
-                          key={variant.id}
-                          variant={selectedVariant === variant.id ? "default" : "secondary"}
-                          size="lg"
-                          onClick={() => handleVariantChange(variant.id)}
-                        >
-                          {variant.value}
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </>
+            {showSizeSelector && (
+              <div className="mb-9">
+                <p className="text-sm font-semibold text-accent-foreground mb-2">
+                  {sizeOptions.label}
+                </p>
+                <div className="flex gap-2">
+                  {sizeOptions.options.map((option) => (
+                    <Button
+                      key={option.value}
+                      variant={
+                        selectedSize === option.value ? "default" : "secondary"
+                      }
+                      size="lg"
+                      onClick={() => setSelectedSize(option.value)}
+                    >
+                      {option.label}
+                    </Button>
+                  ))}
+                </div>
+              </div>
             )}
 
-            {/* Formulario actualizado para enviar variante seleccionada */}
             <Form method="post" action="/cart/add-item">
               <input
                 type="hidden"
@@ -127,29 +147,23 @@ export default function Product({ loaderData }: Route.ComponentProps) {
               />
               <input
                 type="hidden"
-                name="productId"
-                value={product.id}
+                name="attributeValueId"
+                value={getAttributeValueId() ?? ""}
               />
-              {/* Enviar la variante seleccionada si existe y debe mostrar variantes */}
-              {shouldShowVariants && selectedVariant && (
-                <input
-                  type="hidden"
-                  name="variantId"
-                  value={selectedVariant}
-                />
-              )}
               <Button
                 size="xl"
                 className="w-full md:w-80"
                 type="submit"
-                disabled={cartLoading || (shouldShowVariants && !selectedVariant)}
+                // name="productId"
+                // value={product.id}
+                disabled={cartLoading}
               >
                 {cartLoading ? "Agregando..." : "Agregar al Carrito"}
               </Button>
             </Form>
-            
+
             <Separator className="my-6" />
-            
+
             <div>
               <h2 className="text-sm font-semibold text-accent-foreground mb-6">
                 Características
