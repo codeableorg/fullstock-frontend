@@ -33,7 +33,7 @@ export type CartProductInfo = Pick<
 export type CartItemWithProduct = {
   product: CartProductInfo;
   quantity: number;
-  attributeId: number;
+  attributeValueId: number;
 };
 
 // Tipo para el carrito con items y productos incluidos

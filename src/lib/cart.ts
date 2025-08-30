@@ -1,5 +1,6 @@
 import type { CartItem, CartItemInput } from "@/models/cart.model";
-import { type Product } from "@/models/product.model";
+// import { type Product } from "@/models/product.model";
+import { type VariantAttributeValue } from "@/models/variant-attribute.model";
 import {
   alterQuantityCartItem,
   deleteRemoteCartItem,
@@ -18,14 +19,14 @@ export async function getCart(userId?: number, sessionCartId?: string) {
 export async function addToCart(
   userId: number | undefined,
   sessionCartId: string | undefined,
-  productId: Product["id"],
+  attributeValueId: VariantAttributeValue["id"],
   quantity: number = 1
 ) {
   try {
     const updatedCart = await alterQuantityCartItem(
       userId,
       sessionCartId,
-      productId,
+      attributeValueId,
       quantity
     );
     return updatedCart;
@@ -62,10 +63,10 @@ export function calculateTotal(items: CartItem[] | CartItemInput[]): number {
     // Type guard to determine which type we're working with
     if ("product" in item) {
       // CartItem - has a product property
-      return total + item.product.price * item.quantity;
+      return total + Number(item.product.price) * item.quantity;
     } else {
       // CartItemInput - has price directly
-      return total + item.price * item.quantity;
+      return total + Number(item.price) * item.quantity;
     }
   }, 0);
 }

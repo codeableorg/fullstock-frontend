@@ -138,7 +138,7 @@ export async function createRemoteItems(
     await prisma.cartItem.createMany({
       data: items.map((item) => ({
         cartId: cart.id,
-        attributeValueId: item.attributeId, // modificar
+        attributeValueId: item.attributeValueId,
         quantity: item.quantity,
       })),
     });
@@ -154,13 +154,13 @@ export async function createRemoteItems(
 export async function alterQuantityCartItem(
   userId: User["id"] | undefined,
   sessionCartId: string | undefined,
-  attributeId: number,
+  attributeValueId: number,
   quantity: number = 1
 ): Promise<CartWithItems> {
   const cart = await getOrCreateCart(userId, sessionCartId);
 
   const existingItem = cart.items.find(
-    (item) => item.attributeValueId === attributeId
+    (item) => item.attributeValueId === attributeValueId
   );
 
   if (existingItem) {
@@ -180,7 +180,7 @@ export async function alterQuantityCartItem(
     await prisma.cartItem.create({
       data: {
         cartId: cart.id,
-        attributeValueId: attributeId,
+        attributeValueId: attributeValueId,
         quantity,
       },
     });
