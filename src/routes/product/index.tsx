@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Form, useNavigation } from "react-router";
+import { useEffect, useState } from "react";
+import { Form, useNavigation, useSearchParams } from "react-router";
 
 import { Button, Container, Separator } from "@/components/ui";
 import { type Product } from "@/models/product.model";
@@ -34,6 +34,8 @@ export async function loader({ params }: Route.LoaderArgs) {
 }
 
 export default function Product({ loaderData }: Route.ComponentProps) {
+const [searchParams] = useSearchParams();
+const initialVariantId = searchParams.get("variantId") ? Number(searchParams.get("variantId")) : null;
   const { product } = loaderData;
 
   const getSizeOptions = () => {
@@ -66,6 +68,19 @@ export default function Product({ loaderData }: Route.ComponentProps) {
   const [data, setData] = useState(sizeOptions)
   const showSizeSelector = product?.categoryId === 1 || product?.categoryId === 3;
   const selectedDisplay = data.options.find((option) => option.selected === true);
+  
+  useEffect(() => {
+    if (initialVariantId) {
+      setData((prevData) => ({
+        ...prevData,
+        options: prevData.options.map((option) =>
+          option.value === initialVariantId
+            ? { ...option, selected: true }
+            : { ...option, selected: false }
+        ),
+      }));
+    }
+  }, [initialVariantId]);
 
   const onSelectedVariant = (id: number) => {
     setData({
@@ -147,7 +162,7 @@ export default function Product({ loaderData }: Route.ComponentProps) {
               <input
                 type="hidden"
                 name="redirectTo"
-                value={`/products/${product.id}`}
+                value={`/products/${product.id}?variantId=${selectedDisplay?.value}`}
               />
               <input
                 type="hidden"
