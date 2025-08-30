@@ -7,7 +7,6 @@ import { type Cart } from "@/models/cart.model";
 import { getSession } from "@/session.server";
 
 import type { Route } from "./+types";
-import { productVariant } from "prisma/initial_data";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSession(request.headers.get("Cookie"));

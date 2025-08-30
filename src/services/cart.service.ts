@@ -1,7 +1,79 @@
 import { prisma } from "@/db/prisma";
-import type { CartItemWithProduct, CartWithItems } from "@/models/cart.model";
+import type {
+  CartItem,
+  CartItemWithProduct,
+  CartWithItems,
+} from "@/models/cart.model";
 import type { User } from "@/models/user.model";
 import { getSession } from "@/session.server";
+
+import type {
+  Cart as PrismaCart,
+  CartItem as PrismaCartItem,
+  Product as PrismaProduct,
+  ProductVariant as PrismaProductVariant,
+  stickersVariant as PrismaStickersVariant,
+} from "@/../generated/prisma/client";
+
+// Este tipo representa la estructura de datos que devuelve Prisma
+// cuando incluimos todas las relaciones de los items del carrito.
+type PrismaCartItemWithDetails = PrismaCartItem & {
+  product: PrismaProduct;
+  productVariant: PrismaProductVariant | null;
+  stickersVariant: PrismaStickersVariant | null;
+};
+
+type PrismaCartWithDetails = PrismaCart & {
+  items: PrismaCartItemWithDetails[];
+};
+
+/**
+ * Mapea un objeto de carrito de Prisma al modelo CartWithItems de la aplicación.
+ * Esta función convierte los tipos Decimal a numbers para los precios.
+ * @param prismaCart - El objeto de carrito obtenido de Prisma.
+ * @returns El objeto de carrito mapeado, o null si la entrada es null.
+ */
+function mapPrismaCartToAppCart(
+  prismaCart: PrismaCartWithDetails | null
+): CartWithItems | null {
+  if (!prismaCart) {
+    return null;
+  }
+
+  const items: CartItem[] = prismaCart.items.map((item) => {
+    const itemPrice =
+      typeof item.price === "object" ? item.price.toNumber() : item.price;
+
+    const productPrice =
+      typeof item.product.price === "object"
+        ? item.product.price.toNumber()
+        : item.product.price;
+
+    const stickerVariantPrice = item.stickersVariant?.price
+      ? typeof item.stickersVariant.price === "object"
+        ? item.stickersVariant.price.toNumber()
+        : item.stickersVariant.price
+      : undefined;
+
+    return {
+      ...item,
+      price: itemPrice,
+      product: {
+        ...item.product,
+        price: productPrice,
+      },
+      productVariant: item.productVariant,
+      stickersVariant: item.stickersVariant
+        ? { ...item.stickersVariant, price: stickerVariantPrice! }
+        : null,
+    };
+  });
+
+  return {
+    ...prismaCart,
+    items,
+  };
+}
 
 // Función para obtener un carrito con sus ítems
 async function getCart(
@@ -37,41 +109,7 @@ async function getCart(
 
   if (!data) return null;
 
-  return {
-    ...data,
-    items: data.items.map((item: any) => ({
-      ...item,
-      price:
-        typeof item.price === "object"
-          ? item.price.toNumber()
-          : item.price,
-      product: {
-        ...item.product,
-        price:
-          typeof item.product.price === "object"
-            ? item.product.price.toNumber()
-            : item.product.price,
-      },
-      productVariant: item.productVariant
-        ? {
-            id: item.productVariant.id,
-            size: item.productVariant.size as "small" | "medium" | "large",
-          }
-        : null,
-      productVariantId: item.productVariantId ?? null,
-      stickersVariant: item.stickersVariant
-        ? {
-            id: item.stickersVariant.id,
-            measure: item.stickersVariant.measure as "3*3" | "5*5" | "10*10",
-            price:
-              typeof item.stickersVariant.price === "object"
-                ? item.stickersVariant.price.toNumber()
-                : item.stickersVariant.price,
-          }
-        : null,
-      stickersVariantId: item.stickersVariantId ?? null,
-    })),
-  };
+  return mapPrismaCartToAppCart(data);
 }
 
 export async function getRemoteCart(
@@ -115,21 +153,11 @@ export async function getOrCreateCart(
 
   if (!newCart) throw new Error("Failed to create cart");
 
-  return {
-    ...newCart,
-    items: newCart.items.map((item: any) => ({
-      ...item,
-      product: {
-        ...item.product,
-        price:
-          typeof item.product.price === "object"
-            ? item.product.price.toNumber()
-            : item.product.price,
-      } as any, 
-      productVariant: item.productVariant ?? null, 
-      productVariantId: item.productVariantId ?? null,
-    })),
-  };
+  const mappedCart = mapPrismaCartToAppCart(newCart);
+  if (!mappedCart) {
+    throw new Error("Failed to map newly created cart");
+  }
+  return mappedCart;
 }
 
 export async function createRemoteItems(
@@ -320,21 +348,13 @@ export async function linkCartToUser(
 
   if (!updatedCart) throw new Error("Cart not found after linking");
 
-  return {
-    ...updatedCart,
-    items: updatedCart.items.map((item: any) => ({
-      ...item,
-      product: {
-        ...item.product,
-        price:
-          typeof item.product.price === "object"
-            ? item.product.price.toNumber()
-            : item.product.price,
-      } as any, 
-      productVariant: item.productVariant ?? null, 
-      productVariantId: item.productVariantId ?? null,
-    })),
-  };
+  const mappedCart = mapPrismaCartToAppCart(updatedCart);
+
+  if (!mappedCart) {
+    throw new Error("Failed to map linked cart");
+  }
+
+  return mappedCart;
 }
 
 export async function mergeGuestCartWithUserCart(
@@ -364,23 +384,7 @@ export async function mergeGuestCartWithUserCart(
         },
       },
     });
-    return {
-      ...updatedCart, 
-      items: updatedCart.items.map((item: any) => ({
-      
-        ...item,
-        product: {
-          ...item.product,
-          price:
-            typeof item.product.price === "object"
-              ? item.product.price.toNumber()
-              : item.product.price,
-        } as any, 
-        productVariant: item.productVariant ?? null,
-        productVariantId: item.productVariantId ?? null,
-        stickersVariantId: item.stickersVariantId ?? null,
-      })),
-    };
+    return mapPrismaCartToAppCart(updatedCart);
   }
 
   // Obtener productos duplicados para eliminarlos del carrito del usuario

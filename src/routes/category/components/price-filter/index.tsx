@@ -1,8 +1,7 @@
 import { Form } from "react-router";
 
-import { Button, Container, Input } from "@/components/ui";
+import { Button, Input } from "@/components/ui";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
 
 interface PriceFilterProps {
   minPrice: string;

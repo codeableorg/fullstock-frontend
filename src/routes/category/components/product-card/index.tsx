@@ -1,8 +1,8 @@
-import { Link, useNavigate } from "react-router";
 import { useState } from "react";
+import { Link, useNavigate } from "react-router";
 
-import type { Product } from "@/models/product.model";
 import { Button } from "@/components/ui";
+import type { Product } from "@/models/product.model";
 
 interface ProductCardProps {
   product: Product;
@@ -22,12 +22,6 @@ export function ProductCard({
   let variantTitle: string | null = null;
   let variants: string[] = [];
   let variantParamName: "size" | "measure" | null = null;
-
-  const variantMap: Record<string, string> = {
-    "3*3": "3*3",
-    "5*5": "5*5",
-    "10*10": "10*10",
-  };
 
   // Obtener el precio base para stickers para la variante 3*3
   const getBasePrice = () => {
