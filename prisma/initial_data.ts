@@ -10,6 +10,7 @@ export const categories = [
     alt: "Hombre luciendo polo azul",
     description:
       "Polos exclusivos con diseños que todo desarrollador querrá lucir. Ideales para llevar el código a donde vayas.",
+    hasVariants: true, // Los polos tienen variantes de talla
   },
   {
     title: "Tazas",
@@ -18,6 +19,7 @@ export const categories = [
     alt: "Tazas con diseño de código",
     description:
       "Tazas que combinan perfectamente con tu café matutino y tu pasión por la programación. ¡Empieza el día con estilo!",
+    hasVariants: false, // Las tazas NO tienen variantes
   },
   {
     title: "Stickers",
@@ -26,6 +28,44 @@ export const categories = [
     alt: "Stickers de desarrollo web",
     description:
       "Personaliza tu espacio de trabajo con nuestros stickers únicos y muestra tu amor por el desarrollo web.",
+    hasVariants: true, // Los stickers tienen variantes de tamaño
+  },
+];
+
+// Variantes por categoría
+export const categoryVariants = [
+  // Variantes para Polos (categoryId: 1) - sin modificador de precio
+  { categoryId: 1, value: "small", label: "S", priceModifier: 0, sortOrder: 1 },
+  {
+    categoryId: 1,
+    value: "medium",
+    label: "M",
+    priceModifier: 0,
+    sortOrder: 2,
+  },
+  { categoryId: 1, value: "large", label: "L", priceModifier: 0, sortOrder: 3 },
+
+  // Variantes para Stickers (categoryId: 3) - con modificador de precio
+  {
+    categoryId: 3,
+    value: "3x3",
+    label: "3×3 cm",
+    priceModifier: 0,
+    sortOrder: 1,
+  },
+  {
+    categoryId: 3,
+    value: "5x5",
+    label: "5×5 cm",
+    priceModifier: 1.0,
+    sortOrder: 2,
+  },
+  {
+    categoryId: 3,
+    value: "10x10",
+    label: "10×10 cm",
+    priceModifier: 3.0,
+    sortOrder: 3,
   },
 ];
 
