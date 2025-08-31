@@ -10,29 +10,50 @@ export async function getProductsByCategorySlug(
   const category = await getCategoryBySlug(categorySlug);
   const products = await prisma.product.findMany({
     where: { categoryId: category.id },
+    include: { variants: true },
   });
 
-  return products.map((product) => ({
-    ...product,
-    price: product.price.toNumber(),
+  return products.map((p) => ({
+    ...p,
+    price: p.price.toNumber(),
+    variants: p.variants.map((v) => ({
+      ...v,
+      price: v.price.toNumber(),
+    })),
   }));
 }
 
 export async function getProductById(id: number): Promise<Product> {
   const product = await prisma.product.findUnique({
     where: { id },
+    include: { variants: true },
   });
 
   if (!product) {
     throw new Error("Product not found");
   }
 
-  return { ...product, price: product.price.toNumber() };
+  return {
+    ...product,
+    price: product.price.toNumber(),
+    variants: product.variants.map((v) => ({
+      ...v,
+      price: v.price.toNumber(),
+    })),
+  };
 }
 
 export async function getAllProducts(): Promise<Product[]> {
-  return (await prisma.product.findMany()).map((p) => ({
+  const products = await prisma.product.findMany({
+    include: { variants: true },
+  });
+
+  return products.map((p) => ({
     ...p,
     price: p.price.toNumber(),
+    variants: p.variants.map((v) => ({
+      ...v,
+      price: v.price.toNumber(),
+    })),
   }));
 }
