@@ -1,5 +1,4 @@
 import type { Product, ProductVariant, StickersVariant } from "./product.model";
-
 import type {
   Cart as PrismaCart,
   CartItem as PrismaCartItem,

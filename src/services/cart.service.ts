@@ -4,6 +4,10 @@ import type {
   CartItemWithProduct,
   CartWithItems,
 } from "@/models/cart.model";
+import type {
+  ProductVariant,
+  StickersVariant,
+} from "@/models/product.model";
 import type { User } from "@/models/user.model";
 import { getSession } from "@/session.server";
 
@@ -15,7 +19,7 @@ import type {
   stickersVariant as PrismaStickersVariant,
 } from "@/../generated/prisma/client";
 
-// Este tipo representa la estructura de datos que devuelve Prisma
+// Este type representa la estructura de datos que devuelve Prisma
 // cuando incluimos todas las relaciones de los items del carrito.
 type PrismaCartItemWithDetails = PrismaCartItem & {
   product: PrismaProduct;
@@ -28,10 +32,8 @@ type PrismaCartWithDetails = PrismaCart & {
 };
 
 /**
- * Mapea un objeto de carrito de Prisma al modelo CartWithItems de la aplicación.
- * Esta función convierte los tipos Decimal a numbers para los precios.
  * @param prismaCart - El objeto de carrito obtenido de Prisma.
- * @returns El objeto de carrito mapeado, o null si la entrada es null.
+ * @returns El objeto de carrito mapeado, o null 
  */
 function mapPrismaCartToAppCart(
   prismaCart: PrismaCartWithDetails | null
@@ -62,9 +64,18 @@ function mapPrismaCartToAppCart(
         ...item.product,
         price: productPrice,
       },
-      productVariant: item.productVariant,
+      productVariant: item.productVariant
+        ? {
+            ...item.productVariant,
+            size: item.productVariant.size as ProductVariant["size"],
+          }
+        : null,
       stickersVariant: item.stickersVariant
-        ? { ...item.stickersVariant, price: stickerVariantPrice! }
+        ? {
+            ...item.stickersVariant,
+            measure: item.stickersVariant.measure as StickersVariant["measure"],
+            price: stickerVariantPrice!,
+          }
         : null,
     };
   });
