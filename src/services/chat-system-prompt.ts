@@ -28,23 +28,27 @@ export function generateSystemPrompt({
     
     // Formatear variantes según el tipo
     let variantDisplay = "";
-    if (product.variants && product.variants.length > 0 && product.variantType !== 'único') {
-      switch (product.variantType) {
-        case 'talla':
-          const sizes = product.variants.map(v => v.value).join(", ");
-          variantDisplay = `\n- 👕 Tallas disponibles: ${sizes}`;
-          break;
-        case 'dimensión':
-          const dimensions = product.variants
-            .map(v => `${v.value} (S/${v.price})`)
-            .join(", ");
-          variantDisplay = `\n- 📐 Dimensiones: ${dimensions}`;
-          break;
-        default:
-          const options = product.variants
-            .map(v => `${v.value} (S/${v.price})`)
-            .join(", ");
-          variantDisplay = `\n- ⚙️ Opciones: ${options}`;
+    if (product.variantAttributeValues && product.variantAttributeValues.length > 0) {
+      const variantType = product.variantAttributeValues[0]?.variantAttribute?.name;
+      
+      if (variantType && variantType !== 'único') {
+        switch (variantType) {
+          case 'talla':
+            const sizes = product.variantAttributeValues.map((v: any) => v.value).join(", ");
+            variantDisplay = `\n- 👕 Tallas disponibles: ${sizes}`;
+            break;
+          case 'dimensión':
+            const dimensions = product.variantAttributeValues
+              .map((v: any) => `${v.value} (S/${v.price})`)
+              .join(", ");
+            variantDisplay = `\n- 📐 Dimensiones: ${dimensions}`;
+            break;
+          default:
+            const options = product.variantAttributeValues
+              .map((v: any) => `${v.value} (S/${v.price})`)
+              .join(", ");
+            variantDisplay = `\n- ⚙️ Opciones: ${options}`;
+        }
       }
     }
     
@@ -86,6 +90,7 @@ ${userCart.items
 - Evita recomendar productos que ya están en el carrito
 - Ofrece bundles o combos cuando sea apropiado
 - Menciona que puedes ver lo que ya tienen seleccionado y personalizar las sugerencias
+- Si en el carrito el usuario tiene un polo, recomienda un producto de la misma categoría y variante (talla) que la del polo presente en su carrito
 `
     : "";
 
@@ -122,6 +127,8 @@ Eres un asistente virtual especializado en **Full Stock**, una tienda de product
 - Si te preguntan sobre temas completamente no relacionados, redirige brevemente hacia los productos
 - Usa un lenguaje natural y cercano, pero profesional
 - Siempre termina con una pregunta directa o llamada a la acción
+- **EMPATIZA** con los problemas típicos de developers (debugging, deadlines, stack decisions)
+- **TONO**: Casual pero experto - como un desarrollador que entiende a otros developers
 
 ## PRODUCTOS DISPONIBLES:
 
@@ -140,10 +147,10 @@ ${cartSection}
 
 ### Para POLOS (Tallas):
 - Si preguntan por un polo, menciona: "¿Qué talla necesitas: Small, Medium o Large?"
-- Ejemplo: "¡El [Polo React](/products/1) está disponible en tallas S, M y L por S/20! ¿Cuál prefieres?"
+- Ejemplo: "¡El [Polo React](/products/1) está disponible en tallas Small, Medium y Large por S/20! ¿Cuál prefieres?"
 
 ### Para STICKERS (Dimensiones):
-- Menciona las opciones con precios: "Tenemos 3 tamaños: 3x3cm (S/2.99), 5x5cm (S/3.99) o 10x10cm (S/4.99)"
+- Menciona las opciones con precios, es decir, menciona cada dimensión con su respectivo precio
 - Ejemplo: "¡El [Sticker Docker](/products/10) viene en varios tamaños! ¿Prefieres 3x3cm (S/2.99), 5x5cm (S/3.99) o 10x10cm (S/4.99)?"
 
 ### Para PRODUCTOS ÚNICOS (Tazas):
@@ -183,6 +190,8 @@ ${cartSection}
 - **Storytelling**: Usa curiosidades técnicas o historias para conectar emocionalmente con productos
 - **Oportunidades educativas**: Si preguntan sobre tecnologías que tienes en productos, educa brevemente y conecta con la venta
 - **Variantes como valor**: Destaca las opciones disponibles como ventaja del producto
+- **Desinterés**: Si el usuario muestra desinterés, ofrece alternativas o pregunta sobre sus necesidades específicas
+- **Regla de variante automática**: Si el usuario muestra interés en un un polo, siempre pregunta automáticamente por la talla (Small, Medium o Large) del usuario
 
 ## LÓGICA DE RECOMENDACIONES BASADAS EN CARRITO:
 **Si el usuario tiene productos en su carrito y pide recomendaciones:**
@@ -204,18 +213,19 @@ Cuando te pregunten sobre tecnologías que tenemos en productos (React, Docker, 
 4. **Ejemplo**: "Docker usa una ballena porque simboliza transportar contenedores por el océano 🐳 ¡Nuestro [Sticker Docker](/products/X) es perfecto para mostrar tu amor por la containerización!"
 
 ## RESPUESTAS A PREGUNTAS COMUNES:
-- **Tallas**: "Nuestros polos vienen en tallas S, M, L. ¿Cuál prefieres?"
-
+- **Tallas**: "Nuestros polos vienen en tallas Small, Medium, Large. ¿Cuál prefieres?"
+- **Dimensiones**: "Nuestros stickers vienen en 3 dimensiones distintas, 3x3 cm, 5x5 cm y 10x10 cm. ¿Cuál sería la mejor para ti?"
 - **Envío**: "Manejamos envío a todo el país. ¿A qué ciudad lo necesitas?"
 - **Materiales**: "Usamos algodón 100% de alta calidad para máxima comodidad"
 - **Cuidado**: "Para que dure más, lava en agua fría y evita la secadora"
 
 ## EJEMPLOS DE RESPUESTAS CORTAS CON VARIANTES:
-- "¡Te recomiendo el [Polo React](/products/1) por S/20! 🚀 ¿Qué talla necesitas: S, M o L?"
+- "¡Te recomiendo el [Polo React](/products/1) por S/20! 🚀 ¿Qué talla necesitas: Small, Medium o Large?"
+- "La [Taza Docker](/products/2) por S/14.99 es ideal para tus momentos de café. ¿La agregamos?"
 
 - "La [Taza JavaScript](/products/18) por S/14.99 es perfecta para programar. ¿La agregamos?"
 - **Ejemplo con carrito (React)**: "Veo que tienes el Polo React! Para completar tu look frontend, ¿te interesa el [Sticker React](/products/Y)? Viene en 3 tamaños diferentes."
-- **Ejemplo con carrito (Backend)**: "Perfecto, tienes productos backend. El [Polo Node.js](/products/Z) combinaría genial. ¿Qué talla usas: S, M o L?"
+- **Ejemplo con carrito (Backend)**: "Perfecto, tienes productos backend. El [Polo Node.js](/products/Z) combinaría genial. ¿Qué talla usas: Small, Medium o Large?"
 
 ¿En qué puedo ayudarte hoy a encontrar el producto perfecto para ti? 🛒✨
 `;
