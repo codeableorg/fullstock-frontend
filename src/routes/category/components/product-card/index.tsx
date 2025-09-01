@@ -34,14 +34,19 @@ export function ProductCard({ product }: ProductCardProps) {
           {isSticker ? (
             <div className="text-xs text-muted-foreground">
               <p className="text-base font-semibold text-accent-foreground">
-                Desde
+                Entre
               </p>
               <p className="font-medium text-foreground text-base">
                 S/{product.minPrice} - S/{product.maxPrice}
               </p>
             </div>
           ) : (
-            <p className="mt-auto text-base font-medium">S/{product.price}</p>
+            <div className="text-xs text-muted-foreground">
+              <p className="text-base font-semibold text-accent-foreground">
+                Precio
+              </p>
+              <p className="mt-auto text-base font-medium">S/{product.price}</p>
+            </div>
           )}
         </div>
         {product.isOnSale && (

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { Form, useNavigation, useSearchParams } from "react-router";
 
 import { Button, Container, Separator } from "@/components/ui";
@@ -8,21 +8,6 @@ import { getProductById } from "@/services/product.service";
 import NotFound from "../not-found";
 
 import type { Route } from "./+types";
-const categoryStickerId =3
-const categoryTazaId = 2
-const initialVariantPosition = 1
-
-const variantGroupLabel: { [key: number]: string } = {
-  3: 'No aplica',
-  1: 'Talla',
-  2: 'Dimensiones'
-}
-const displayVariantSize: { [key: string]: string } = {
-  'S': 'Small',
-  'M': 'Medium',
-  'L': 'Large'
-}
-
 
 export async function loader({ params }: Route.LoaderArgs) {
   try {
@@ -34,71 +19,55 @@ export async function loader({ params }: Route.LoaderArgs) {
 }
 
 export default function Product({ loaderData }: Route.ComponentProps) {
-const [searchParams] = useSearchParams();
-const initialVariantId = searchParams.get("variantId") ? Number(searchParams.get("variantId")) : null;
   const { product } = loaderData;
-
-  const getSizeOptions = () => {
-    const options = product?.variantAttributeValues?.map((variantAttribute, index) => ({
-      value: variantAttribute.id,
-      label: product.categoryId === categoryStickerId ? `${variantAttribute.value} cm` : displayVariantSize[variantAttribute.value],
-      price: variantAttribute.price,
-      selected: index===initialVariantPosition?true:false
-    }));
-    if (product?.categoryId === categoryTazaId) {
-      return {
-        label: '',
-        options: [{
-          value: product?.variantAttributeValues?.[0].id,
-          label: product?.variantAttributeValues?.[0].value,
-          price: product?.variantAttributeValues?.[0].price,
-          selected: true
-        }]
-      }
-    }
-    return {
-      label: variantGroupLabel[product?.variantAttributeValues?.[0].attributeId as number],
-      options: options || [],
-    }
-  };
-
-  const sizeOptions = getSizeOptions();
   const navigation = useNavigation();
   const cartLoading = navigation.state === "submitting";
-  const [data, setData] = useState(sizeOptions)
-  const showSizeSelector = product?.categoryId === 1 || product?.categoryId === 3;
-  const selectedDisplay = data.options.find((option) => option.selected === true);
   
-  useEffect(() => {
-    if (initialVariantId) {
-      setData((prevData) => ({
-        ...prevData,
-        options: prevData.options.map((option) =>
-          option.value === initialVariantId
-            ? { ...option, selected: true }
-            : { ...option, selected: false }
-        ),
-      }));
-    }
-  }, [initialVariantId]);
+  const [searchParams] = useSearchParams();
+  const initialVariantId = searchParams.get("variantId") ? Number(searchParams.get("variantId")) : null;
 
-  const onSelectedVariant = (id: number) => {
-    setData({
-      ...data,
-      options: data.options.map((v) => {
-        if (v.value === id) {
-          return ({
-            ...v,
-            selected: true
-          })
+  // Estados para manejar variantes
+  const [selectedVariant, setSelectedVariant] = useState<number | null>(initialVariantId);
+  const [currentPrice, setCurrentPrice] = useState<number>(0);
+
+  // Verificar si el producto tiene variantes
+  const hasVariants = product?.variantAttributeValues && product.variantAttributeValues.length > 0;
+  
+  // Verificar si debe mostrar selectores (solo polos y stickers)
+  const shouldShowVariants = hasVariants && (product?.categoryId === 1 || product?.categoryId === 3);
+  
+  // Agrupar variantes por atributo
+  const variantGroups = shouldShowVariants 
+    ? product.variantAttributeValues!.reduce((groups, variant) => {
+        const attributeName = variant!.variantAttribute!.name;
+        if (!groups[attributeName]) {
+          groups[attributeName] = [];
         }
-        return ({
-          ...v,
-          selected: false
-        })
-      })
-    })
-  }
+        groups[attributeName].push(variant);
+        return groups;
+      }, {} as Record<string, typeof product.variantAttributeValues>)
+    : {};
+
+  useEffect(() => {
+    if (!product) return;
+    
+    if (hasVariants && product.variantAttributeValues) {
+        const firstVariant = product.variantAttributeValues[selectedVariant ? product.variantAttributeValues.findIndex(v => v.id === selectedVariant) : 0];
+        setSelectedVariant(firstVariant.id);
+        setCurrentPrice(Number(firstVariant.price));
+    } else {
+      setCurrentPrice(Number(product.price || 0));
+    }
+  }, [product, hasVariants, selectedVariant]);
+
+  // Funciones después de los hooks
+  const handleVariantChange = (variantId: number) => {
+    setSelectedVariant(variantId);
+    const variant = product?.variantAttributeValues?.find(v => v.id === variantId);
+    if (variant) {
+      setCurrentPrice(Number(variant.price));
+    }
+  };
 
   if (!product) {
     return <NotFound />;
@@ -118,71 +87,75 @@ const initialVariantId = searchParams.get("variantId") ? Number(searchParams.get
           <div className="flex-grow flex-basis-0">
             <h1 className="text-3xl leading-9 font-bold mb-3">
               {product.title}
-              {showSizeSelector && (
-                <span className="text-muted-foreground">
-                  {" "}
-                  (
-                  {
-                    data.options.find(
-                      (option) => option.selected === true
-                    )?.label
-                  }
-                  )
-                </span>
-              )}
             </h1>
-            <p className="text-3xl leading-9 mb-6">S/ {selectedDisplay?.price}</p>
+            
+            {/* Precio dinámico */}
+            <p className="text-3xl leading-9 mb-6">
+              S/{currentPrice.toFixed(2)}
+            </p>
+            
             <p className="text-sm leading-5 text-muted-foreground mb-10">
               {product.description}
             </p>
 
-            {showSizeSelector && (
-              <div className="mb-9">
-                <p className="text-sm font-semibold text-accent-foreground mb-2">
-                  {sizeOptions.label}
-                </p>
-                <div className="flex gap-2">
-                  {sizeOptions.options.map((option) => (
-                    <Button
-                      key={option.value}
-                      variant={
-                        selectedDisplay?.value === option.value ? "default" : "secondary"
-                      }
-                      size="lg"
-                      onClick={() => onSelectedVariant(option?.value||0)}
-                    >
-                      {option.label}
-                    </Button>
-                  ))}
-                </div>
-              </div>
+            {/* Selectores de variantes dinámicos - solo para polos y stickers */}
+            {shouldShowVariants && (
+              <>
+                {Object.entries(variantGroups).map(([attributeName, variants]) => (
+                  <div key={attributeName} className="mb-9">
+                    <p className="text-sm font-semibold text-accent-foreground mb-2">
+                      {attributeName.charAt(0).toUpperCase() + attributeName.slice(1)}
+                    </p>
+                    <div className="flex gap-2">
+                      {variants!.map((variant) => (
+                        <Button
+                          key={variant.id}
+                          variant={selectedVariant === variant.id ? "default" : "secondary"}
+                          size="lg"
+                          className="w-[70px]"
+                          onClick={() => handleVariantChange(variant.id)}
+                        >
+                          {variant.value}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </>
             )}
 
+            {/* Formulario actualizado para enviar variante seleccionada */}
             <Form method="post" action="/cart/add-item">
               <input
                 type="hidden"
                 name="redirectTo"
-                value={`/products/${product.id}?variantId=${selectedDisplay?.value}`}
+                value={`/products/${product.id}?variantId=${selectedVariant}`}
               />
               <input
                 type="hidden"
                 name="attributeValueId"
-                value={selectedDisplay?.value||""}
+                value={selectedVariant!}
               />
+              {/* Enviar la variante seleccionada si existe y debe mostrar variantes */}
+              {shouldShowVariants && selectedVariant && (
+                <input
+                  type="hidden"
+                  name="variantId"
+                  value={selectedVariant}
+                />
+              )}
               <Button
                 size="xl"
                 className="w-full md:w-80"
                 type="submit"
-                // name="productId"
-                // value={product.id}
-                disabled={cartLoading}
+                disabled={cartLoading || (shouldShowVariants && !selectedVariant)}
               >
                 {cartLoading ? "Agregando..." : "Agregar al Carrito"}
               </Button>
             </Form>
-
+            
             <Separator className="my-6" />
-
+            
             <div>
               <h2 className="text-sm font-semibold text-accent-foreground mb-6">
                 Características

@@ -5,23 +5,25 @@ import type { VariantAttributeValue } from "@/models/variant-attribute.model";
 
 import { getCategoryBySlug } from "./category.service";
 
-const formattedProduct = (product:any ): ProductVariantValue  => {
-    const {variantAttributeValues, ...rest} = product
-    const prices = variantAttributeValues.map((v: VariantAttributeValue) => v.price.toNumber())
-    const minPrice = Math.min(...prices)
-    const maxPrice = Math.max(...prices)
-    if (minPrice === maxPrice) {
-      return {
-        ...rest,
-        price: minPrice
-      }
-    }
+const formattedProduct = (product: any): ProductVariantValue => {
+  const { variantAttributeValues, ...rest } = product;
+  const prices = variantAttributeValues.map((v: VariantAttributeValue) =>
+    v.price.toNumber()
+  );
+  const minPrice = Math.min(...prices);
+  const maxPrice = Math.max(...prices);
+  if (minPrice === maxPrice) {
     return {
       ...rest,
-      minPrice,
-      maxPrice,
-    }
-}
+      price: minPrice,
+    };
+  }
+  return {
+    ...rest,
+    minPrice,
+    maxPrice,
+  };
+};
 
 export async function getProductsByCategorySlug(
   categorySlug: Category["slug"]
@@ -30,39 +32,45 @@ export async function getProductsByCategorySlug(
   const products = await prisma.product.findMany({
     where: { categoryId: category.id },
     include: {
-      variantAttributeValues: true
-    }
+      variantAttributeValues: true,
+    },
   });
 
-  return products.map(formattedProduct)
+  return products.map(formattedProduct);
 }
 
-export async function getProductById(id: number): Promise<any> {
+export async function getProductById(id: number): Promise<Product> {
   const product = await prisma.product.findUnique({
     where: { id },
     include: {
-      variantAttributeValues: true
-    }
+      variantAttributeValues: {
+        include: {
+          variantAttribute: true,
+        },
+      },
+    },
   });
-
   if (!product) {
     throw new Error("Product not found");
   }
-  const variants = product.variantAttributeValues.map((variant)=> ({
-    ...variant,
-    price: variant.price.toNumber()
-  }))
+  const productWithParsedPrices = {
+    ...product,
+    variantAttributeValues: product.variantAttributeValues.map((variant) => ({
+      ...variant,
+      price: variant.price.toNumber(),
+    })),
+  };
 
-return {...product, variantAttributeValues: variants }
+  return productWithParsedPrices as unknown as ProductVariantValue;
 }
 
 export async function getAllProducts(): Promise<Product[]> {
   const products = await prisma.product.findMany({
     include: {
-      variantAttributeValues: true
-    }
+      variantAttributeValues: true,
+    },
   });
-  return products.map(formattedProduct)
+  return products.map(formattedProduct);
 }
 
 export async function filterByMinMaxPrice(
@@ -97,3 +105,4 @@ export async function filterByMinMaxPrice(
 
   return result.map(formattedProduct);
 }
+
