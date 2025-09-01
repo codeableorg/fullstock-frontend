@@ -1,4 +1,4 @@
-import { type Product } from "./product.model";
+import { type Product, type ProductVariant } from "./product.model";
 
 import type {
   Cart as PrismaCart,
@@ -10,6 +10,10 @@ export type CartItem = PrismaCartItem & {
     Product,
     "id" | "title" | "imgSrc" | "alt" | "price" | "isOnSale"
   >;
+  productVariant?: Pick<
+    ProductVariant,
+    "id" | "type" | "value" | "price"
+  > | null;
 };
 
 export type Cart = PrismaCart;
@@ -20,10 +24,10 @@ export interface CartItemInput {
   title: Product["title"];
   price: Product["price"];
   imgSrc: Product["imgSrc"];
+  productVariantId?: number;
 }
 
 // Tipo para representar un producto simplificado en el carrito
-
 export type CartProductInfo = Pick<
   Product,
   "id" | "title" | "imgSrc" | "alt" | "price" | "isOnSale"
@@ -33,6 +37,10 @@ export type CartProductInfo = Pick<
 export type CartItemWithProduct = {
   product: CartProductInfo;
   quantity: number;
+  productVariant?: Pick<
+    ProductVariant,
+    "id" | "type" | "value" | "price"
+  > | null;
 };
 
 // Tipo para el carrito con items y productos incluidos

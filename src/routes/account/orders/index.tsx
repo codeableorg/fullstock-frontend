@@ -88,7 +88,13 @@ export default function Orders({ loaderData }: Route.ComponentProps) {
                 </thead>
                 <tbody className="border-t border-b border-border">
                   {order.items.map((item) => (
-                    <tr key={item.productId}>
+                    <tr
+                      key={
+                        item.productVariantId
+                          ? `${item.productId}-${item.productVariantId}`
+                          : String(item.id)
+                      }
+                    >
                       <td className="py-6 pl-6">
                         <div className="flex items-center gap-2">
                           <div className="w-16 rounded-xl bg-muted">

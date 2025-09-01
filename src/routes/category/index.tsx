@@ -1,7 +1,7 @@
 import { redirect } from "react-router";
 
 import { Container } from "@/components/ui";
-import { isValidCategorySlug, type Category } from "@/models/category.model";
+import { isValidCategorySlug} from "@/models/category.model";
 import type { Product } from "@/models/product.model";
 import { getCategoryBySlug } from "@/services/category.service";
 import { getProductsByCategorySlug } from "@/services/product.service";
@@ -10,6 +10,8 @@ import { PriceFilter } from "./components/price-filter";
 import { ProductCard } from "./components/product-card";
 
 import type { Route } from "./+types";
+
+export type ProductWithDisplayPrice = Product & { displayedPrice: number };
 
 export async function loader({ params, request }: Route.LoaderArgs) {
   const { category: categorySlug } = params;
@@ -32,13 +34,51 @@ export async function loader({ params, request }: Route.LoaderArgs) {
       products: Product[],
       minPrice: string,
       maxPrice: string
-    ) => {
+    ): ProductWithDisplayPrice[] => {
       const min = minPrice ? parseFloat(minPrice) : 0;
       const max = maxPrice ? parseFloat(maxPrice) : Infinity;
-      return products.filter(
-        (product) => product.price >= min && product.price <= max
-      );
+
+    return products
+        .map((product) => {
+          if (product.variants && product.variants.length > 0) {
+            const sortedVariants = [...product.variants].sort(
+              (a, b) => a.price - b.price
+            );
+
+            const lowest = sortedVariants[0].price;
+            const highest = sortedVariants[sortedVariants.length - 1].price;
+
+            let selectedVariant = sortedVariants[0];
+
+            if (min <= lowest && max >= highest) {
+              // caso 1 -> rango incluye todos los precios
+              selectedVariant = sortedVariants[0];
+            } else {
+              // caso 2 -> primer variant en rango
+              const variantInRange = sortedVariants.find(
+                (v) => v.price >= min && v.price <= max
+              );
+              if (variantInRange) {
+                selectedVariant = variantInRange;
+              }
+            }
+
+            return {
+              ...product,
+              displayedPrice: selectedVariant.price,
+            };
+          }
+
+          // Si no tiene variants, usar price del producto
+          return {
+            ...product,
+            displayedPrice: product.price,
+          };
+        })
+  .filter((p) => p.displayedPrice >= min && p.displayedPrice <= max);
     };
+
+
 
     const filteredProducts = filterProductsByPrice(
       products,

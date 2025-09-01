@@ -1,6 +1,8 @@
 import { type Chat, GoogleGenAI } from "@google/genai";
 import dotenv from "dotenv";
 
+import type { Product, ProductVariant } from "@/models/product.model";
+
 import { getOrCreateCart } from "./cart.service";
 import { getAllCategories } from "./category.service";
 import { generateSystemPrompt } from "./chat-system-prompt";
@@ -22,10 +24,25 @@ export async function sendMessage(
 ) {
   if (!chats[sessionId]) {
     // Obtener datos de la base de datos
-    const [categories, products] = await Promise.all([
+    const [categories, rawProducts] = await Promise.all([
       getAllCategories(),
       getAllProducts(),
     ]);
+
+    // Normalizar posibles precios de variantes (Decimal -> number) para el prompt
+    const products: Product[] = rawProducts.map(
+      (p): Product => ({
+        ...p,
+        variants: Array.isArray(p?.variants)
+          ? p.variants.map(
+              (v): ProductVariant => ({
+                ...v,
+                price: Number(v.price),
+              })
+            )
+          : undefined,
+      })
+    );
 
     // Obtener carrito del usuario si está disponible
     let userCart = null;

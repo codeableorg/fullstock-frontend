@@ -8,6 +8,55 @@ interface SystemPromptConfig {
   userCart?: CartWithItems | null;
 }
 
+const PEN = (num: number) => `S/${Number(num).toFixed(2)}`;
+
+function formatProductVariants(product: Product): string {
+  const variants = product.variants as
+    | { id: number; type: string; value: string; price: number }[]
+    | undefined;
+
+  if (!variants || variants.length === 0) return "";
+
+  const typeLabel = variants[0].type;
+  const prices = variants.map((v) => Number(v.price));
+  const min = Math.min(...prices);
+  const max = Math.max(...prices);
+
+  const list = variants
+    .map(
+      (v) =>
+        `- [${v.value}](/products/${product.id}?variant=${encodeURIComponent(
+          v.value
+        )}): ${PEN(Number(v.price))}`
+    )
+    .join("\n");
+
+  return `
+- Variantes (${typeLabel}):
+${list}
+- Rango de precios por variante: ${PEN(min)} - ${PEN(max)}
+`;
+}
+
+function formatCartItemLine(item: CartWithItems["items"][number]): string {
+  const unit = Number(item.productVariant?.price ?? item.product.price);
+  const subtotal = unit * item.quantity;
+  const variantSuffix = item.productVariant
+    ? ` (${item.productVariant.value})`
+    : "";
+  const productLink = item.productVariant
+    ? `/products/${item.product.id}?variant=${encodeURIComponent(
+        item.productVariant.value
+      )}`
+    : `/products/${item.product.id}`;
+  return `
+- **${item.product.title}${variantSuffix}** x${item.quantity} — ${PEN(
+    unit
+  )} c/u (Subtotal: ${PEN(subtotal)})
+  Link: [Ver producto](${productLink})
+`;
+}
+
 export function generateSystemPrompt({
   categories,
   products,
@@ -32,29 +81,20 @@ ${onSaleProducts
     ? `
 ## 🛒 CARRITO ACTUAL DEL USUARIO:
 El usuario tiene actualmente ${userCart.items.length} producto(s) en su carrito:
-${userCart.items
-  .map(
-    (item) => `
-- **${item.product.title}** (Cantidad: ${item.quantity}) - S/${item.product.price}
-  Link: [Ver producto](/products/${item.product.id})
-`
-  )
-  .join("")}
-
+${userCart.items.map(formatCartItemLine).join("")}
 **IMPORTANTE**: Usa esta información para hacer recomendaciones inteligentes:
 - **PRIORIDAD**: Si piden recomendaciones, sugiere PRIMERO productos de la misma categoría o tema que los productos en su carrito
 - Si tienen un producto de React, recomienda otros productos relacionados con React o frontend
 - Si tienen productos backend, prioriza otros productos backend o de tecnologías relacionadas
 - Evita recomendar productos que ya están en el carrito
 - Ofrece bundles o combos cuando sea apropiado
-- Menciona que puedes ver lo que ya tienen seleccionado y personalizar las sugerencias
-`
+- Menciona que puedes ver lo que ya tienen seleccionado y personalizar las sugerencias`
     : "";
 
   return `
 # Asistente Virtual de Full Stock
 
-Eres un asistente virtual especializado en **Full Stock**, una tienda de productos para desarrolladores web. 
+Eres un asistente virtual especializado en **Full Stock**, una tienda de productos para desarrolladores web.
 
 ## PERSONALIDAD Y COMPORTAMIENTO:
 - Sé educado, amable, alegre y entusiasta como un vendedor experto
@@ -74,7 +114,7 @@ ${categories
     (cat) => `
 **${cat.title}** (${cat.slug})
 - Descripción: ${cat.description}
-- Link: [Ver categoría](/category/${cat.slug})
+- Link: [Ver categoría](/${cat.slug})
 `
   )
   .join("\n")}
@@ -85,11 +125,12 @@ ${products
     const category = categories.find((c) => c.id === product.categoryId);
     return `
 **${product.title}**
-- 💰 Precio: S/${product.price}${product.isOnSale ? " ⚡ ¡EN OFERTA!" : ""}
+- 💰 Precio base: S/${product.price}${product.isOnSale ? " ⚡ ¡EN OFERTA!" : ""}
 - 📝 Descripción: ${product.description}
 - 🏷️ Categoría: ${category?.title || "Sin categoría"}
 - ✨ Características: ${product.features.join(", ")}
 - 🔗 Link: [Ver producto](/products/${product.id})
+${formatProductVariants(product)}
 `;
   })
   .join("\n")}
@@ -102,7 +143,8 @@ ${cartSection}
 - **MANTÉN LAS RESPUESTAS BREVES Y DIRECTAS** (máximo 2-3 oraciones)
 - Ve directo al punto, sin explicaciones largas
 - Cuando recomiendes productos, SIEMPRE incluye el link en formato: [Nombre del Producto](/products/ID)
-- Para categorías, usa links como: [Categoría](/category/slug)
+- Para categorías, usa links como: [Categoría](/slug)
+- Si mencionas una variante específica (talla/tamaño), enlaza al producto con el query param ?variant=VALOR. Ejemplo: /products/123?variant=10x10cm
 - Responde en **Markdown** para dar formato atractivo
 - Sé específico sobre precios, características y beneficios
 - Si hay productos en oferta, destácalos con emojis y texto llamativo
@@ -136,6 +178,11 @@ ${cartSection}
    - Backend → Node.js, Python, Docker
    - Frontend → React, JavaScript, CSS
 
+## MANEJO DE VARIANTES (talla/tamaño):
+- Si un producto tiene variantes, pregunta la preferencia de **talla** o **tamaño** antes de cerrar la compra.
+- Si el usuario ya tiene una variante en el carrito, sugiérela por defecto y ofrece cambiarla si desea.
+- Indica precio correcto por variante cuando lo menciones (usa el rango si aplica).
+
 ## MANEJO DE PREGUNTAS TÉCNICAS RELACIONADAS:
 Cuando te pregunten sobre tecnologías que tenemos en productos (React, Docker, JavaScript, etc.):
 1. **Responde brevemente** la pregunta técnica/histórica
@@ -143,8 +190,7 @@ Cuando te pregunten sobre tecnologías que tenemos en productos (React, Docker, 
 3. **Genera interés** usando esa información como gancho de venta
 4. **Ejemplo**: "Docker usa una ballena porque simboliza transportar contenedores por el océano 🐳 ¡Nuestro [Sticker Docker](/products/X) es perfecto para mostrar tu amor por la containerización!"
 
-## RESPUESTAS A PREGUNTAS COMUNES:
-- **Tallas**: "Nuestros polos vienen en tallas S, M, L, XL. ¿Cuál prefieres?"
+## RESPUESTAS A PREGUNTAS COMUNES
 - **Envío**: "Manejamos envío a todo el país. ¿A qué ciudad lo necesitas?"
 - **Materiales**: "Usamos algodón 100% de alta calidad para máxima comodidad"
 - **Cuidado**: "Para que dure más, lava en agua fría y evita la secadora"
@@ -155,7 +201,7 @@ Cuando te pregunten sobre tecnologías que tenemos en productos (React, Docker, 
 - **Ejemplo de pregunta técnica relacionada**: "¡La ballena de Docker representa la facilidad de transportar aplicaciones! 🐳 Nuestro [Sticker Docker](/products/X) captura perfectamente esa filosofía. ¿Te gusta coleccionar stickers de tecnología?"
 - **Ejemplo con carrito (React)**: "Veo que tienes el Polo React en tu carrito! Para completar tu look frontend, te recomiendo la [Taza React](/products/Y). ¿Te interesa?"
 - **Ejemplo con carrito (Backend)**: "Perfecto, tienes productos backend en tu carrito. El [Sticker Node.js](/products/Z) combinaría genial. ¿Lo agregamos?"
-
+- **Ejemplo cuando el usuario dice "añade X"**: "¡Listo! Aquí está el enlace con la variante: [Sticker React 10x10cm](/products/12?variant=10x10cm). Abre el enlace y presiona ‘Agregar al Carrito’. ¿Quieres otra talla o tamaño?"
 ¿En qué puedo ayudarte hoy a encontrar el producto perfecto para ti? 🛒✨
 `;
 }

@@ -1,4 +1,4 @@
-import type { CategorySlug } from "../generated/prisma/client";
+import type { CategorySlug, Product } from "../generated/prisma/client";
 
 const imagesBaseUrl = "https://fullstock-images.s3.us-east-2.amazonaws.com";
 
@@ -28,6 +28,34 @@ export const categories = [
       "Personaliza tu espacio de trabajo con nuestros stickers únicos y muestra tu amor por el desarrollo web.",
   },
 ];
+
+export const productVariants = (product: Product) => {
+  // Polos
+  if (product.categoryId === 1) {
+    return ["Small", "Medium", "Large"].map((size) => ({
+      productId: product.id,
+      type: "talla",
+      value: size,
+      price: product.price,
+    }));
+  }
+
+  // Stickers
+  if (product.categoryId === 3) {
+    return [
+      { value: "3x3cm", multiplier: 1 },
+      { value: "5x5cm", multiplier: 1.67 },
+      { value: "10x10cm", multiplier: 3.33 },
+    ].map(({ value, multiplier }) => ({
+      productId: product.id,
+      type: "tamaño",
+      value,
+      price: Number(product.price) * multiplier,
+    }));
+  }
+
+  return [];
+};
 
 export const products = [
   {

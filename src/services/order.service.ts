@@ -30,6 +30,9 @@ export async function createOrder(
             title: item.title,
             price: item.price,
             imgSrc: item.imgSrc,
+            ...(item.productVariantId
+              ? { productVariantId: item.productVariantId }
+              : {}),
           })),
         },
         paymentId: paymentId,

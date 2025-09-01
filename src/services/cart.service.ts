@@ -34,6 +34,7 @@ async function getCart(
               isOnSale: true,
             },
           },
+          productVariant: true,
         },
         orderBy: {
           id: "asc",
@@ -52,6 +53,12 @@ async function getCart(
         ...item.product,
         price: item.product.price.toNumber(),
       },
+      productVariant: item.productVariant
+        ? {
+            ...item.productVariant,
+            price: item.productVariant.price.toNumber(),
+          }
+        : null,
     })),
   };
 }
@@ -73,11 +80,10 @@ export async function getOrCreateCart(
   }
 
   // Si no se encontró un carrito creamos uno nuevo
-
-  // Creamos un carrito con userId si se proporciona
   const newCart = await prisma.cart.create({
     data: {
       userId: userId || null,
+      sessionCartId: sessionCartId || undefined,
     },
     include: {
       items: {
@@ -92,6 +98,7 @@ export async function getOrCreateCart(
               isOnSale: true,
             },
           },
+          productVariant: true,
         },
       },
     },
@@ -107,6 +114,12 @@ export async function getOrCreateCart(
         ...item.product,
         price: item.product.price.toNumber(),
       },
+      productVariant: item.productVariant
+        ? {
+            ...item.productVariant,
+            price: item.productVariant.price.toNumber(),
+          }
+        : null,
     })),
   };
 }
@@ -132,6 +145,7 @@ export async function createRemoteItems(
         cartId: cart.id,
         productId: item.product.id,
         quantity: item.quantity,
+        productVariantId: item.productVariant?.id ?? null,
       })),
     });
   }
@@ -147,11 +161,16 @@ export async function alterQuantityCartItem(
   userId: User["id"] | undefined,
   sessionCartId: string | undefined,
   productId: number,
-  quantity: number = 1
+  quantity: number = 1,
+  productVariantId?: number
 ): Promise<CartWithItems> {
   const cart = await getOrCreateCart(userId, sessionCartId);
 
-  const existingItem = cart.items.find((item) => item.product.id === productId);
+  const existingItem = cart.items.find(
+    (item) =>
+      item.product.id === productId &&
+      (item.productVariant?.id ?? null) === (productVariantId ?? null)
+  );
 
   if (existingItem) {
     const newQuantity = existingItem.quantity + quantity;
@@ -172,6 +191,7 @@ export async function alterQuantityCartItem(
         cartId: cart.id,
         productId,
         quantity,
+        productVariantId: productVariantId ?? null,
       },
     });
   }
@@ -246,6 +266,7 @@ export async function linkCartToUser(
               isOnSale: true,
             },
           },
+          productVariant: true,
         },
       },
     },
@@ -261,6 +282,12 @@ export async function linkCartToUser(
         ...item.product,
         price: item.product.price.toNumber(),
       },
+      productVariant: item.productVariant
+        ? {
+            ...item.productVariant,
+            price: item.productVariant.price.toNumber(),
+          }
+        : null,
     })),
   };
 }
@@ -295,6 +322,7 @@ export async function mergeGuestCartWithUserCart(
                 isOnSale: true,
               },
             },
+            productVariant: true,
           },
         },
       },
@@ -307,6 +335,12 @@ export async function mergeGuestCartWithUserCart(
           ...item.product,
           price: item.product.price.toNumber(),
         },
+        productVariant: item.productVariant
+          ? {
+              ...item.productVariant,
+              price: item.productVariant.price.toNumber(),
+            }
+          : null,
       })),
     };
   }
@@ -330,6 +364,7 @@ export async function mergeGuestCartWithUserCart(
       cartId: userCart.id,
       productId: item.productId,
       quantity: item.quantity,
+      productVariantId: item.productVariantId ?? null,
     })),
   });
 
