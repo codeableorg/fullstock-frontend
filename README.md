@@ -309,9 +309,10 @@ npm run test:e2e
 - **Sistema de Variantes de Producto**: Implementación completa del sistema de variantes con base de datos (Prisma schema)
 - **Carrito con Variantes**: Actualización del carrito para mostrar información detallada de variantes seleccionadas
 
-### 👨‍💻 Sebastian
-- **UI/UX Design & Responsive Design**: Diseño e implementación de la interfaz adaptativa con Tailwind CSS
-- **Chat Bot AI**: Integración con Google Gemini para el asistente virtual y sistema de recomendaciones
+### 👨‍💻 Sebastián
+- **UI/UX Design & Responsive Design**: Implementación con Tailwind CSS y ajustes ligeros en 'initial_data.ts' y servicios para la correcta comunicación backend–frontend.
+- **Actualización del ChatBot**: Actualización con nuevo contexto, prompts de comportamiento, estrategia de ventas, ejemplos de respuesta y lógica de recomendaciones.
+
 
 ### 👩‍💻 Janet
 - **Modificacion del archivo de data inicial**: Modificación del archivo 'initial_data.ts' para las diferentes variables de productos
