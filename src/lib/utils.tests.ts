@@ -2,13 +2,15 @@ import { vi } from "vitest";
 
 import type { Category } from "@/models/category.model";
 import type { Order, OrderDetails, OrderItem } from "@/models/order.model";
-import type { Product } from "@/models/product.model";
+import type { ProductVariantValue } from "@/models/product.model";
 import type { User } from "@/models/user.model";
 
 import type {
   OrderItem as PrismaOrderItem,
   Order as PrismaOrder,
   Product as PrismaProduct,
+  VariantAttributeValue as PrismaVariantAttributeValue,
+
 } from "@/../generated/prisma/client";
 import type { Session } from "react-router";
 
@@ -53,37 +55,39 @@ export const createMockSession = (userId: number | null): Session => ({
   unset: vi.fn(),
 });
 
-export const createTestProduct = (overrides?: Partial<Product>): Product => ({
+export const createTestDBProduct = (
+  overrides?: Partial<PrismaProduct> & { variantAttributeValues?: PrismaVariantAttributeValue[] }
+): PrismaProduct & { variantAttributeValues: PrismaVariantAttributeValue[] } => ({
   id: 1,
   title: "Test Product",
   imgSrc: "/test-image.jpg",
   alt: "Test alt text",
-  price: 100,
   description: "Test description",
   categoryId: 1,
   isOnSale: false,
   features: ["Feature 1", "Feature 2"],
   createdAt: new Date(),
   updatedAt: new Date(),
+  variantAttributeValues: overrides?.variantAttributeValues ?? [createTestDBVariantAttributeValue()],
   ...overrides,
 });
 
-export const createTestDBProduct = (
-  overrides?: Partial<PrismaProduct>
-): PrismaProduct => ({
+// --- FRONTEND PRODUCT ---
+export const createTestProduct = (overrides?: Partial<ProductVariantValue>): ProductVariantValue => ({
   id: 1,
   title: "Test Product",
   imgSrc: "/test-image.jpg",
   alt: "Test alt text",
-  price: new Decimal(100),
   description: "Test description",
   categoryId: 1,
   isOnSale: false,
   features: ["Feature 1", "Feature 2"],
   createdAt: new Date(),
   updatedAt: new Date(),
+  variantAttributeValues: [createTestDBVariantAttributeValue()],
   ...overrides,
 });
+
 
 export const createTestCategory = (
   overrides?: Partial<Category>
@@ -94,6 +98,19 @@ export const createTestCategory = (
   imgSrc: "/images/polos.jpg",
   alt: "Colección de polos para programadores",
   description: "Explora nuestra colección de polos para programadores",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  ...overrides,
+});
+
+export const createTestDBVariantAttributeValue = (
+  overrides?: Partial<PrismaVariantAttributeValue>
+): PrismaVariantAttributeValue => ({
+  id: 1,
+  attributeId: 1,
+  productId: 1,
+  value: "Default",
+  price: new Decimal(100),
   createdAt: new Date(),
   updatedAt: new Date(),
   ...overrides,
