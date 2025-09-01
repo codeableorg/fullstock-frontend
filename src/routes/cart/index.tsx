@@ -30,8 +30,9 @@ export default function Cart({ loaderData }: Route.ComponentProps) {
           Carrito de compras
         </h1>
         <div className="border-solid border rounded-xl flex flex-col">
-          {cart?.items?.map(({ product, quantity, id, attributeValueId }) => (
-            <div key={product.id} className="flex gap-7 p-6 border-b">
+          {cart?.items?.map(({ product, quantity, id, variantAttributeValue
+ }) => (
+            <div key={variantAttributeValue?.id} className="flex gap-7 p-6 border-b">
               <div className="w-20 rounded-xl bg-muted">
                 <img
                   src={product.imgSrc}
@@ -41,7 +42,7 @@ export default function Cart({ loaderData }: Route.ComponentProps) {
               </div>
               <div className="flex grow flex-col justify-between">
                 <div className="flex gap-4 justify-between items-center">
-                  <h2 className="text-sm">{product.title}</h2>
+                  <h2 className="text-sm">{product.title} ({variantAttributeValue?.value})</h2>
                   <Form method="post" action="/cart/remove-item">
                     <Button
                       size="sm-icon"
@@ -62,7 +63,7 @@ export default function Cart({ loaderData }: Route.ComponentProps) {
                       <input type="hidden" name="quantity" value="-1" />
                       <Button
                         name="attributeValueId"
-                        value={attributeValueId}
+                        value={variantAttributeValue?.id}
                         variant="outline"
                         size="sm-icon"
                         disabled={quantity === 1}
@@ -78,7 +79,7 @@ export default function Cart({ loaderData }: Route.ComponentProps) {
                         variant="outline"
                         size="sm-icon"
                         name="attributeValueId"
-                        value={attributeValueId}
+                        value={variantAttributeValue?.id}
                       >
                         <Plus />
                       </Button>
