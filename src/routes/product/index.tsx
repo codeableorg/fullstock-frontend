@@ -78,7 +78,6 @@ export default function Product({ loaderData }: Route.ComponentProps) {
 
   return (
     <>
-    <pre>{JSON.stringify(variantGroups, null, 2)}</pre>
       <section className="py-12">
         <Container className="flex flex-col gap-8 md:flex-row md:items-start">
           <div className="bg-muted rounded-xl min-w-[min(100%,28rem)] self-center flex-grow max-w-xl md:min-w-fit md:self-start">
