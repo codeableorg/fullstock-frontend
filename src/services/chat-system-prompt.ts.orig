@@ -1,7 +1,10 @@
 import type { CartWithItems } from "@/models/cart.model";
 import type { Category } from "@/models/category.model";
 import type { Product, VariantAttributeValueWithNumber } from "@/models/product.model";
+<<<<<<< Updated upstream
+=======
 
+>>>>>>> Stashed changes
 
 interface SystemPromptConfig {
   categories: Category[];
@@ -35,13 +38,20 @@ export function generateSystemPrompt({
       if (variantType && variantType !== 'único') {
         switch (variantType) {
           case 'talla': {
+<<<<<<< Updated upstream
+            const sizes = product.variantAttributeValues.map((v: VariantAttributeValueWithNumber) => v.value).join(", ");
+=======
 
             const sizes = product.variantAttributeValues?.map((v: VariantAttributeValueWithNumber) => v.value).join(", ");
+>>>>>>> Stashed changes
             variantDisplay = `\n- 👕 Tallas disponibles: ${sizes}`;
             break;
           }
           case 'dimensión': {
+<<<<<<< Updated upstream
+=======
 
+>>>>>>> Stashed changes
             const dimensions = product.variantAttributeValues
               .map((v: VariantAttributeValueWithNumber) => `${v.value} (S/${v.price})`)
               .join(", ");
@@ -49,7 +59,10 @@ export function generateSystemPrompt({
             break;
           }
           default: {
+<<<<<<< Updated upstream
+=======
 
+>>>>>>> Stashed changes
             const options = product.variantAttributeValues
               .map((v: VariantAttributeValueWithNumber) => `${v.value} (S/${v.price})`)
               .join(", ");

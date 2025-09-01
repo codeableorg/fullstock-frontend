@@ -13,9 +13,13 @@ export type Product = PrismaProduct & {
 export type VariantAttributeValueWithNumber =  Omit<PrismaVariantAttributeValue, "price"> & {
   price: number
   variantAttribute: VariantAttribute
+<<<<<<< Updated upstream
+}
+=======
 }
 
 export type ProductDTO = PrismaProduct & {
   variantAttributeValues: PrismaVariantAttributeValue[];
 };
 
+>>>>>>> Stashed changes

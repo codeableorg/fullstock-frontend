@@ -1,11 +1,11 @@
 import { prisma } from "@/db/prisma";
 import type { Category } from "@/models/category.model";
-import type { Product } from "@/models/product.model";
+import type { Product, ProductDTO } from "@/models/product.model";
 import type { VariantAttributeValue } from "@/models/variant-attribute.model";
 
 import { getCategoryBySlug } from "./category.service";
 
-export const formattedProduct = (product: any): Product => {
+export const formattedProduct = (product: ProductDTO): Product => {
   const { variantAttributeValues, ...rest } = product;
   const prices = variantAttributeValues.map((v: VariantAttributeValue) =>
     v.price.toNumber()
