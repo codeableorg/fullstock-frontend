@@ -106,9 +106,12 @@ export async function action({ request }: Route.ActionArgs) {
   const items = cartItems.map((item) => ({
     productId: item.product.id,
     quantity: item.quantity,
-    title: item.product.title,
-    price: item.product.price,
+    title: `${item.product.title}${
+      item.productVariant ? ` (${item.productVariant.value})` : ""
+    }`,
+    price: item.productVariant?.price ?? item.product.price,
     imgSrc: item.product.imgSrc,
+    productVariantId: item.productVariant?.id,
   }));
 
   const { id: orderId } = await createOrder(
@@ -249,11 +252,8 @@ export default function Checkout({
           <div className="flex-grow">
             <h2 className="text-lg font-medium mb-4">Resumen de la orden</h2>
             <div className="border border-border rounded-xl bg-background flex flex-col">
-              {cart?.items?.map(({ product, quantity }) => (
-                <div
-                  key={product.id}
-                  className="flex gap-6 p-6 border-b border-border"
-                >
+              {cart?.items?.map(({ id, product, quantity, productVariant }) => (
+                <div key={id} className="flex gap-6 p-6 border-b border-border">
                   <div className="w-20 rounded-xl bg-muted">
                     <img
                       src={product.imgSrc}
@@ -262,11 +262,16 @@ export default function Checkout({
                     />
                   </div>
                   <div className="flex flex-col justify-between flex-grow">
-                    <h3 className="text-sm leading-5">{product.title}</h3>
+                    <h3 className="text-sm leading-5">
+                      {product.title}
+                      {productVariant ? ` (${productVariant.value})` : ""}
+                    </h3>
                     <div className="flex text-sm font-medium gap-4 items-center self-end">
                       <p>{quantity}</p>
                       <X className="w-4 h-4" />
-                      <p>S/{product.price.toFixed(2)}</p>
+                      <p>
+                        S/{(productVariant?.price ?? product.price).toFixed(2)}
+                      </p>
                     </div>
                   </div>
                 </div>
