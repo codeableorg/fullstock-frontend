@@ -106,13 +106,13 @@ export default function Product({ loaderData }: Route.ComponentProps) {
                     <p className="text-sm font-semibold text-accent-foreground mb-2">
                       {attributeName.charAt(0).toUpperCase() + attributeName.slice(1)}
                     </p>
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
                       {variants!.map((variant) => (
                         <Button
                           key={variant.id}
                           variant={selectedVariant === variant.id ? "default" : "secondary"}
                           size="lg"
-                          className="w-[70px]"
+                          className="flex-1 min-w-[80px] sm:min-w-[100px] md:flex-none md:w-[70px]"
                           onClick={() => handleVariantChange(variant.id)}
                         >
                           {variant.value}
