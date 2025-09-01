@@ -93,31 +93,37 @@ export async function getOrdersByUser(request: Request): Promise<Order[]> {
     throw new Error("User not authenticated");
   }
   
-  const orders = await prisma.order.findMany({
-    where: { userId },
-    include: {
-      items: {
-        include: {
-          variantAttributeValue: {
-            include: {
-              product: {
-                select: {
-                  id: true,
-                  title: true,
-                  imgSrc: true,
-                  alt: true,
-                  isOnSale: true,
+  let orders;
+  
+  try {
+    orders = await prisma.order.findMany({
+      where: { userId },
+      include: {
+        items: {
+          include: {
+            variantAttributeValue: {
+              include: {
+                product: {
+                  select: {
+                    id: true,
+                    title: true,
+                    imgSrc: true,
+                    alt: true,
+                    isOnSale: true,
+                  },
                 },
               },
             },
           },
         },
       },
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+  } catch (error) {
+    throw new Error("Failed to fetch orders", { cause: error });
+  }
   
   return orders.map((order) => {
     const details = {
