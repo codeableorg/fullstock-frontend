@@ -1,11 +1,11 @@
 import { prisma } from "@/db/prisma";
 import type { Category } from "@/models/category.model";
-import type { Product, ProductVariantValue } from "@/models/product.model";
+import type { Product } from "@/models/product.model";
 import type { VariantAttributeValue } from "@/models/variant-attribute.model";
 
 import { getCategoryBySlug } from "./category.service";
 
-const formattedProduct = (product: any): ProductVariantValue => {
+export const formattedProduct = (product: any): Product => {
   const { variantAttributeValues, ...rest } = product;
   const prices = variantAttributeValues.map((v: VariantAttributeValue) =>
     v.price.toNumber()
@@ -61,7 +61,7 @@ export async function getProductById(id: number): Promise<Product> {
     })),
   };
 
-  return productWithParsedPrices as unknown as ProductVariantValue;
+  return productWithParsedPrices as unknown as Product;
 }
 
 export async function getAllProducts(): Promise<Product[]> {
@@ -78,7 +78,7 @@ export async function filterByMinMaxPrice(
   min?: number,
   max?: number
 ): Promise<Product[]> {
-  const priceFilter: any = {};
+  const priceFilter: {  gte?: number; lte?: number } = {};
 
   if (min !== undefined) {
     priceFilter.gte = min;
@@ -90,7 +90,7 @@ export async function filterByMinMaxPrice(
   const result = await prisma.product.findMany({
     where: {
       category: {
-        slug: slug as any, // si slug es enum
+        slug: slug as Category["slug"], // si slug es enum
       },
       variantAttributeValues: {
         some: {

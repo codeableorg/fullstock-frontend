@@ -9,7 +9,7 @@ import {
 } from "@/lib/utils.tests";
 
 import { getCategoryBySlug } from "./category.service";
-import { getProductsByCategorySlug, getProductById } from "./product.service";
+import { getProductsByCategorySlug, getProductById, formattedProduct } from "./product.service";
 
 import type { Category } from "generated/prisma/client";
 
@@ -53,10 +53,7 @@ describe("Product Service", () => {
 
       // Comprobamos que los precios se transforman a number
       expect(products).toEqual(
-        mockedProducts.map((product) => ({
-          ...product,
-          price: product.variantAttributeValues[0].price.toNumber(),
-        }))
+        mockedProducts.map(formattedProduct)
       );
     });
     it("should throw error when category slug does not exist", async () => {

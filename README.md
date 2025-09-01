@@ -318,7 +318,7 @@ npm run test:e2e
 - **Modificacion del archivo de data inicial**: Modificación del archivo 'initial_data.ts' para las diferentes variables de productos
 - **Actualización del servicio de productos**: Modificación de las funciones para integrar variantes de productos
 - **Filtros de Precio Inteligentes**: Implementación de la lógica de filtrado que considera todas las variantes de precio
-
+- **Test para Product**: Actualización de los test para product service y product route
 <!-- - **Testing de Variantes**: Actualización de tests unitarios y E2E para cubrir casos de uso con variantes -->
 
 ### 🤝 Tareas Colaborativas

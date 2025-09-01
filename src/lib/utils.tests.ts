@@ -2,7 +2,7 @@ import { vi } from "vitest";
 
 import type { Category } from "@/models/category.model";
 import type { Order, OrderDetails, OrderItem } from "@/models/order.model";
-import type { ProductVariantValue } from "@/models/product.model";
+import type { Product, VariantAttributeValueWithNumber } from "@/models/product.model";
 import type { User } from "@/models/user.model";
 
 import type {
@@ -73,7 +73,7 @@ export const createTestDBProduct = (
 });
 
 // --- FRONTEND PRODUCT ---
-export const createTestProduct = (overrides?: Partial<ProductVariantValue>): ProductVariantValue => ({
+export const createTestProduct = (overrides?: Partial<Product>): Product => ({
   id: 1,
   title: "Test Product",
   imgSrc: "/test-image.jpg",
@@ -84,7 +84,7 @@ export const createTestProduct = (overrides?: Partial<ProductVariantValue>): Pro
   features: ["Feature 1", "Feature 2"],
   createdAt: new Date(),
   updatedAt: new Date(),
-  variantAttributeValues: [createTestDBVariantAttributeValue()],
+  variantAttributeValues: [createTestVariantAttributeValue()],
   ...overrides,
 });
 
@@ -113,6 +113,19 @@ export const createTestDBVariantAttributeValue = (
   price: new Decimal(100),
   createdAt: new Date(),
   updatedAt: new Date(),
+  ...overrides,
+});
+export const createTestVariantAttributeValue = (
+  overrides: Partial<VariantAttributeValueWithNumber> = {}
+): VariantAttributeValueWithNumber => ({
+  id: 1,
+  attributeId: 1,
+  productId: 1,
+  value: "Default",
+  price: 100, // ya es number
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  variantAttribute: [{ id: 1, name: "Talla", createdAt: new Date(), updatedAt: new Date() }],
   ...overrides,
 });
 

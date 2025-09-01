@@ -9,6 +9,9 @@ import NotFound from "../not-found";
 
 import type { Route } from "./+types";
 
+const shirtId = 1;
+const stickerId = 3;
+
 export async function loader({ params }: Route.LoaderArgs) {
   try {
     const product = await getProductById(parseInt(params.id));
@@ -34,7 +37,7 @@ export default function Product({ loaderData }: Route.ComponentProps) {
   const hasVariants = product?.variantAttributeValues && product.variantAttributeValues.length > 0;
   
   // Verificar si debe mostrar selectores (solo polos y stickers)
-  const shouldShowVariants = hasVariants && (product?.categoryId === 1 || product?.categoryId === 3);
+  const shouldShowVariants = hasVariants && (product?.categoryId === shirtId || product?.categoryId === stickerId);
   
   // Agrupar variantes por atributo
   const variantGroups = shouldShowVariants 
@@ -75,6 +78,7 @@ export default function Product({ loaderData }: Route.ComponentProps) {
 
   return (
     <>
+    <pre>{JSON.stringify(variantGroups, null, 2)}</pre>
       <section className="py-12">
         <Container className="flex flex-col gap-8 md:flex-row md:items-start">
           <div className="bg-muted rounded-xl min-w-[min(100%,28rem)] self-center flex-grow max-w-xl md:min-w-fit md:self-start">
