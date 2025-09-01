@@ -45,8 +45,6 @@ async function getCart(
     },
   });
 
-  console.log("DATA CART SERVICE", data?.items);
-
   if (!data) return null;
 
   return {

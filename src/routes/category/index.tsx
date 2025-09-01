@@ -28,7 +28,6 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     const [category] = await Promise.all([
       getCategoryBySlug(categorySlug),
     ]);
-    console.log({categorySlug, minValue, maxValue})
     const finalProducts = await filterByMinMaxPrice(categorySlug, minValue, maxValue);
 
     return {

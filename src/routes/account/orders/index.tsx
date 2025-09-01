@@ -13,6 +13,8 @@ export async function loader({ request }: Route.LoaderArgs) {
   try {
     const orders = await getOrdersByUser(request);
 
+    console.log("ORDERS", orders[0].items);
+
     orders.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
     return { orders };
@@ -29,7 +31,7 @@ export default function Orders({ loaderData }: Route.ComponentProps) {
       {orders!.length > 0 ? (
         <div className="flex flex-col gap-4">
           {orders!.map((order) => (
-            <div key={order.id}>
+            <div key={order.id} className="p-6 border rounded-lg">
               <div className="rounded-lg bg-muted py-4 px-6">
                 <dl className="flex flex-col gap-4 w-full sm:flex-row">
                   <div className="flex-shrink-0">
