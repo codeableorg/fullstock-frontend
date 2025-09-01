@@ -105,4 +105,3 @@ export async function filterByMinMaxPrice(
 
   return result.map(formattedProduct);
 }
-
