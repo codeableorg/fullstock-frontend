@@ -362,4 +362,3 @@ export async function mergeGuestCartWithUserCart(
   // Devolver el carrito actualizado del usuario
   return await getCart(userId);
 }
-
