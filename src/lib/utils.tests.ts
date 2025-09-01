@@ -125,7 +125,7 @@ export const createTestVariantAttributeValue = (
   price: 100, // ya es number
   createdAt: new Date(),
   updatedAt: new Date(),
-  variantAttribute: [{ id: 1, name: "Talla", createdAt: new Date(), updatedAt: new Date() }],
+  variantAttribute: { id: 1, name: "Talla", createdAt: new Date(), updatedAt: new Date() },
   ...overrides,
 });
 
@@ -151,13 +151,22 @@ export const createTestOrderItem = (
   ({
     id: 1,
     orderId: 1,
-    productId: 1,
+    attributeValueId: 1,
     quantity: 1,
     title: "Test Product",
     price: 100,
     imgSrc: "test-image.jpg",
     createdAt: new Date(),
     updatedAt: new Date(),
+    variantAttributeValue: {
+      id: 1,
+      attributeId: 1,
+      productId: 1,
+      value: "Default",
+      price: new Decimal(100),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
     ...overrides,
   } satisfies OrderItem);
 
@@ -167,7 +176,7 @@ export const createTestDBOrderItem = (
   ({
     id: 1,
     orderId: 1,
-    productId: 1,
+    attributeValueId: 1,
     quantity: 1,
     title: "Test Product",
     price: new Decimal(100),

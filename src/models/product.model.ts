@@ -8,9 +8,11 @@ export type Product = PrismaProduct & {
   variantAttributeValues?: VariantAttributeValueWithNumber[];
 };
 
-
-
 export type VariantAttributeValueWithNumber =  Omit<PrismaVariantAttributeValue, "price"> & {
   price: number
-  variantAttribute: VariantAttribute[]
+  variantAttribute: VariantAttribute
 }
+
+export type ProductDTO = PrismaProduct & {
+  variantAttributeValues: PrismaVariantAttributeValue[];
+};
