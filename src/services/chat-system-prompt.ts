@@ -2,7 +2,6 @@ import type { CartWithItems } from "@/models/cart.model";
 import type { Category } from "@/models/category.model";
 import type { Product, VariantAttributeValueWithNumber } from "@/models/product.model";
 
-
 interface SystemPromptConfig {
   categories: Category[];
   products: Product[];
@@ -32,16 +31,13 @@ export function generateSystemPrompt({
     if (product.variantAttributeValues && product.variantAttributeValues.length > 0) {
       const variantType = product.variantAttributeValues[0]?.variantAttribute?.name;
       
-      if (variantType && variantType !== 'único') {
-        switch (variantType) {
+      switch (variantType) {
           case 'talla': {
-
-            const sizes = product.variantAttributeValues?.map((v: VariantAttributeValueWithNumber) => v.value).join(", ");
+            const sizes = product.variantAttributeValues.map((v: VariantAttributeValueWithNumber) => v.value).join(", ");
             variantDisplay = `\n- 👕 Tallas disponibles: ${sizes}`;
             break;
           }
           case 'dimensión': {
-
             const dimensions = product.variantAttributeValues
               .map((v: VariantAttributeValueWithNumber) => `${v.value} (S/${v.price})`)
               .join(", ");
@@ -49,13 +45,11 @@ export function generateSystemPrompt({
             break;
           }
           default: {
-
             const options = product.variantAttributeValues
               .map((v: VariantAttributeValueWithNumber) => `${v.value} (S/${v.price})`)
               .join(", ");
             variantDisplay = `\n- ⚙️ Opciones: ${options}`;
           }
-        }
       }
     }
     
