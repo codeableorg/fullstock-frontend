@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Form, useNavigation } from "react-router";
+import { Form, useNavigation, useSearchParams } from "react-router";
 
 import { Button, Container, Separator } from "@/components/ui";
 import { type Product } from "@/models/product.model";
@@ -23,26 +23,23 @@ export default function Product({ loaderData }: Route.ComponentProps) {
   const navigation = useNavigation();
   const cartLoading = navigation.state === "submitting";
   
+  const [searchParams] = useSearchParams();
+  const initialVariantId = searchParams.get("variantId") ? Number(searchParams.get("variantId")) : null;
+
   // Estados para manejar variantes
-  const [selectedVariant, setSelectedVariant] = useState<number | null>(null);
+  const [selectedVariant, setSelectedVariant] = useState<number | null>(initialVariantId);
   const [currentPrice, setCurrentPrice] = useState<number>(0);
 
-  if (!product) {
-    return <NotFound />;
-  }
-
-  const showSizeSelector = product.categoryId === 1 || product.categoryId === 3;
-
   // Verificar si el producto tiene variantes
-  const hasVariants = product.variantAttributeValues && product.variantAttributeValues.length > 0;
+  const hasVariants = product?.variantAttributeValues && product.variantAttributeValues.length > 0;
   
   // Verificar si debe mostrar selectores (solo polos y stickers)
-  const shouldShowVariants = hasVariants && (product.categoryId === 1 || product.categoryId === 3);
+  const shouldShowVariants = hasVariants && (product?.categoryId === 1 || product?.categoryId === 3);
   
-  // Agrupar variantes por atributo (en caso de que un producto tenga múltiples tipos de atributos)
+  // Agrupar variantes por atributo
   const variantGroups = shouldShowVariants 
-    ? product.variantAttributeValues.reduce((groups, variant) => {
-        const attributeName = variant.variantAttribute.name;
+    ? product.variantAttributeValues!.reduce((groups, variant) => {
+        const attributeName = variant!.variantAttribute!.name;
         if (!groups[attributeName]) {
           groups[attributeName] = [];
         }
@@ -51,39 +48,30 @@ export default function Product({ loaderData }: Route.ComponentProps) {
       }, {} as Record<string, typeof product.variantAttributeValues>)
     : {};
 
-  // Inicializar precio y variante seleccionada
   useEffect(() => {
-    if (hasVariants) {
-      // Seleccionar la primera variante por defecto
-      const firstVariant = product.variantAttributeValues[0];
-      setSelectedVariant(firstVariant.id);
-      setCurrentPrice(firstVariant.price);
+    if (!product) return;
+    
+    if (hasVariants && product.variantAttributeValues) {
+        const firstVariant = product.variantAttributeValues[selectedVariant ? product.variantAttributeValues.findIndex(v => v.id === selectedVariant) : 0];
+        setSelectedVariant(firstVariant.id);
+        setCurrentPrice(Number(firstVariant.price));
     } else {
-      // Si no hay variantes, usar el precio base del producto (asumiendo que existe)
-      setCurrentPrice(product.price || 0);
+      setCurrentPrice(Number(product.price || 0));
     }
-  }, [product]);
+  }, [product, hasVariants, selectedVariant]);
 
-  // Manejar cambio de variante
+  // Funciones después de los hooks
   const handleVariantChange = (variantId: number) => {
     setSelectedVariant(variantId);
-    const variant = product.variantAttributeValues.find(v => v.id === variantId);
+    const variant = product?.variantAttributeValues?.find(v => v.id === variantId);
     if (variant) {
-      setCurrentPrice(variant.price);
+      setCurrentPrice(Number(variant.price));
     }
   };
 
-  const getAttributeValueId = () => { // AQUI TRAER EL AttributeValueId con el cambio de SEBAS
-    if (
-      !product.variantAttributeValues ||
-      product.variantAttributeValues.length === 0
-    ) {
-      return undefined;
-    }
-    // Devuelve el attributeId de la posición 0
-    return product.variantAttributeValues[0].id;
-  };
-
+  if (!product) {
+    return <NotFound />;
+  }
 
   return (
     <>
@@ -99,71 +87,75 @@ export default function Product({ loaderData }: Route.ComponentProps) {
           <div className="flex-grow flex-basis-0">
             <h1 className="text-3xl leading-9 font-bold mb-3">
               {product.title}
-              {showSizeSelector && (
-                <span className="text-muted-foreground">
-                  {" "}
-                  (
-                  {
-                    sizeOptions.options.find(
-                      (option) => option.value === selectedSize
-                    )?.label
-                  }
-                  )
-                </span>
-              )}
             </h1>
-            <p className="text-3xl leading-9 mb-6">S/{product.price}</p>
+            
+            {/* Precio dinámico */}
+            <p className="text-3xl leading-9 mb-6">
+              S/{currentPrice.toFixed(2)}
+            </p>
+            
             <p className="text-sm leading-5 text-muted-foreground mb-10">
               {product.description}
             </p>
 
-            {showSizeSelector && (
-              <div className="mb-9">
-                <p className="text-sm font-semibold text-accent-foreground mb-2">
-                  {sizeOptions.label}
-                </p>
-                <div className="flex gap-2">
-                  {sizeOptions.options.map((option) => (
-                    <Button
-                      key={option.value}
-                      variant={
-                        selectedSize === option.value ? "default" : "secondary"
-                      }
-                      size="lg"
-                      onClick={() => setSelectedSize(option.value)}
-                    >
-                      {option.label}
-                    </Button>
-                  ))}
-                </div>
-              </div>
+            {/* Selectores de variantes dinámicos - solo para polos y stickers */}
+            {shouldShowVariants && (
+              <>
+                {Object.entries(variantGroups).map(([attributeName, variants]) => (
+                  <div key={attributeName} className="mb-9">
+                    <p className="text-sm font-semibold text-accent-foreground mb-2">
+                      {attributeName.charAt(0).toUpperCase() + attributeName.slice(1)}
+                    </p>
+                    <div className="flex gap-2">
+                      {variants!.map((variant) => (
+                        <Button
+                          key={variant.id}
+                          variant={selectedVariant === variant.id ? "default" : "secondary"}
+                          size="lg"
+                          className="w-[70px]"
+                          onClick={() => handleVariantChange(variant.id)}
+                        >
+                          {variant.value}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </>
             )}
 
+            {/* Formulario actualizado para enviar variante seleccionada */}
             <Form method="post" action="/cart/add-item">
               <input
                 type="hidden"
                 name="redirectTo"
-                value={`/products/${product.id}`}
+                value={`/products/${product.id}?variantId=${selectedVariant}`}
               />
               <input
                 type="hidden"
                 name="attributeValueId"
-                value={getAttributeValueId() ?? ""}
+                value={selectedVariant!}
               />
+              {/* Enviar la variante seleccionada si existe y debe mostrar variantes */}
+              {shouldShowVariants && selectedVariant && (
+                <input
+                  type="hidden"
+                  name="variantId"
+                  value={selectedVariant}
+                />
+              )}
               <Button
                 size="xl"
                 className="w-full md:w-80"
                 type="submit"
-                // name="productId"
-                // value={product.id}
-                disabled={cartLoading}
+                disabled={cartLoading || (shouldShowVariants && !selectedVariant)}
               >
                 {cartLoading ? "Agregando..." : "Agregar al Carrito"}
               </Button>
             </Form>
-
+            
             <Separator className="my-6" />
-
+            
             <div>
               <h2 className="text-sm font-semibold text-accent-foreground mb-6">
                 Características

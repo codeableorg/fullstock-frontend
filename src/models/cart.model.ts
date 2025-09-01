@@ -3,6 +3,7 @@ import { type Product } from "./product.model";
 import type {
   Cart as PrismaCart,
   CartItem as PrismaCartItem,
+  VariantAttributeValue
 } from "@/../generated/prisma/client";
 
 export type CartItem = PrismaCartItem & {
@@ -10,6 +11,7 @@ export type CartItem = PrismaCartItem & {
     Product,
     "id" | "title" | "imgSrc" | "alt" | "price" | "isOnSale"
   >;
+  variantAttributeValue?: VariantAttributeValue;
 };
 
 export type Cart = PrismaCart;
@@ -34,6 +36,7 @@ export type CartItemWithProduct = {
   product: CartProductInfo;
   quantity: number;
   attributeValueId: number;
+  variantAttributeValue?: VariantAttributeValue;
 };
 
 // Tipo para el carrito con items y productos incluidos

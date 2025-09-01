@@ -424,7 +424,7 @@ export const variantAttributeValues = [
 
   { attributeId: 2, productId: 17, value: "3x3 cm", price: 2.99 },
   { attributeId: 2, productId: 17, value: "5x5 cm", price: 3.99 },
-  { attributeId: 2, productId: 17, value: "10x10 cm", price: 4.99 },
+  { attributeId: 2, productId: 17, value: "10x10 cm", price: .99 },
 
   // --- TAZAS (no aplica: Único) ---
   { attributeId: 3, productId: 18, value: "Único", price: 14.99 },
