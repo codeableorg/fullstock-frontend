@@ -32,7 +32,7 @@ vi.mock("react-router", () => ({
 const createTestProps = (
   productData: Partial<ProductType> = {}
 ): Route.ComponentProps => ({
-  loaderData: { product: createTestProduct(productData) },
+  loaderData: { product: createTestProduct(productData), variantParam: null },
   params: { id: "123" },
   // Hack to satisfy type requirements
   matches: [] as unknown as Route.ComponentProps["matches"],
@@ -123,8 +123,9 @@ describe("Product Component", () => {
       // Step 3: Call
       render(<Product {...props} />);
       // Step 4: Verify
-      const redirectInput = screen.queryByDisplayValue(
-        `/products/${productId}`
+      // The redirectTo includes a variant param when variants exist; assert it starts with the product path
+      const redirectInput = screen.getByDisplayValue(
+        new RegExp(`^/products/${productId}`)
       );
       expect(redirectInput).toBeInTheDocument();
     });

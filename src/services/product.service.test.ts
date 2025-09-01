@@ -7,7 +7,12 @@ import type { Category } from "@/models/category.model";
 import { getCategoryBySlug } from "./category.service";
 import { getProductById, getProductsByCategorySlug } from "./product.service";
 
-import type { Product as PrismaProduct } from "@/../generated/prisma/client";
+import type {
+  Product as PrismaProduct,
+  ProductVariant as PrismaProductVariant,
+} from "@/../generated/prisma/client";
+
+import { Decimal } from "@/../generated/prisma/internal/prismaNamespace";
 
 vi.mock("@/db/prisma", () => ({
   prisma: {
@@ -30,13 +35,32 @@ describe("Product Service", () => {
     it("should return products for a valid category slug", async () => {
       // Step 1: Setup - Create test data with valid category and products
       const testCategory = createTestCategory();
-      const mockedProducts: PrismaProduct[] = [
-        createTestDBProduct({ id: 1, categoryId: testCategory.id }),
-        createTestDBProduct({
-          id: 2,
-          title: "Test Product 2",
-          categoryId: testCategory.id,
-        }),
+      type PrismaProductWithVariants = PrismaProduct & {
+        variants: PrismaProductVariant[];
+      };
+      const mockedProducts: PrismaProductWithVariants[] = [
+        {
+          ...createTestDBProduct({ id: 1, categoryId: testCategory.id }),
+          variants: [
+            {
+              id: 10,
+              productId: 1,
+              type: "talla",
+              value: "Medium",
+              price: new Decimal(20),
+              createdAt: new Date(),
+              updatedAt: new Date(),
+            },
+          ],
+        },
+        {
+          ...createTestDBProduct({
+            id: 2,
+            title: "Test Product 2",
+            categoryId: testCategory.id,
+          }),
+          variants: [],
+        },
       ];
 
       // Step 2: Mock - Configure responses
@@ -51,11 +75,16 @@ describe("Product Service", () => {
       expect(getCategoryBySlug).toHaveBeenCalledWith(testCategory.slug);
       expect(mockPrisma.product.findMany).toHaveBeenCalledWith({
         where: { categoryId: testCategory.id },
+        include: { variants: true },
       });
       expect(products).toEqual(
         mockedProducts.map((product) => ({
           ...product,
           price: product.price.toNumber(),
+          variants: product.variants.map((v) => ({
+            ...v,
+            price: (v.price as Decimal).toNumber(),
+          })),
         }))
       );
     });
@@ -83,9 +112,27 @@ describe("Product Service", () => {
     it("should return product for valid ID", async () => {
       // Step 1: Setup - Create test data for existing product
       const testProduct = createTestDBProduct();
+      const productWithVariants = {
+        ...testProduct,
+        variants: [
+          {
+            id: 21,
+            productId: testProduct.id,
+            type: "talla",
+            value: "Large",
+            price: new Decimal(25),
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+        ],
+      } as unknown as PrismaProduct & { variants: PrismaProductVariant[] };
 
       // Step 2: Mock - Configure Prisma response
-      vi.mocked(mockPrisma.product.findUnique).mockResolvedValue(testProduct);
+      vi.mocked(mockPrisma.product.findUnique).mockResolvedValue(
+        productWithVariants as PrismaProduct & {
+          variants: PrismaProductVariant[];
+        }
+      );
 
       // Step 3: Call service function
       const result = await getProductById(testProduct.id);
@@ -93,10 +140,15 @@ describe("Product Service", () => {
       // Step 4: Verify expected behavior
       expect(mockPrisma.product.findUnique).toHaveBeenCalledWith({
         where: { id: testProduct.id },
+        include: { variants: true },
       });
       expect(result).toEqual({
-        ...testProduct,
+        ...productWithVariants,
         price: testProduct.price.toNumber(),
+        variants: productWithVariants.variants.map((v) => ({
+          ...v,
+          price: (v.price as Decimal).toNumber(),
+        })),
       });
     });
 
@@ -114,6 +166,7 @@ describe("Product Service", () => {
       await expect(productPromise).rejects.toThrow("Product not found");
       expect(mockPrisma.product.findUnique).toHaveBeenCalledWith({
         where: { id: nonExistentId },
+        include: { variants: true },
       });
     });
   });
