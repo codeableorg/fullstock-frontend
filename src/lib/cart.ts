@@ -19,14 +19,16 @@ export async function addToCart(
   userId: number | undefined,
   sessionCartId: string | undefined,
   productId: Product["id"],
-  quantity: number = 1
+  quantity: number = 1,
+  productVariantId?: number
 ) {
   try {
     const updatedCart = await alterQuantityCartItem(
       userId,
       sessionCartId,
       productId,
-      quantity
+      quantity,
+      productVariantId
     );
     return updatedCart;
   } catch (error) {
@@ -62,7 +64,8 @@ export function calculateTotal(items: CartItem[] | CartItemInput[]): number {
     // Type guard to determine which type we're working with
     if ("product" in item) {
       // CartItem - has a product property
-      return total + item.product.price * item.quantity;
+      const unitPrice = item.productVariant?.price ?? item.product.price;
+      return total + unitPrice * item.quantity;
     } else {
       // CartItemInput - has price directly
       return total + item.price * item.quantity;
