@@ -64,7 +64,6 @@ model Product {
 
   category               Category?                @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   
-  orderItems             OrderItem[]
   variantAttributeValues VariantAttributeValue[]
 
   @@map("products")
@@ -93,7 +92,8 @@ model VariantAttributeValue {
   variantAttribute VariantAttribute @relation(fields: [attributeId], references: [id])
   product          Product           @relation(fields: [productId], references: [id])
   
-  CartItem CartItem[]
+  CartItem  CartItem[]
+  OrderItem OrderItem[]
 
   @@unique([attributeId, productId, value], name: "unique_attribute_product_value")
   @@map("variants_attributes_values")
@@ -152,18 +152,18 @@ model Order {
 }
 
 model OrderItem {
-  id        Int      @id @default(autoincrement())
-  orderId   Int      @map("order_id")
-  productId Int?     @map("product_id")
-  quantity  Int
-  title     String
-  price     Decimal  @db.Decimal(10, 2)
-  imgSrc    String?  @map("img_src")
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
-  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamp(0)
+  id                Int      @id @default(autoincrement())
+  orderId           Int      @map("order_id")
+  attributeValueId  Int      @map("attribute_value_id")
+  quantity          Int
+  title             String
+  price             Decimal  @db.Decimal(10, 2)
+  imgSrc            String?  @map("img_src")
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt         DateTime @default(now()) @map("updated_at") @db.Timestamp(0)
 
-  order   Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  order                 Order                 @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  variantAttributeValue VariantAttributeValue @relation(fields: [attributeValueId], references: [id], onDelete: Cascade)
 
   @@map("order_items")
 }

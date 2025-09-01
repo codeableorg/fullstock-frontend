@@ -19,7 +19,7 @@ import {
   type CulqiInstance,
 } from "@/hooks/use-culqui";
 import { calculateTotal, getCart } from "@/lib/cart";
-import { type CartItem } from "@/models/cart.model";
+import { type CartItem, type CartItemWithProduct } from "@/models/cart.model";
 import { getCurrentUser } from "@/services/auth.service";
 import { deleteRemoteCart } from "@/services/cart.service";
 import { createOrder } from "@/services/order.service";
@@ -103,12 +103,18 @@ export async function action({ request }: Route.ActionArgs) {
 
   const chargeData = await response.json();
 
-  const items = cartItems.map((item) => ({
-    productId: item.product.id,
+  const items: CartItemWithProduct[] = cartItems.map((item) => ({
+    product: {
+      id: item.product.id,
+      title: item.product.title,
+      imgSrc: item.product.imgSrc,
+      alt: item.product.alt,
+      price: item.product.price ?? 0,
+      isOnSale: item.product.isOnSale,
+    },
     quantity: item.quantity,
-    title: item.product.title,
-    price: item.product.price,
-    imgSrc: item.product.imgSrc,
+    attributeValueId: item.attributeValueId,
+    variantAttributeValue: item.variantAttributeValue,
   }));
 
   const { id: orderId } = await createOrder(

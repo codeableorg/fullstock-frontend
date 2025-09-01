@@ -1,4 +1,4 @@
-import type { CartItem, CartItemInput } from "@/models/cart.model";
+import type { CartItem, CartItemWithProduct } from "@/models/cart.model";
 // import { type Product } from "@/models/product.model";
 import { type VariantAttributeValue } from "@/models/variant-attribute.model";
 import {
@@ -55,18 +55,30 @@ export async function removeFromCart(
   }
 }
 
-export function calculateTotal(items: CartItem[]): number;
-export function calculateTotal(items: CartItemInput[]): number;
-
-export function calculateTotal(items: CartItem[] | CartItemInput[]): number {
+// Función para CartItem
+function calculateCartItemTotal(items: CartItem[]): number {
   return items.reduce((total, item) => {
-    // Type guard to determine which type we're working with
-    if ("product" in item) {
-      // CartItem - has a product property
-      return total + Number(item.product.price) * item.quantity;
-    } else {
-      // CartItemInput - has price directly
-      return total + Number(item.price) * item.quantity;
-    }
+    const price = item.variantAttributeValue ? Number(item.variantAttributeValue.price) || 0 : 0;
+    return total + (price * item.quantity);
   }, 0);
+}
+
+// Función para CartItemWithProduct
+function calculateCartItemWithProductTotal(items: CartItemWithProduct[]): number {
+  return items.reduce((total, item) => {
+    const price = typeof item.product.price === 'number' ? item.product.price : 0;
+    return total + (price * item.quantity);
+  }, 0);
+}
+
+export function calculateTotal(items: CartItem[]): number;
+export function calculateTotal(items: CartItemWithProduct[]): number;
+
+export function calculateTotal(items: CartItem[] | CartItemWithProduct[]): number {
+  // Verificar si es CartItemWithProduct comprobando la estructura
+  if (items.length > 0 && 'product' in items[0]) {
+    return calculateCartItemWithProductTotal(items as CartItemWithProduct[]);
+  } else {
+    return calculateCartItemTotal(items as CartItem[]);
+  }
 }

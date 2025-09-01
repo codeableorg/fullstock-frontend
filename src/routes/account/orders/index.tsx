@@ -13,6 +13,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   try {
     const orders = await getOrdersByUser(request);
 
+    // console.log("ORDERS", orders[0].items[0].variantAttributeValue?.value);
     console.log("ORDERS", orders[0].items);
 
     orders.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
@@ -89,37 +90,43 @@ export default function Orders({ loaderData }: Route.ComponentProps) {
                   </tr>
                 </thead>
                 <tbody className="border-t border-b border-border">
-                  {order.items.map((item) => (
-                    <tr key={item.productId}>
-                      <td className="py-6 pl-6">
-                        <div className="flex items-center gap-2">
-                          <div className="w-16 rounded-xl bg-muted">
-                            <img
-                              src={item.imgSrc || undefined}
-                              alt={item.title}
-                            />
-                          </div>
-                          <div>
-                            <div className="font-medium text-foreground">
-                              {item.title}
+                  {order.items.map((item) => {
+                    const productTitle = item.variantAttributeValue?.value 
+                      ? `${item.title} (${item.variantAttributeValue.value})`
+                      : item.title;
+
+                    return (
+                      <tr key={item.id}>
+                        <td className="py-6 pl-6">
+                          <div className="flex items-center gap-2">
+                            <div className="w-16 rounded-xl bg-muted">
+                              <img
+                                src={item.imgSrc || undefined}
+                                alt={productTitle}
+                              />
                             </div>
-                            <div className="mt-1 sm:hidden">
-                              {item.quantity} × S/{item.price.toFixed(2)}
+                            <div>
+                              <div className="font-medium text-foreground">
+                                {productTitle}
+                              </div>
+                              <div className="mt-1 sm:hidden">
+                                {item.quantity} × S/{item.price.toFixed(2)}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </td>
-                      <td className="py-6 pr-8 text-center hidden sm:table-cell">
-                        S/{item.price.toFixed(2)}
-                      </td>
-                      <td className="py-6 pr-8 text-center hidden sm:table-cell">
-                        {item.quantity}
-                      </td>
-                      <td className="py-6 pr-8 whitespace-nowrap text-center font-medium text-foreground">
-                        S/{(item.price * item.quantity).toFixed(2)}
-                      </td>
-                    </tr>
-                  ))}
+                        </td>
+                        <td className="py-6 pr-8 text-center hidden sm:table-cell">
+                          S/{item.price.toFixed(2)}
+                        </td>
+                        <td className="py-6 pr-8 text-center hidden sm:table-cell">
+                          {item.quantity}
+                        </td>
+                        <td className="py-6 pr-8 whitespace-nowrap text-center font-medium text-foreground">
+                          S/{(item.price * item.quantity).toFixed(2)}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

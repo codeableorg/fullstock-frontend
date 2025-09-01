@@ -25,7 +25,6 @@ export interface CartItemInput {
 }
 
 // Tipo para representar un producto simplificado en el carrito
-
 export type CartProductInfo = Pick<
   Product,
   "id" | "title" | "imgSrc" | "alt" | "price" | "isOnSale"

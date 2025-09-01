@@ -1,6 +1,7 @@
 import type {
   Order as PrismaOrder,
   OrderItem as PrismaOrderItem,
+  VariantAttributeValue
 } from "@/../generated/prisma/client";
 
 export type OrderDetails = Pick<
@@ -19,6 +20,7 @@ export type OrderDetails = Pick<
 
 export type OrderItem = Omit<PrismaOrderItem, "price"> & {
   price: number;
+  variantAttributeValue?: VariantAttributeValue;
 };
 
 export type Order = Omit<PrismaOrder, "totalAmount"> & {
@@ -28,7 +30,7 @@ export type Order = Omit<PrismaOrder, "totalAmount"> & {
 };
 
 export interface OrderItemInput {
-  productId: number;
+  attributeValueId: number;
   quantity: number;
   title: string;
   price: number;
