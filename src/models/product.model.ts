@@ -12,5 +12,5 @@ export type Product = PrismaProduct & {
 
 export type VariantAttributeValueWithNumber =  Omit<PrismaVariantAttributeValue, "price"> & {
   price: number
-  variantAttribute: VariantAttribute[]
+  variantAttribute: VariantAttribute
 }

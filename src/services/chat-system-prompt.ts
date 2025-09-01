@@ -1,6 +1,6 @@
 import type { CartWithItems } from "@/models/cart.model";
 import type { Category } from "@/models/category.model";
-import type { Product } from "@/models/product.model";
+import type { Product, VariantAttributeValueWithNumber } from "@/models/product.model";
 
 interface SystemPromptConfig {
   categories: Category[];
@@ -33,21 +33,24 @@ export function generateSystemPrompt({
       
       if (variantType && variantType !== 'único') {
         switch (variantType) {
-          case 'talla':
-            const sizes = product.variantAttributeValues.map((v: any) => v.value).join(", ");
+          case 'talla': {
+            const sizes = product.variantAttributeValues.map((v: VariantAttributeValueWithNumber) => v.value).join(", ");
             variantDisplay = `\n- 👕 Tallas disponibles: ${sizes}`;
             break;
-          case 'dimensión':
+          }
+          case 'dimensión': {
             const dimensions = product.variantAttributeValues
-              .map((v: any) => `${v.value} (S/${v.price})`)
+              .map((v: VariantAttributeValueWithNumber) => `${v.value} (S/${v.price})`)
               .join(", ");
             variantDisplay = `\n- 📐 Dimensiones: ${dimensions}`;
             break;
-          default:
+          }
+          default: {
             const options = product.variantAttributeValues
-              .map((v: any) => `${v.value} (S/${v.price})`)
+              .map((v: VariantAttributeValueWithNumber) => `${v.value} (S/${v.price})`)
               .join(", ");
             variantDisplay = `\n- ⚙️ Opciones: ${options}`;
+          }
         }
       }
     }
