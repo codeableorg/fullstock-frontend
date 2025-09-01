@@ -29,4 +29,5 @@ type Params = {
   "/account/orders": {};
   "/not-found": {};
   "/verify-email": {};
+  "/chat": {};
 };

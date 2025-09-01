@@ -1,13 +1,13 @@
 import { prisma } from "@/db/prisma";
 import { calculateTotal } from "@/lib/cart";
-import { type CartItemInput } from "@/models/cart.model";
+import { type CartItemWithProduct } from "@/models/cart.model";
 import { type Order, type OrderDetails } from "@/models/order.model";
 import { getSession } from "@/session.server";
 
 import { getOrCreateUser } from "./user.service";
 
 export async function createOrder(
-  items: CartItemInput[],
+  items: CartItemWithProduct[],
   formData: OrderDetails,
   paymentId: string
 ): Promise<Order> {
@@ -25,17 +25,33 @@ export async function createOrder(
         ...shippingDetails,
         items: {
           create: items.map((item) => ({
-            productId: item.productId,
+            attributeValueId: item.attributeValueId,
             quantity: item.quantity,
-            title: item.title,
-            price: item.price,
-            imgSrc: item.imgSrc,
+            title: item.product.title,
+            price: item.product.price ?? 0,
+            imgSrc: item.product.imgSrc ?? "",
           })),
         },
         paymentId: paymentId,
       },
       include: {
-        items: true,
+        items: {
+          include: {
+            variantAttributeValue: {
+              include: {
+                product: {
+                  select: {
+                    id: true,
+                    title: true,
+                    imgSrc: true,
+                    alt: true,
+                    isOnSale: true,
+                  },
+                },
+              },
+            },
+          },
+        },
       },
     });
   } catch (error) {
@@ -54,16 +70,14 @@ export async function createOrder(
     zip: order.zip,
     phone: order.phone,
   };
+  
   return {
     ...order,
     totalAmount: Number(order.totalAmount),
     items: order.items.map((item) => ({
       ...item,
       price: Number(item.price),
-      imgSrc: item.imgSrc,
-      productId: item.productId,
-      createdAt: item.createdAt,
-      updatedAt: item.updatedAt,
+      variantAttributeValue: item.variantAttributeValue,
     })),
     createdAt: order.createdAt,
     updatedAt: order.updatedAt,
@@ -78,15 +92,39 @@ export async function getOrdersByUser(request: Request): Promise<Order[]> {
   if (!userId) {
     throw new Error("User not authenticated");
   }
-  const orders = await prisma.order.findMany({
-    where: { userId },
-    include: {
-      items: true,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+  
+  let orders;
+  
+  try {
+    orders = await prisma.order.findMany({
+      where: { userId },
+      include: {
+        items: {
+          include: {
+            variantAttributeValue: {
+              include: {
+                product: {
+                  select: {
+                    id: true,
+                    title: true,
+                    imgSrc: true,
+                    alt: true,
+                    isOnSale: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+  } catch (error) {
+    throw new Error("Failed to fetch orders", { cause: error });
+  }
+  
   return orders.map((order) => {
     const details = {
       email: order.email,
@@ -100,14 +138,14 @@ export async function getOrdersByUser(request: Request): Promise<Order[]> {
       zip: order.zip,
       phone: order.phone,
     };
+    
     return {
       ...order,
       totalAmount: Number(order.totalAmount),
       items: order.items.map((item) => ({
         ...item,
         price: Number(item.price),
-        createdAt: item.createdAt,
-        updatedAt: item.updatedAt,
+        variantAttributeValue: item.variantAttributeValue,
       })),
       createdAt: order.createdAt,
       updatedAt: order.updatedAt,

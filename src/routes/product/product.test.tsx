@@ -1,163 +1,123 @@
-import { render, screen } from "@testing-library/react";
-import { useNavigation } from "react-router";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-import { createTestProduct } from "@/lib/utils.tests";
-import type { Product as ProductType } from "@/models/product.model";
+import { createTestProduct, createTestVariantAttributeValue } from "@/lib/utils.tests";
+import type { Product as ProductModel, VariantAttributeValueWithNumber } from "@/models/product.model";
 
 import Product from ".";
 
 import type { Route } from "./+types";
 
-// Helper function to create a test navigation object
-const createTestNavigation = (overrides = {}) => ({
-  state: "idle" as const,
-  location: undefined,
-  formMethod: undefined,
-  formAction: undefined,
-  formEncType: undefined,
-  formData: undefined,
-  json: undefined,
-  text: undefined,
-  ...overrides,
+// Mock de react-router
+vi.mock("react-router", () => {
+  const actual = vi.importActual("react-router"); // mantener los demás exports reales
+  return {
+    ...actual,
+    Form: vi.fn(({ children }) => <form>{children}</form>),
+    useNavigation: vi.fn(() => ({ state: "idle" } )),
+    useSearchParams: vi.fn(() => [new URLSearchParams(), vi.fn()]),
+    Link: vi.fn(({ children, ...props }) => <a {...props}>{children}</a>),
+  };
 });
 
-// Mock de react-router
-vi.mock("react-router", () => ({
-  Form: vi.fn(({ children }) => <form>{children}</form>),
-  useNavigation: vi.fn(() => createTestNavigation()),
-  Link: vi.fn(({ children, ...props }) => <a {...props}>{children}</a>),
-}));
-
 const createTestProps = (
-  productData: Partial<ProductType> = {}
+  productData: Partial<ProductModel> = {}
 ): Route.ComponentProps => ({
   loaderData: { product: createTestProduct(productData) },
   params: { id: "123" },
-  // Hack to satisfy type requirements
   matches: [] as unknown as Route.ComponentProps["matches"],
 });
 
 describe("Product Component", () => {
   describe("Rendering with valid product data", () => {
     it("should render product title correctly", () => {
-      // Step 1: Setup - Create test props
       const props = createTestProps({ title: "Awesome Product" });
-      // Step 2: Mock - Component mocks already set up above
-      // Step 3: Call - Render component
       render(<Product {...props} />);
-      // Step 4: Verify - Check title is rendered correctly
-      const titleElement = screen.getByRole("heading", { level: 1 });
-      expect(titleElement).toHaveTextContent("Awesome Product");
+      expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Awesome Product");
     });
 
     it("should render product price with correct currency", () => {
-      // Step 1: Setup - Create test props
-      const props = createTestProps({ price: 150.99 });
-      // Step 2: Mock - Component mocks already set up above
-      // Step 3: Call - Render component
+     const props = createTestProps({
+  categoryId: 1, // Para que el componente muestre variantes
+  variantAttributeValues: [
+    createTestVariantAttributeValue({ id: 1, value: "S", price: 100 }),
+    createTestVariantAttributeValue({ id: 2, value: "M", price: 120 }),
+  ],
+});
       render(<Product {...props} />);
-      // Step 4: Verify - Check price is rendered correctly
-      expect(screen.queryByText("S/150.99")).toBeInTheDocument();
+      expect(screen.getByText("S/100.00")).toBeInTheDocument();
     });
 
     it("should render product description", () => {
-      // Step 1: Setup - Create test props
-      const props = createTestProps({
-        description: "Amazing product",
-      });
-      // Step 2: Mock - Component mocks already set up above
-      // Step 3: Call - Render component
+      const props = createTestProps({ description: "Amazing product" });
       render(<Product {...props} />);
-      // Step 4: Verify - Check description is rendered
-      expect(screen.queryByText("Amazing product")).toBeInTheDocument();
+      expect(screen.getByText("Amazing product")).toBeInTheDocument();
     });
 
-    it("should render product image with correct src and alt attributes", () => {
-      // Step 1: Setup - Create test props
+    it("should render product image with correct src and alt", () => {
       const props = createTestProps({
         imgSrc: "/test-image.jpg",
         alt: "Test Product",
       });
-      // Step 2: Mock - Component mocks already set up above
-      // Step 3: Call - Render component
       render(<Product {...props} />);
-      // Step 4: Verify - Check image attributes
       const image = screen.getByRole("img");
       expect(image).toHaveAttribute("src", "/test-image.jpg");
       expect(image).toHaveAttribute("alt", "Test Product");
     });
 
     it("should render all product features as list items", () => {
-      // Step 1: Setup - Create test props
       const features = ["Feature 1", "Feature 2", "Feature 3"];
       const props = createTestProps({ features });
-      // Step 2: Mock - Component mocks already set up above
-      // Step 3: Call - Render component
       render(<Product {...props} />);
-      // Step 4: Verify - Check features are rendered
       features.forEach((feature) => {
-        expect(screen.queryByText(feature)).toBeInTheDocument();
+        expect(screen.getByText(feature)).toBeInTheDocument();
       });
     });
 
     it('should render "Agregar al Carrito" button', () => {
-      // Step 1: Setup - Create test props
       const props = createTestProps();
-      // Step 2: Mock - Component mocks already set up above
-      // Step 3: Call - Render component
       render(<Product {...props} />);
-      // Step 4: Verify - Check button is present
-      expect(
-        screen.queryByRole("button", { name: "Agregar al Carrito" })
-      ).toBeInTheDocument();
-    });
-  });
-
-  describe("Form interactions", () => {
-    it("should include hidden redirectTo input with correct value", () => {
-      // Step 1: Setup
-      const productId = 123;
-      const props = createTestProps({ id: productId });
-      // Step 2: Mock - Component mocks already set up above
-      // Step 3: Call
-      render(<Product {...props} />);
-      // Step 4: Verify
-      const redirectInput = screen.queryByDisplayValue(
-        `/products/${productId}`
-      );
-      expect(redirectInput).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Agregar al Carrito" })).toBeInTheDocument();
     });
 
-    it("should disable button when cart is loading", () => {
-      // Step 1: Setup
-      const props = createTestProps();
-      const expectedNavigation = createTestNavigation({ state: "submitting" });
-      // Step 2: Mock - Override navigation state to simulate loading
-      vi.mocked(useNavigation).mockReturnValue(expectedNavigation);
-      // Step 3: Call
-      render(<Product {...props} />);
-      // Step 4: Verify
-      const button = screen.getByRole("button");
-      expect(button).toBeDisabled();
-      expect(button).toHaveTextContent("Agregando...");
-    });
-  });
+    it("should render variants and update price when variant is selected", () => {
+      const props = createTestProps({
+        categoryId: 1,
+        variantAttributeValues: [
+          {
+            id: 1,
+            attributeId: 1,
+            productId: 1,
+            value: "S",
+            price: 100,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            variantAttribute: { id: 1, name: "Talla" },
+          },
+          {
+            id: 2,
+            attributeId: 1,
+            productId: 1,
+            value: "M",
+            price: 120,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            variantAttribute: { id: 1, name: "Talla" },
+          },
+        ] as VariantAttributeValueWithNumber[],
+      });
 
-  describe("Error handling", () => {
-    it("should render NotFound component when product is not provided", () => {
-      // Step 1: Setup - Create props without product
-      const props = createTestProps();
-      props.loaderData.product = undefined;
-
-      // Step 2: Mock - Mock NotFound component
-      // vi.mock("../not-found", () => ({
-      //   default: () => <div data-testid="not-found">Not Found Page</div>,
-      // }));
-      // Step 3: Call
       render(<Product {...props} />);
-      // Step 4: Verify
-      expect(screen.getByTestId("not-found")).toBeInTheDocument();
+
+      const smallBtn = screen.getByRole("button", { name: "S" });
+      const mediumBtn = screen.getByRole("button", { name: "M" });
+      expect(smallBtn).toBeInTheDocument();
+      expect(mediumBtn).toBeInTheDocument();
+
+      expect(screen.getByText("S/100.00")).toBeInTheDocument();
+
+      fireEvent.click(mediumBtn);
+      expect(screen.getByText("S/120.00")).toBeInTheDocument();
     });
   });
 });

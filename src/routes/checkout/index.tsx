@@ -19,7 +19,7 @@ import {
   type CulqiInstance,
 } from "@/hooks/use-culqui";
 import { calculateTotal, getCart } from "@/lib/cart";
-import { type CartItem } from "@/models/cart.model";
+import { type CartItem, type CartItemWithProduct } from "@/models/cart.model";
 import { getCurrentUser } from "@/services/auth.service";
 import { deleteRemoteCart } from "@/services/cart.service";
 import { createOrder } from "@/services/order.service";
@@ -103,12 +103,18 @@ export async function action({ request }: Route.ActionArgs) {
 
   const chargeData = await response.json();
 
-  const items = cartItems.map((item) => ({
-    productId: item.product.id,
+  const items: CartItemWithProduct[] = cartItems.map((item) => ({
+    product: {
+      id: item.product.id,
+      title: item.product.title,
+      imgSrc: item.product.imgSrc,
+      alt: item.product.alt,
+      price: item.product.price ?? 0,
+      isOnSale: item.product.isOnSale,
+    },
     quantity: item.quantity,
-    title: item.product.title,
-    price: item.product.price,
-    imgSrc: item.product.imgSrc,
+    attributeValueId: item.attributeValueId,
+    variantAttributeValue: item.variantAttributeValue,
   }));
 
   const { id: orderId } = await createOrder(
@@ -249,9 +255,9 @@ export default function Checkout({
           <div className="flex-grow">
             <h2 className="text-lg font-medium mb-4">Resumen de la orden</h2>
             <div className="border border-border rounded-xl bg-background flex flex-col">
-              {cart?.items?.map(({ product, quantity }) => (
+              {cart?.items?.map(({ product, quantity, variantAttributeValue }) => (
                 <div
-                  key={product.id}
+                  key={variantAttributeValue?.id}
                   className="flex gap-6 p-6 border-b border-border"
                 >
                   <div className="w-20 rounded-xl bg-muted">
@@ -262,11 +268,11 @@ export default function Checkout({
                     />
                   </div>
                   <div className="flex flex-col justify-between flex-grow">
-                    <h3 className="text-sm leading-5">{product.title}</h3>
+                    <h3 className="text-sm leading-5">{product.title} ({variantAttributeValue?.value})</h3>
                     <div className="flex text-sm font-medium gap-4 items-center self-end">
                       <p>{quantity}</p>
                       <X className="w-4 h-4" />
-                      <p>S/{product.price.toFixed(2)}</p>
+                      <p>S/{product.price!.toFixed(2)}</p>
                     </div>
                   </div>
                 </div>
@@ -301,56 +307,79 @@ export default function Checkout({
                 Información de envío
               </legend>
               <div className="flex flex-col gap-6">
-                <InputField
-                  label="Nombre"
-                  autoComplete="given-name"
-                  error={errors.firstName?.message}
-                  {...register("firstName")}
-                />
-                <InputField
-                  label="Apellido"
-                  autoComplete="family-name"
-                  error={errors.lastName?.message}
-                  {...register("lastName")}
-                />
-                <InputField
-                  label="Compañia"
-                  autoComplete="organization"
-                  error={errors.company?.message}
-                  {...register("company")}
-                />
-                {errors.company?.message && <p>{errors.company?.message}</p>}
-                <InputField
-                  label="Dirección"
-                  autoComplete="street-address"
-                  error={errors.address?.message}
-                  {...register("address")}
-                />
-                <InputField
-                  label="Ciudad"
-                  autoComplete="address-level2"
-                  error={errors.city?.message}
-                  {...register("city")}
-                />
-                <SelectField
-                  label="País"
-                  options={countryOptions}
-                  placeholder="Seleccionar país"
-                  error={errors.country?.message}
-                  {...register("country")}
-                />
-                <InputField
-                  label="Provincia/Estado"
-                  autoComplete="address-level1"
-                  error={errors.region?.message}
-                  {...register("region")}
-                />
-                <InputField
-                  label="Código Postal"
-                  autoComplete="postal-code"
-                  error={errors.zip?.message}
-                  {...register("zip")}
-                />
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex-1">
+                  <InputField
+                    label="Nombre"
+                    autoComplete="given-name"
+                    error={errors.firstName?.message}
+                    {...register("firstName")}
+                  />
+                </div>
+                <div className="flex-1">
+                  <InputField
+                    label="Apellido"
+                    autoComplete="family-name"
+                    error={errors.lastName?.message}
+                    {...register("lastName")}
+                  />
+                </div>
+              </div>
+
+              <InputField
+                label="Compañia"
+                autoComplete="organization"
+                error={errors.company?.message}
+                {...register("company")}
+              />
+              {errors.company?.message && <p>{errors.company?.message}</p>}
+              
+              <InputField
+                label="Dirección"
+                autoComplete="street-address"
+                error={errors.address?.message}
+                {...register("address")}
+              />
+
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex-1">
+                  <InputField
+                    label="Ciudad"
+                    autoComplete="address-level2"
+                    error={errors.city?.message}
+                    {...register("city")}
+                  />
+                </div>
+                <div className="flex-1">
+                  <SelectField
+                    label="País"
+                    options={countryOptions}
+                    placeholder="Seleccionar país"
+                    error={errors.country?.message}
+                    {...register("country")}
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex-1">
+                  <InputField
+                    label="Provincia/Estado"
+                    autoComplete="address-level1"
+                    error={errors.region?.message}
+                    {...register("region")}
+                  />
+                </div>
+                <div className="flex-1">
+                  <InputField
+                    label="Código Postal"
+                    autoComplete="postal-code"
+                    error={errors.zip?.message}
+                    {...register("zip")}
+                  />
+                </div>
+                </div>
+
                 <InputField
                   label="Teléfono"
                   autoComplete="tel"

@@ -55,7 +55,6 @@ model Product {
   title       String
   imgSrc      String   @map("img_src")
   alt         String?
-  price       Decimal  @db.Decimal(10, 2)
   description String?
   categoryId  Int?     @map("category_id")
   isOnSale    Boolean  @default(false) @map("is_on_sale")
@@ -63,11 +62,41 @@ model Product {
   createdAt   DateTime @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt   DateTime @default(now()) @map("updated_at") @db.Timestamp(0)
 
-  category   Category?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  cartItems  CartItem[]
-  orderItems OrderItem[]
+  category               Category?                @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  
+  variantAttributeValues VariantAttributeValue[]
 
   @@map("products")
+}
+
+model VariantAttribute {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamp(0)
+
+  variantsAttributeValue VariantAttributeValue[]
+
+  @@map("variants_attributes")
+}
+
+model VariantAttributeValue {
+  id          Int      @id @default(autoincrement())
+  attributeId Int      @map("attribute_id")
+  productId   Int      @map("product_id")
+  value       String
+  price       Decimal  @db.Decimal(10, 2)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt   DateTime @default(now()) @map("updated_at") @db.Timestamp(0)
+
+  variantAttribute VariantAttribute @relation(fields: [attributeId], references: [id])
+  product          Product           @relation(fields: [productId], references: [id])
+  
+  CartItem  CartItem[]
+  OrderItem OrderItem[]
+
+  @@unique([attributeId, productId, value], name: "unique_attribute_product_value")
+  @@map("variants_attributes_values")
 }
 
 model Cart {
@@ -86,15 +115,15 @@ model Cart {
 model CartItem {
   id        Int      @id @default(autoincrement())
   cartId    Int      @map("cart_id")
-  productId Int      @map("product_id")
+  attributeValueId Int @map("attribute_value_id")
   quantity  Int
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamp(0)
 
   cart    Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variantAttributeValue VariantAttributeValue @relation(fields: [attributeValueId], references: [id], onDelete: Cascade)
 
-  @@unique([cartId, productId], name: "unique_cart_item")
+  @@unique([cartId, attributeValueId], name: "unique_cart_item")
   @@map("cart_items")
 }
 
@@ -123,18 +152,18 @@ model Order {
 }
 
 model OrderItem {
-  id        Int      @id @default(autoincrement())
-  orderId   Int      @map("order_id")
-  productId Int?     @map("product_id")
-  quantity  Int
-  title     String
-  price     Decimal  @db.Decimal(10, 2)
-  imgSrc    String?  @map("img_src")
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
-  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamp(0)
+  id                Int      @id @default(autoincrement())
+  orderId           Int      @map("order_id")
+  attributeValueId  Int      @map("attribute_value_id")
+  quantity          Int
+  title             String
+  price             Decimal  @db.Decimal(10, 2)
+  imgSrc            String?  @map("img_src")
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt         DateTime @default(now()) @map("updated_at") @db.Timestamp(0)
 
-  order   Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  order                 Order                 @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  variantAttributeValue VariantAttributeValue @relation(fields: [attributeValueId], references: [id], onDelete: Cascade)
 
   @@map("order_items")
 }

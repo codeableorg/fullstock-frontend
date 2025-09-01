@@ -1,5 +1,18 @@
-import type { Product as PrismaProduct } from "@/../generated/prisma/client";
+import type { VariantAttributeValue as PrismaVariantAttributeValue,  } from "./variant-attribute.model";
+import type { Product as PrismaProduct, VariantAttribute } from "@/../generated/prisma/client";
 
-export type Product = Omit<PrismaProduct, "price"> & {
-  price: number;
+export type Product = PrismaProduct & {
+  price?: number | null;
+  minPrice?: number | null;
+  maxPrice?: number | null;
+  variantAttributeValues?: VariantAttributeValueWithNumber[];
+};
+
+export type VariantAttributeValueWithNumber =  Omit<PrismaVariantAttributeValue, "price"> & {
+  price: number
+  variantAttribute: VariantAttribute
+}
+
+export type ProductDTO = PrismaProduct & {
+  variantAttributeValues: PrismaVariantAttributeValue[];
 };
