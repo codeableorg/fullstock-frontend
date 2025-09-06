@@ -42,12 +42,33 @@ model Category {
   imgSrc      String?      @map("img_src")
   alt         String?
   description String?
+  hasVariants Boolean      @default(false) @map("has_variants") // Indica si esta categoría maneja variantes
   createdAt   DateTime     @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt   DateTime     @default(now()) @map("updated_at") @db.Timestamp(0)
 
-  products Product[]
+  products         Product[]
+  categoryVariants CategoryVariant[]
 
   @@map("categories")
+}
+
+// Variantes disponibles para cada categoría
+model CategoryVariant {
+  id           Int      @id @default(autoincrement())
+  categoryId   Int      @map("category_id")
+  value        String   // "small", "medium", "large", "3x3", "5x5", "10x10"
+  label        String   // "S", "M", "L", "3×3 cm", "5×5 cm", "10×10 cm"
+  priceModifier Decimal @default(0) @map("price_modifier") @db.Decimal(10, 2)
+  sortOrder    Int      @default(0) @map("sort_order") // Para ordenar las opciones
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt    DateTime @default(now()) @map("updated_at") @db.Timestamp(0)
+
+  category   Category   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  cartItems  CartItem[]
+  orderItems OrderItem[]
+
+  @@unique([categoryId, value])
+  @@map("category_variants")
 }
 
 model Product {
@@ -83,18 +104,22 @@ model Cart {
   @@map("carts")
 }
 
+// Actualizar CartItem para variantes de categoría
 model CartItem {
-  id        Int      @id @default(autoincrement())
-  cartId    Int      @map("cart_id")
-  productId Int      @map("product_id")
-  quantity  Int
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
-  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamp(0)
+  id                Int      @id @default(autoincrement())
+  cartId            Int      @map("cart_id")
+  productId         Int      @map("product_id")
+  categoryVariantId Int?     @map("category_variant_id") // Variante seleccionada
+  quantity          Int
+  finalPrice        Decimal  @map("final_price") @db.Decimal(10, 2)// Price final
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt         DateTime @default(now()) @map("updated_at") @db.Timestamp(0)
 
-  cart    Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  cart            Cart             @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product         Product          @relation(fields: [productId], references: [id], onDelete: Cascade)
+  categoryVariant CategoryVariant? @relation(fields: [categoryVariantId], references: [id], onDelete: SetNull)
 
-  @@unique([cartId, productId], name: "unique_cart_item")
+  @@unique([cartId, productId, categoryVariantId], name: "unique_cart_item_variant")
   @@map("cart_items")
 }
 
@@ -122,19 +147,23 @@ model Order {
   @@map("orders")
 }
 
+// Actualizar OrderItem
 model OrderItem {
-  id        Int      @id @default(autoincrement())
-  orderId   Int      @map("order_id")
-  productId Int?     @map("product_id")
-  quantity  Int
-  title     String
-  price     Decimal  @db.Decimal(10, 2)
-  imgSrc    String?  @map("img_src")
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
-  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamp(0)
+  id                Int      @id @default(autoincrement())
+  orderId           Int      @map("order_id")
+  productId         Int?     @map("product_id")
+  categoryVariantId Int?     @map("category_variant_id")
+  quantity          Int
+  title             String
+  variantInfo       String?  @map("variant_info") // "Talla: M" o "Tamaño: 5×5 cm"
+  price             Decimal  @db.Decimal(10, 2) // Precio final (base + modificador)
+  imgSrc            String?  @map("img_src")
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt         DateTime @default(now()) @map("updated_at") @db.Timestamp(0)
 
-  order   Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  order           Order            @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product         Product?         @relation(fields: [productId], references: [id], onDelete: SetNull)
+  categoryVariant CategoryVariant? @relation(fields: [categoryVariantId], references: [id], onDelete: SetNull)
 
   @@map("order_items")
 }

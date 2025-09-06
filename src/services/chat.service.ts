@@ -2,7 +2,7 @@ import { type Chat, GoogleGenAI } from "@google/genai";
 import dotenv from "dotenv";
 
 import { getOrCreateCart } from "./cart.service";
-import { getAllCategories } from "./category.service";
+import { getAllCategoriesWithVariants } from "./category.service";
 import { generateSystemPrompt } from "./chat-system-prompt";
 import { getAllProducts } from "./product.service";
 
@@ -23,7 +23,7 @@ export async function sendMessage(
   if (!chats[sessionId]) {
     // Obtener datos de la base de datos
     const [categories, products] = await Promise.all([
-      getAllCategories(),
+      getAllCategoriesWithVariants(),
       getAllProducts(),
     ]);
 

@@ -19,14 +19,16 @@ export async function addToCart(
   userId: number | undefined,
   sessionCartId: string | undefined,
   productId: Product["id"],
-  quantity: number = 1
+  quantity: number = 1,
+  categoryVariantId: number | null = null
 ) {
   try {
     const updatedCart = await alterQuantityCartItem(
       userId,
       sessionCartId,
       productId,
-      quantity
+      quantity,
+      categoryVariantId
     );
     return updatedCart;
   } catch (error) {
@@ -60,9 +62,9 @@ export function calculateTotal(items: CartItemInput[]): number;
 export function calculateTotal(items: CartItem[] | CartItemInput[]): number {
   return items.reduce((total, item) => {
     // Type guard to determine which type we're working with
-    if ("product" in item) {
+    if ("finalPrice" in item) {
       // CartItem - has a product property
-      return total + item.product.price * item.quantity;
+      return total + item.finalPrice * item.quantity;
     } else {
       // CartItemInput - has price directly
       return total + item.price * item.quantity;

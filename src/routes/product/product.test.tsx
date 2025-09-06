@@ -32,7 +32,10 @@ vi.mock("react-router", () => ({
 const createTestProps = (
   productData: Partial<ProductType> = {}
 ): Route.ComponentProps => ({
-  loaderData: { product: createTestProduct(productData) },
+  loaderData: {
+    product: createTestProduct(productData),
+    categoryWithVariants: null,
+  },
   params: { id: "123" },
   // Hack to satisfy type requirements
   matches: [] as unknown as Route.ComponentProps["matches"],
